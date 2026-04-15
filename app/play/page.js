@@ -3,6 +3,17 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 
+// ── Confetti pieces (deterministic — no Math.random in render) ────────────────
+const CONFETTI_COLOURS = ['#00e676', '#ffb800', '#ff4466', '#4499ff', '#cc44ff', '#ffffff'];
+const CONFETTI = Array.from({ length: 40 }, (_, i) => ({
+  color: CONFETTI_COLOURS[i % CONFETTI_COLOURS.length],
+  left: `${((i * 41 + 7) % 96) + 2}%`,
+  duration: `${1.6 + (i % 9) * 0.22}s`,
+  delay: `${(i % 11) * 0.06}s`,
+  size: `${7 + (i % 5)}px`,
+  round: i % 3 !== 0,
+}));
+
 function generateUUID() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     return crypto.randomUUID();
@@ -18,18 +29,12 @@ function formatTime(ms) {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  return minutes > 0
-    ? `${minutes}m ${seconds}s`
-    : `${seconds}s`;
+  return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 }
 
 function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs) {
   const squares = solved
-    ? [
-        ...Array(cluesUsed - 1).fill('🟥'),
-        '🟩',
-        ...Array(6 - cluesUsed).fill('⬜'),
-      ]
+    ? [...Array(cluesUsed - 1).fill('🟥'), '🟩', ...Array(6 - cluesUsed).fill('⬜')]
     : Array(6).fill('🟥');
   const clueWord = cluesUsed === 1 ? 'clue' : 'clues';
   return `FootyIQ #${gameNumber}\n${squares.join('')}\n${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}\nfootyiq.au`;
@@ -37,7 +42,7 @@ function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs) {
 
 export default function PlayPage() {
   const [deviceId, setDeviceId] = useState(null);
-  const [gameState, setGameState] = useState('loading'); // loading | error | playing | done
+  const [gameState, setGameState] = useState('loading');
   const [game, setGame] = useState(null);
   const [clues, setClues] = useState([]);
   const [wrongGuesses, setWrongGuesses] = useState([]);
@@ -46,7 +51,7 @@ export default function PlayPage() {
   const [gameOverData, setGameOverData] = useState(null);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [emailInput, setEmailInput] = useState('');
-  const [emailState, setEmailState] = useState('idle'); // idle | loading | done | error
+  const [emailState, setEmailState] = useState('idle');
   const [copied, setCopied] = useState(false);
   const [loadError, setLoadError] = useState(null);
   const [isGuessing, setIsGuessing] = useState(false);
@@ -55,7 +60,7 @@ export default function PlayPage() {
   const timerRef = useRef(null);
   const inputRef = useRef(null);
 
-  // ── Initialise device ID ───────────────────────────────────────────────────
+  // ── Device ID ──────────────────────────────────────────────────────────────
 
   useEffect(() => {
     let id = localStorage.getItem('footyiq_device_id');
@@ -74,21 +79,10 @@ export default function PlayPage() {
     async function loadGame() {
       try {
         const res = await fetch('/api/game/today');
-
-        if (res.status === 404) {
-          setLoadError('No game today. Check back tomorrow!');
-          setGameState('error');
-          return;
-        }
-        if (!res.ok) {
-          setLoadError('Failed to load the game. Please refresh.');
-          setGameState('error');
-          return;
-        }
+        if (res.status === 404) { setLoadError('No game today. Check back tomorrow!'); setGameState('error'); return; }
+        if (!res.ok) { setLoadError('Failed to load the game. Please refresh.'); setGameState('error'); return; }
 
         const data = await res.json();
-
-        // Already played today?
         const saved = localStorage.getItem(`footyiq_result_${data.date}`);
         if (saved) {
           setGame(data);
@@ -106,7 +100,6 @@ export default function PlayPage() {
         setGameState('error');
       }
     }
-
     loadGame();
   }, [deviceId]);
 
@@ -114,23 +107,19 @@ export default function PlayPage() {
 
   useEffect(() => {
     if (gameState !== 'playing') return;
-
     timerRef.current = setInterval(() => {
       setElapsedMs(performance.now() - startTimeRef.current);
     }, 100);
-
     return () => clearInterval(timerRef.current);
   }, [gameState]);
 
-  // ── Autofocus input when a new clue is revealed ────────────────────────────
+  // ── Autofocus ─────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    if (gameState === 'playing') {
-      inputRef.current?.focus();
-    }
+    if (gameState === 'playing') inputRef.current?.focus();
   }, [gameState, clueNumber]);
 
-  // ── Submit final result to /api/submit ─────────────────────────────────────
+  // ── Finish game ────────────────────────────────────────────────────────────
 
   const finishGame = useCallback(
     async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses }) => {
@@ -138,27 +127,17 @@ export default function PlayPage() {
         const res = await fetch('/api/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            gameId: game.id,
-            deviceId,
-            cluesUsed,
-            totalTimeMs,
-            guesses: allGuesses,
-            solved,
-          }),
+          body: JSON.stringify({ gameId: game.id, deviceId, cluesUsed, totalTimeMs, guesses: allGuesses, solved }),
         });
-
         const submitData = await res.json();
         const rank = res.ok && submitData.success ? submitData.rank : null;
         const totalPlayers = res.ok && submitData.success ? submitData.totalPlayers : null;
         const percentile = res.ok && submitData.success ? submitData.percentile : null;
-
         const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile };
         setGameOverData(resultData);
         setGameState('done');
         localStorage.setItem(`footyiq_result_${game.date}`, JSON.stringify(resultData));
       } catch {
-        // Show result even if submit fails
         const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null };
         setGameOverData(resultData);
         setGameState('done');
@@ -169,7 +148,7 @@ export default function PlayPage() {
     [game, deviceId]
   );
 
-  // ── Handle a guess submission ──────────────────────────────────────────────
+  // ── Handle guess ───────────────────────────────────────────────────────────
 
   const handleGuess = useCallback(async () => {
     const guessText = currentGuess.trim();
@@ -183,54 +162,28 @@ export default function PlayPage() {
       const res = await fetch('/api/guess', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId: game.id,
-          deviceId,
-          guess: guessText,
-          clueNumber,
-          totalTimeMs: timeMs,
-        }),
+        body: JSON.stringify({ gameId: game.id, deviceId, guess: guessText, clueNumber, totalTimeMs: timeMs }),
       });
-
       const data = await res.json();
 
-      if (!res.ok) {
-        setCurrentGuess(guessText); // restore on error
-        setIsGuessing(false);
-        return;
-      }
+      if (!res.ok) { setCurrentGuess(guessText); setIsGuessing(false); return; }
 
       if (data.correct) {
-        const finalMs = Math.round(performance.now() - startTimeRef.current);
         clearInterval(timerRef.current);
-        await finishGame({
-          solved: true,
-          answer: data.answer,
-          cluesUsed: clueNumber,
-          totalTimeMs: finalMs,
-          allGuesses: [...wrongGuesses, guessText],
-        });
+        await finishGame({ solved: true, answer: data.answer, cluesUsed: clueNumber, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses: [...wrongGuesses, guessText] });
       } else if (data.failed) {
-        const finalMs = Math.round(performance.now() - startTimeRef.current);
         clearInterval(timerRef.current);
         const allGuesses = [...wrongGuesses, guessText];
         setWrongGuesses(allGuesses);
-        await finishGame({
-          solved: false,
-          answer: data.answer,
-          cluesUsed: 6,
-          totalTimeMs: finalMs,
-          allGuesses,
-        });
+        await finishGame({ solved: false, answer: data.answer, cluesUsed: 6, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses });
       } else {
-        // Wrong — reveal next clue
         setWrongGuesses((prev) => [...prev, guessText]);
         setClues((prev) => [...prev, data.nextClue]);
         setClueNumber((prev) => prev + 1);
         setIsGuessing(false);
       }
     } catch {
-      setCurrentGuess(guessText); // restore on network error
+      setCurrentGuess(guessText);
       setIsGuessing(false);
     }
   }, [currentGuess, isGuessing, game, deviceId, clueNumber, wrongGuesses, finishGame]);
@@ -242,38 +195,24 @@ export default function PlayPage() {
     if (!emailInput.trim()) return;
     setEmailState('loading');
     try {
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailInput.trim() }),
-      });
+      const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: emailInput.trim() }) });
       setEmailState(res.ok ? 'done' : 'error');
-    } catch {
-      setEmailState('error');
-    }
+    } catch { setEmailState('error'); }
   }
 
   // ── Copy share text ────────────────────────────────────────────────────────
 
   function handleCopy() {
     if (!game || !gameOverData) return;
-    const shareText = buildShareText(
-      game.game_number,
-      gameOverData.solved,
-      gameOverData.cluesUsed,
-      gameOverData.totalTimeMs
-    );
-    navigator.clipboard.writeText(shareText).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    navigator.clipboard.writeText(buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs))
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render: loading / error ────────────────────────────────────────────────
 
   if (gameState === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="bg-texture min-h-screen flex items-center justify-center">
         <p className="text-gray-400 text-lg animate-pulse">Loading today's game…</p>
       </div>
     );
@@ -281,25 +220,52 @@ export default function PlayPage() {
 
   if (gameState === 'error') {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+      <div className="bg-texture min-h-screen flex items-center justify-center px-4">
         <p className="text-red-400 text-center text-lg">{loadError}</p>
       </div>
     );
   }
 
+  // ── Render: game ───────────────────────────────────────────────────────────
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className="bg-texture min-h-screen text-white flex flex-col">
+
+      {/* Confetti overlay — only on correct answer */}
+      {gameState === 'done' && gameOverData?.solved && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-50" aria-hidden>
+          {CONFETTI.map((p, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                left: p.left,
+                top: '-12px',
+                width: p.size,
+                height: p.size,
+                background: p.color,
+                borderRadius: p.round ? '50%' : '2px',
+                animation: `confetti-fall ${p.duration} ease-in ${p.delay} forwards`,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* ── Header ────────────────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between px-4 py-4 border-b border-gray-800">
+      <header
+        className="flex items-center justify-between px-4 py-3.5 border-b"
+        style={{ background: 'rgba(10,14,19,0.96)', backdropFilter: 'blur(10px)', borderColor: 'rgba(255,255,255,0.06)' }}
+      >
         <div>
-          <h1 className="text-xl font-bold tracking-tight">FootyIQ</h1>
+          <h1 className="text-xl font-black tracking-tight text-white">FootyIQ</h1>
           {game && (
             <p className="text-xs text-gray-500 mt-0.5">Game #{game.game_number}</p>
           )}
         </div>
+
         {gameState === 'playing' && (
-          <div className="text-2xl font-mono font-semibold tabular-nums">
+          <div className="text-2xl font-mono font-bold tabular-nums animate-timer-glow">
             {formatTime(elapsedMs)}
           </div>
         )}
@@ -315,14 +281,18 @@ export default function PlayPage() {
         {/* ── Playing state ─────────────────────────────────────────────── */}
         {gameState === 'playing' && (
           <>
-            {/* Clue list */}
-            <div className="space-y-5">
+            {/* Clue card panel */}
+            <div
+              className="rounded-2xl p-5 space-y-5 mb-6"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+            >
               {clues.map((clueText, index) => {
                 const clueNum = index + 1;
                 const wrongGuessForClue = wrongGuesses[index];
+                const isNew = index === clues.length - 1 && index > 0;
 
                 return (
-                  <div key={clueNum}>
+                  <div key={clueNum} className={isNew ? 'animate-fade-slide-in' : ''}>
                     <div className="flex items-baseline gap-2 mb-1">
                       <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Clue {clueNum}
@@ -340,7 +310,7 @@ export default function PlayPage() {
             </div>
 
             {/* Guess input */}
-            <div className="mt-8">
+            <div>
               <div className="flex gap-2">
                 <input
                   ref={inputRef}
@@ -352,12 +322,14 @@ export default function PlayPage() {
                   autoComplete="off"
                   autoFocus
                   disabled={isGuessing}
-                  className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-base focus:outline-none focus:border-gray-600 disabled:opacity-50 transition-colors"
+                  className="flex-1 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-base focus:outline-none disabled:opacity-50 transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                 />
                 <button
                   onClick={handleGuess}
                   disabled={isGuessing || !currentGuess.trim()}
-                  className="bg-white text-gray-950 font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform"
+                  className="font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform text-white"
+                  style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}
                 >
                   {isGuessing ? '…' : 'Guess'}
                 </button>
@@ -369,18 +341,14 @@ export default function PlayPage() {
           </>
         )}
 
-        {/* ── Done state (just finished or already played) ───────────────── */}
+        {/* ── Done state ────────────────────────────────────────────────── */}
         {gameState === 'done' && gameOverData && (
-          <div className="space-y-6">
+          <div className="space-y-5">
 
             {/* Answer */}
             <div className="text-center pt-2">
               <p className="text-sm text-gray-500 mb-2">The answer was</p>
-              <p
-                className={`text-3xl font-bold ${
-                  gameOverData.solved ? 'text-green-400' : 'text-red-400'
-                }`}
-              >
+              <p className={`text-3xl font-bold ${gameOverData.solved ? 'text-[#00e676]' : 'text-red-400'}`}>
                 {gameOverData.answer}
               </p>
               <p className="text-sm text-gray-500 mt-2">
@@ -392,91 +360,83 @@ export default function PlayPage() {
 
             {/* Stats grid */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-gray-800 rounded-xl py-4 px-3 text-center">
-                <p className="text-2xl font-bold">{gameOverData.cluesUsed}</p>
-                <p className="text-xs text-gray-500 mt-1">Clues used</p>
-              </div>
-              <div className="bg-gray-800 rounded-xl py-4 px-3 text-center">
-                <p className="text-2xl font-bold font-mono tabular-nums">
-                  {formatTime(gameOverData.totalTimeMs)}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">Time</p>
-              </div>
-              {gameOverData.rank !== null && (
-                <>
-                  <div className="bg-gray-800 rounded-xl py-4 px-3 text-center">
-                    <p className="text-2xl font-bold">#{gameOverData.rank}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Rank of {gameOverData.totalPlayers}
-                    </p>
-                  </div>
-                  <div className="bg-gray-800 rounded-xl py-4 px-3 text-center">
-                    <p className="text-2xl font-bold">{gameOverData.percentile}%</p>
-                    <p className="text-xs text-gray-500 mt-1">Percentile</p>
-                  </div>
-                </>
-              )}
+              {[
+                { value: gameOverData.cluesUsed, label: 'Clues used' },
+                { value: formatTime(gameOverData.totalTimeMs), label: 'Time', mono: true },
+                ...(gameOverData.rank !== null ? [
+                  { value: `#${gameOverData.rank}`, label: `Rank of ${gameOverData.totalPlayers}` },
+                  { value: `${gameOverData.percentile}%`, label: 'Percentile' },
+                ] : []),
+              ].map(({ value, label, mono }) => (
+                <div
+                  key={label}
+                  className="rounded-xl py-4 px-3 text-center"
+                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+                >
+                  <p className={`text-2xl font-bold ${mono ? 'font-mono tabular-nums' : ''}`}>{value}</p>
+                  <p className="text-xs text-gray-500 mt-1">{label}</p>
+                </div>
+              ))}
             </div>
 
-            {/* Share card preview */}
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            {/* Share card */}
+            <div
+              className="rounded-xl p-4"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
               <p className="font-mono text-sm text-gray-300 whitespace-pre-line leading-relaxed">
-                {buildShareText(
-                  game.game_number,
-                  gameOverData.solved,
-                  gameOverData.cluesUsed,
-                  gameOverData.totalTimeMs
-                )}
+                {buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs)}
               </p>
             </div>
 
             <button
               onClick={handleCopy}
-              className="w-full bg-white text-gray-950 font-semibold py-3 rounded-xl active:scale-95 transition-transform"
+              className="w-full font-semibold py-3 rounded-xl active:scale-95 transition-transform text-black"
+              style={{ background: '#00e676' }}
             >
               {copied ? 'Copied!' : 'Copy Result'}
             </button>
 
             {/* Email signup */}
-            <div className="border-t border-gray-800 pt-6">
+            <div
+              className="rounded-xl p-5"
+              style={{ border: '1px solid rgba(255,255,255,0.07)' }}
+            >
               {emailState === 'done' ? (
-                <p className="text-center text-green-400 text-sm">
+                <p className="text-center text-[#00e676] text-sm">
                   You're in! We'll remind you tomorrow at 7am.
                 </p>
               ) : (
-                <form onSubmit={handleEmailSubmit} className="space-y-3">
-                  <p className="text-sm text-gray-400 text-center">
-                    Get tomorrow's game at 7am
-                  </p>
-                  <div className="flex gap-2">
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-400 text-center">Get tomorrow's game at 7am</p>
+                  <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="email"
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
                       placeholder="your@email.com"
-                      className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-gray-600 transition-colors"
+                      className="flex-1 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 text-sm focus:outline-none transition-colors"
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                     />
                     <button
                       type="submit"
                       disabled={emailState === 'loading'}
-                      className="bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl disabled:opacity-50 transition-colors"
+                      className="text-white text-sm font-medium px-4 py-2.5 rounded-xl disabled:opacity-50 transition-colors whitespace-nowrap"
+                      style={{ background: '#1a2535', border: '1px solid rgba(255,255,255,0.1)' }}
                     >
                       {emailState === 'loading' ? '…' : 'Notify me'}
                     </button>
-                  </div>
+                  </form>
                   {emailState === 'error' && (
-                    <p className="text-xs text-red-400 text-center">
-                      Something went wrong. Try again.
-                    </p>
+                    <p className="text-xs text-red-400 text-center">Something went wrong. Try again.</p>
                   )}
-                </form>
+                </div>
               )}
             </div>
 
-            {/* Leaderboard link */}
             <Link
               href="/leaderboard"
-              className="block text-center text-sm text-gray-500 hover:text-gray-300 transition-colors pb-6"
+              className="block text-center text-sm text-gray-500 hover:text-gray-300 transition-colors pb-4"
             >
               View leaderboard →
             </Link>

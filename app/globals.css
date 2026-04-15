@@ -1,7 +1,73 @@
 @import "tailwindcss";
 
+/* ── Base defaults ─────────────────────────────────────────────────────────── */
+
 html,
 body {
   background-color: #0a0e13;
   color: #f4f7fb;
+}
+
+/* ── Background textures ───────────────────────────────────────────────────── */
+
+/* Subtle dot-grid on the primary dark background */
+.bg-texture {
+  background-color: #0a0e13;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Slightly lighter alternate sections */
+.bg-texture-alt {
+  background-color: #070b10;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Wrong-guess / new clue entrance animation ─────────────────────────────── */
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-slide-in {
+  animation: fade-slide-in 0.28s ease-out both;
+}
+
+/* ── Timer pulsing glow ────────────────────────────────────────────────────── */
+
+@keyframes timer-glow {
+  0%, 100% {
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.07);
+  }
+  50% {
+    text-shadow: 0 0 22px rgba(255, 255, 255, 0.28), 0 0 8px rgba(255, 255, 255, 0.14);
+  }
+}
+
+.animate-timer-glow {
+  animation: timer-glow 2s ease-in-out infinite;
+}
+
+/* ── Confetti fall ─────────────────────────────────────────────────────────── */
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-16px) rotate(0deg);
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(110vh) rotate(600deg);
+    opacity: 0;
+  }
 }

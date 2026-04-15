@@ -2,18 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Nav from './components/Nav';
 
 const GREEN = '#00e676';
-const GREEN_DIM = 'rgba(0,230,118,0.08)';
-const GREEN_BORDER = 'rgba(0,230,118,0.2)';
 
 export default function Home() {
   const [leaderboard, setLeaderboard] = useState(null);
   const [yesterday, setYesterday] = useState(null);
   const [email, setEmail] = useState('');
-  const [emailState, setEmailState] = useState('idle'); // idle | loading | done | error
-
-  // ── Live stats ─────────────────────────────────────────────────────────────
+  const [emailState, setEmailState] = useState('idle');
 
   useEffect(() => {
     fetch('/api/leaderboard')
@@ -28,8 +25,6 @@ export default function Home() {
       .then((d) => d && setYesterday(d))
       .catch(() => {});
   }, []);
-
-  // ── Email signup ───────────────────────────────────────────────────────────
 
   async function handleEmailSubmit(e) {
     e.preventDefault();
@@ -49,87 +44,102 @@ export default function Home() {
 
   const stats = leaderboard?.stats;
 
-  // ── Render ─────────────────────────────────────────────────────────────────
-
   return (
-    <div className="min-h-screen bg-[#0a0e13] text-white">
+    <div className="bg-texture min-h-screen text-white">
 
-      {/* ── NAV ─────────────────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-50 bg-[#0a0e13]/95 backdrop-blur-sm border-b border-gray-800 px-4 py-3">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <span className="text-xl font-black tracking-tight">FootyIQ</span>
-          <Link
-            href="/play"
-            className="font-bold px-4 py-2 rounded-lg text-sm text-black active:scale-95 transition-transform"
-            style={{ background: GREEN }}
-          >
-            Play Today
-          </Link>
-        </div>
-      </nav>
+      <Nav />
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#0a0e13] px-4 pt-20 pb-16 md:pt-28 md:pb-24 text-center">
+      <section className="relative overflow-hidden px-4 pt-20 pb-16 md:pt-28 md:pb-24 text-center">
 
-        {/* Subtle green glow blob behind headline */}
+        {/* Green radial glow */}
         <div
-          className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 w-[600px] h-[400px] rounded-full blur-3xl"
-          style={{ background: 'radial-gradient(ellipse, rgba(0,230,118,0.07) 0%, transparent 70%)' }}
-        />
+          className="pointer-events-none absolute inset-0 flex items-start justify-center"
+          aria-hidden
+        >
+          <div
+            className="w-[700px] h-[500px] rounded-full blur-3xl"
+            style={{ background: 'radial-gradient(ellipse, rgba(0,230,118,0.06) 0%, transparent 65%)' }}
+          />
+        </div>
+
+        {/* Rugby ball watermark */}
+        <div
+          className="pointer-events-none select-none absolute inset-0 flex items-center justify-center"
+          style={{ opacity: 0.03 }}
+          aria-hidden
+        >
+          <span className="text-[320px] leading-none">🏉</span>
+        </div>
 
         <div className="relative max-w-3xl mx-auto">
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-gray-950 border border-gray-800 rounded-full px-4 py-1.5 text-sm text-gray-500 mb-10">
+          <div
+            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-gray-400 mb-8"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+          >
             <span>🏉</span>
             <span>New game every day at 7am AEST</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight leading-none mb-6">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight leading-none mb-6 text-white">
             Prove you know<br />
             <span style={{ color: GREEN }}>your footy</span>
           </h1>
 
           {/* Subtext */}
-          <p className="text-xl text-gray-400 mb-10 max-w-xl mx-auto">
+          <p className="text-xl text-gray-400 mb-8 max-w-xl mx-auto">
             6 clues. 1 player. How fast can you crack it?
           </p>
 
+          {/* Today's stats mini card */}
+          {stats && stats.totalAttempts > 0 && (
+            <div
+              className="inline-flex items-center gap-3 rounded-full px-5 py-2 text-sm mb-8"
+              style={{ background: 'rgba(0,230,118,0.06)', border: '1px solid rgba(0,230,118,0.18)' }}
+            >
+              <span className="text-gray-300">
+                <span className="text-white font-bold">{stats.totalAttempts}</span> playing today
+              </span>
+              {stats.avgClues && (
+                <>
+                  <span style={{ color: 'rgba(0,230,118,0.3)' }}>|</span>
+                  <span className="text-gray-300">
+                    avg <span className="text-white font-bold">{stats.avgClues}</span> clues
+                  </span>
+                </>
+              )}
+            </div>
+          )}
+
           {/* Primary CTA */}
-          <Link
-            href="/play"
-            className="inline-block font-black text-xl uppercase tracking-widest rounded-2xl px-10 py-5 mb-10 active:scale-95 transition-transform"
-            style={{ background: GREEN, color: '#000' }}
-          >
-            Play Today's Game →
-          </Link>
+          <div className="block mb-8">
+            <Link
+              href="/play"
+              className="inline-block font-black text-xl uppercase tracking-widest rounded-2xl px-10 py-5 active:scale-95 transition-transform"
+              style={{ background: GREEN, color: '#000' }}
+            >
+              Play Today's Game →
+            </Link>
+          </div>
 
           {/* Live stats row */}
           <div className="flex items-center justify-center gap-2 text-sm text-gray-600 flex-wrap min-h-[20px]">
             {stats ? (
               <>
-                {stats.totalAttempts > 0 && (
-                  <span>{stats.totalAttempts} {stats.totalAttempts === 1 ? 'player' : 'players'} today</span>
-                )}
-                {stats.avgClues && stats.totalAttempts > 0 && (
-                  <>
-                    <span className="text-gray-600">·</span>
-                    <span>Average {stats.avgClues} clues</span>
-                  </>
-                )}
-                {stats.oneCluePercent > 0 && (
-                  <>
-                    <span className="text-gray-600">·</span>
-                    <span>{stats.oneCluePercent}% cracked it in 1</span>
-                  </>
-                )}
                 {stats.totalAttempts === 0 && (
                   <span>No scores yet — be the first to play</span>
                 )}
+                {stats.oneCluePercent > 0 && (
+                  <>
+                    <span>{stats.oneCluePercent}% cracked it in 1 clue</span>
+                  </>
+                )}
               </>
             ) : (
-              <span className="animate-pulse">Loading today's stats…</span>
+              <span className="animate-pulse text-gray-700">Loading stats…</span>
             )}
           </div>
 
@@ -137,7 +147,7 @@ export default function Home() {
       </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-      <section className="bg-[#070b10] border-y border-gray-800 px-4 py-16 md:py-20">
+      <section className="bg-texture-alt border-y px-4 py-16 md:py-20" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
         <div className="max-w-5xl mx-auto">
 
           <p className="text-center text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-12">
@@ -146,34 +156,45 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
 
-            <div className="bg-[#0d1117] rounded-2xl border border-gray-800 p-7">
-              <div className="text-4xl mb-5">🔍</div>
-              <h3 className="font-bold text-lg text-white mb-3">Get a clue</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                A mystery NRL player is revealed one clue at a time. Guess early, score big. Wait too long and everyone beats you to it.
-              </p>
-            </div>
-
-            <div className="bg-[#0d1117] rounded-2xl border border-gray-800 p-7 relative">
-              {/* "Most popular" accent */}
+            {[
+              {
+                emoji: '🔍',
+                title: 'Get a clue',
+                body: 'A mystery NRL player is revealed one clue at a time. Guess early, score big. Wait too long and everyone beats you to it.',
+              },
+              {
+                emoji: '✏️',
+                title: 'Make your guess',
+                body: "Type the player's name. Fewer clues used = higher score. Get it in 1 and you're a legend.",
+                accent: true,
+              },
+              {
+                emoji: '🏆',
+                title: 'Challenge your mates',
+                body: "Share your result with coloured squares. The leaderboard is live — see where you rank against every player today.",
+              },
+            ].map(({ emoji, title, body, accent }) => (
               <div
-                className="absolute -top-px left-6 right-6 h-px"
-                style={{ background: `linear-gradient(90deg, transparent, ${GREEN}, transparent)` }}
-              />
-              <div className="text-4xl mb-5">✏️</div>
-              <h3 className="font-bold text-lg text-white mb-3">Make your guess</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Type the player's name. Fewer clues used = higher score. Get it in 1 and you're a legend.
-              </p>
-            </div>
-
-            <div className="bg-[#0d1117] rounded-2xl border border-gray-800 p-7">
-              <div className="text-4xl mb-5">🏆</div>
-              <h3 className="font-bold text-lg text-white mb-3">Challenge your mates</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Share your result with coloured squares. The leaderboard is live — see where you rank against every player today.
-              </p>
-            </div>
+                key={title}
+                className="group relative rounded-2xl p-7 transition-transform hover:-translate-y-1"
+                style={{
+                  background: '#0d1117',
+                  border: accent
+                    ? '1px solid rgba(0,230,118,0.2)'
+                    : '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                {accent && (
+                  <div
+                    className="absolute -top-px left-8 right-8 h-px"
+                    style={{ background: `linear-gradient(90deg, transparent, ${GREEN}, transparent)` }}
+                  />
+                )}
+                <div className="text-4xl mb-5">{emoji}</div>
+                <h3 className="font-bold text-lg text-white mb-3">{title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{body}</p>
+              </div>
+            ))}
 
           </div>
         </div>
@@ -181,19 +202,15 @@ export default function Home() {
 
       {/* ── YESTERDAY'S ANSWER ───────────────────────────────────────────── */}
       {yesterday && (
-        <section className="bg-[#0a0e13] px-4 py-16 md:py-20 text-center">
+        <section className="bg-texture px-4 py-16 md:py-20 text-center">
           <div className="max-w-xl mx-auto">
-
             <p className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-8">
               Yesterday's game
             </p>
-
             <p className="text-gray-500 text-lg mb-3">Yesterday's answer was</p>
-
             <p className="text-5xl md:text-6xl font-black mb-6" style={{ color: GREEN }}>
               {yesterday.answer}
             </p>
-
             {yesterday.oneCluePercent > 0 ? (
               <p className="text-gray-600">
                 Only{' '}
@@ -205,7 +222,6 @@ export default function Home() {
                 <span className="text-white font-bold">{yesterday.solvedCount}</span> players solved it
               </p>
             ) : null}
-
             <div className="mt-8">
               <Link
                 href="/play"
@@ -215,16 +231,17 @@ export default function Home() {
                 Play today's game
               </Link>
             </div>
-
           </div>
         </section>
       )}
 
       {/* ── EMAIL SIGNUP ─────────────────────────────────────────────────── */}
-      <section className="bg-[#070b10] border-y border-gray-800 px-4 py-16">
+      <section
+        className="bg-texture-alt border-y px-4 py-16"
+        style={{ borderColor: 'rgba(255,255,255,0.05)' }}
+      >
         <div className="max-w-md mx-auto text-center">
-
-          <p className="font-black text-2xl mb-2">Don't miss tomorrow's game</p>
+          <p className="font-black text-2xl text-white mb-2">Don't miss tomorrow's game</p>
           <p className="text-gray-500 text-sm mb-8">Delivered to your inbox at 7am AEST. No spam, ever.</p>
 
           {emailState === 'done' ? (
@@ -232,19 +249,20 @@ export default function Home() {
               You're in! See you tomorrow at 7am.
             </p>
           ) : (
-            <form onSubmit={handleEmailSubmit} className="flex gap-2">
+            <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-2">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="flex-1 bg-black border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-700 text-sm focus:outline-none focus:border-gray-600 transition-colors"
+                className="flex-1 rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm focus:outline-none transition-colors"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
               />
               <button
                 type="submit"
                 disabled={emailState === 'loading'}
-                className="font-bold px-5 py-3 rounded-xl text-sm disabled:opacity-50 whitespace-nowrap transition-colors"
-                style={{ background: '#111', color: '#fff', border: '1px solid #333' }}
+                className="font-bold px-5 py-3 rounded-xl text-sm text-white disabled:opacity-50 transition-colors whitespace-nowrap"
+                style={{ background: '#1a2535', border: '1px solid rgba(255,255,255,0.1)' }}
               >
                 {emailState === 'loading' ? '…' : 'Notify me'}
               </button>
@@ -254,19 +272,21 @@ export default function Home() {
           {emailState === 'error' && (
             <p className="text-red-400 text-xs mt-3">Something went wrong. Try again.</p>
           )}
-
         </div>
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer className="bg-[#0a0e13] px-4 py-10 text-center">
-        <div className="max-w-5xl mx-auto space-y-3">
+      <footer
+        className="bg-texture px-4 py-12 text-center border-t"
+        style={{ borderColor: 'rgba(255,255,255,0.05)' }}
+      >
+        <div className="max-w-5xl mx-auto space-y-4">
           <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
             <Link href="/play" className="hover:text-gray-300 transition-colors">Play</Link>
             <Link href="/leaderboard" className="hover:text-gray-300 transition-colors">Leaderboard</Link>
             <Link href="/champion" className="hover:text-gray-300 transition-colors">Champions</Link>
           </div>
-          <p className="text-xs text-gray-600">
+          <p className="text-xs text-gray-700">
             Built for NRL fans in Australia and New Zealand · footyiq.au
           </p>
         </div>

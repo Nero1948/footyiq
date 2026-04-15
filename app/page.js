@@ -67,8 +67,8 @@ const HOW_IT_WORKS = [
   {
     step: '03',
     emoji: '🏆',
-    title: 'Challenge your mates',
-    body: "Share your result with coloured squares. The leaderboard is live — see where you rank against every player today.",
+    title: 'Rub it in',
+    body: "Share your result in the group chat. Let them know where they stand.",
     bg: '#0d1117',
   },
 ];
@@ -199,18 +199,18 @@ export default function Home() {
             style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}
           >
             <span>🏉</span>
-            <span>New game every day at 7am AEST</span>
+            <span>Daily footy brain test</span>
           </div>
 
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight leading-none mb-6 text-white">
-            Prove you know<br />
-            <span style={{ color: GREEN }}>your footy</span>
+            Think you know footy?<br />
+            <span style={{ color: GREEN }}>Prove it.</span>
           </h1>
 
           {/* Subtext */}
           <p className="text-xl text-gray-400 mb-8 max-w-xl mx-auto">
-            6 clues. 1 player. How fast can you crack it?
+            6 clues. 1 player. Daily.
           </p>
 
           {/* Today's stats pill */}
@@ -240,7 +240,7 @@ export default function Home() {
               className="inline-block font-black text-xl uppercase tracking-widest rounded-2xl px-10 py-5 active:scale-95 transition-transform animate-cta-pulse"
               style={{ background: GREEN, color: '#000' }}
             >
-              Play Today's Game →
+              Take the Test →
             </Link>
           </div>
 

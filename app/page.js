@@ -107,8 +107,11 @@ async function getYesterday() {
 export default async function Home() {
   const [stats, yesterday] = await Promise.all([getLandingStats(), getYesterday()]);
 
-  // Use today's stats if available, fall back to yesterday's
-  const heroStats = (stats?.totalAttempts > 0)
+  const STATS_THRESHOLD = 20;
+  const todayHasEnoughStats = (stats?.totalAttempts ?? 0) >= STATS_THRESHOLD;
+  const showLiveTeaser = (stats?.totalAttempts ?? 0) > 0 && !todayHasEnoughStats;
+  // Use today's stats if enough players have played, fall back to yesterday's
+  const heroStats = todayHasEnoughStats
     ? { ...stats, isYesterday: false }
     : (yesterday?.totalAttempts > 0 ? { ...yesterday, isYesterday: true } : null);
 
@@ -175,7 +178,15 @@ export default async function Home() {
           </p>
 
           {/* 4-stat row */}
-          {heroStats && (
+          {showLiveTeaser && (
+            <div
+              className="inline-flex items-center justify-center rounded-2xl px-5 py-2.5 text-sm mb-8"
+              style={{ background: 'rgba(0,230,118,0.07)', border: '1px solid rgba(0,230,118,0.2)' }}
+            >
+              <span className="text-gray-300">Today&apos;s game is live — be one of the first to play.</span>
+            </div>
+          )}
+          {!showLiveTeaser && heroStats && (
             <div
               className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl px-5 py-2.5 text-sm mb-8"
               style={{ background: 'rgba(0,230,118,0.07)', border: '1px solid rgba(0,230,118,0.2)' }}
@@ -278,7 +289,7 @@ export default async function Home() {
               <p className="text-5xl md:text-6xl font-black mb-6" style={{ color: GREEN }}>
                 {yesterday.answer}
               </p>
-              {yesterday.oneCluePercent > 0 ? (
+              {yesterday.oneCluePercent > 0 && yesterday.totalAttempts >= 20 ? (
                 <p className="text-gray-600">
                   Only <span className="text-white font-bold">{yesterday.oneCluePercent}%</span> of players cracked it in 1 clue
                 </p>

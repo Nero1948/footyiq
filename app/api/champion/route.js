@@ -3,6 +3,14 @@ import { supabase } from '@/lib/supabase';
 
 export const runtime = 'nodejs';
 
+const FALLBACK_NAMES = ['Mystery Fan', 'Secret Selector', 'Phantom Tipper', 'Ghost Player', 'Undercover Footy Brain', 'Anonymous Legend'];
+
+function getFallbackName(deviceId) {
+  let h = 0;
+  for (let i = 0; i < deviceId.length; i++) h = (h * 31 + deviceId.charCodeAt(i)) & 0x7fffffff;
+  return FALLBACK_NAMES[h % FALLBACK_NAMES.length];
+}
+
 const W = 1200;
 const H = 630;
 
@@ -101,7 +109,7 @@ export async function GET(request) {
 
   const winnerName = (champion.username && champion.username !== 'Anonymous')
     ? champion.username
-    : `…${champion.device_id.slice(-4)}`;
+    : getFallbackName(champion.device_id);
 
   const cluesUsed  = champion.clues_used;
   const cluesStr   = String(cluesUsed);

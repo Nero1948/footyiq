@@ -70,6 +70,7 @@ export default function PlayClient({ initialGame }) {
   const [emailInput, setEmailInput] = useState('');
   const [emailState, setEmailState] = useState('idle');
   const [copied, setCopied] = useState(false);
+  const [timerVisible, setTimerVisible] = useState(false);
   const [loadError, setLoadError] = useState(initialGame ? null : 'No game today. Check back tomorrow!');
   const [isGuessing, setIsGuessing] = useState(false);
   const [stats, setStats] = useState(null);
@@ -216,6 +217,7 @@ export default function PlayClient({ initialGame }) {
   const handleGuess = useCallback(async () => {
     const guessText = currentGuess.trim();
     if (!guessText || isGuessing) return;
+    setTimerVisible(true);
     const timeMs = Math.round(performance.now() - startTimeRef.current);
     setIsGuessing(true);
     setCurrentGuess('');
@@ -340,7 +342,7 @@ export default function PlayClient({ initialGame }) {
           <Link href="/" className="text-xl font-black tracking-tight text-white hover:text-[#00e676] transition-colors">Set For Six</Link>
           {game && <p className="text-xs text-gray-500 mt-0.5">Game #{game.game_number}</p>}
         </div>
-        {gameState === 'playing' && <div className="text-2xl font-mono font-bold tabular-nums animate-timer-glow">{formatTime(elapsedMs)}</div>}
+        {gameState === 'playing' && timerVisible && <div className="text-2xl font-mono font-bold tabular-nums animate-timer-glow">{formatTime(elapsedMs)}</div>}
         {gameState === 'done' && gameOverData && <div className="text-sm text-gray-400 font-mono tabular-nums">{formatTime(gameOverData.totalTimeMs)}</div>}
       </header>
 
@@ -349,7 +351,10 @@ export default function PlayClient({ initialGame }) {
         {/* Playing state */}
         {gameState === 'playing' && (
           <>
-            <div className="rounded-2xl p-5 space-y-5 mb-6" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-black text-white">Can you name this NRL player?</h2>
+            </div>
+            <div className="rounded-2xl p-6 space-y-6 mb-8" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
               {clues.map((clueText, index) => {
                 const clueNum = index + 1;
                 const wrongGuessForClue = wrongGuesses[index];
@@ -360,12 +365,13 @@ export default function PlayClient({ initialGame }) {
                       <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Clue {clueNum}</span>
                       {wrongGuessForClue && <span className="text-sm text-red-400 font-medium truncate">— {wrongGuessForClue}</span>}
                     </div>
-                    <p className="text-base text-gray-100 leading-relaxed">{clueText}</p>
+                    <p className="text-lg font-semibold text-white leading-relaxed">{clueText}</p>
                   </div>
                 );
               })}
             </div>
             <div>
+              <p className="text-xs text-gray-500 mb-2">Type a player&apos;s name</p>
               <div className="flex gap-2">
                 <input
                   ref={inputRef}
@@ -381,7 +387,7 @@ export default function PlayClient({ initialGame }) {
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                 />
                 <button onClick={handleGuess} disabled={isGuessing || !currentGuess.trim() || !deviceId} className="font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform text-white" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                  {isGuessing ? '…' : 'Guess'}
+                  {isGuessing ? '…' : 'Lock it in'}
                 </button>
               </div>
               <p className="text-xs text-gray-600 mt-2 text-center">Clue {clueNumber} of 6</p>
@@ -407,7 +413,7 @@ export default function PlayClient({ initialGame }) {
                 { value: formatTime(gameOverData.totalTimeMs), label: 'Time', mono: true },
                 ...(gameOverData.rank !== null ? [
                   { value: `#${gameOverData.rank}`, label: `Rank of ${gameOverData.totalPlayers}` },
-                  { value: `${gameOverData.percentile}%`, label: 'Percentile' },
+                  ...(gameOverData.totalPlayers >= 20 ? [{ value: `${gameOverData.percentile}%`, label: 'Percentile' }] : []),
                 ] : []),
               ].map(({ value, label, mono }) => (
                 <div key={label} className="rounded-xl py-4 px-3 text-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
@@ -452,7 +458,7 @@ export default function PlayClient({ initialGame }) {
               </div>
             )}
 
-            {stats && stats.totalPlayers > 0 && (
+            {stats && stats.totalPlayers >= 20 && (
               <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
                 <div className="flex items-baseline justify-between">
                   <p className="text-sm font-semibold text-gray-300">How everyone did</p>

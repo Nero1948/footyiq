@@ -16,7 +16,7 @@ export async function generateMetadata() {
     }
   } catch { /* fall through */ }
   return {
-    title: 'Set For Six — Play Today',
+    title: 'Set For Six — Play',
     description: 'Six clues. One mystery NRL player. Can you crack it before your mates?',
   };
 }

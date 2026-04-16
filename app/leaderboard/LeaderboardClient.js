@@ -7,6 +7,19 @@ import Nav from '../components/Nav';
 function formatSeconds(ms) { return (ms / 1000).toFixed(1) + 's'; }
 function formatClues(n) { return n === 1 ? '1 clue' : `${n} clues`; }
 
+const FALLBACK_NAMES = ['Mystery Fan', 'Secret Selector', 'Phantom Tipper', 'Ghost Player', 'Undercover Footy Brain', 'Anonymous Legend'];
+
+function getFallbackName(deviceId) {
+  let h = 0;
+  for (let i = 0; i < deviceId.length; i++) h = (h * 31 + deviceId.charCodeAt(i)) & 0x7fffffff;
+  return FALLBACK_NAMES[h % FALLBACK_NAMES.length];
+}
+
+function getDisplayName(username, deviceId) {
+  if (username && username !== 'Anonymous') return username;
+  return getFallbackName(deviceId);
+}
+
 const MEDAL = { 1: '🥇', 2: '🥈', 3: '🥉' };
 const RANK_STYLES = {
   1: { text: 'text-yellow-400', border: 'border-l-2 border-yellow-400', bg: 'bg-[#12100a]' },
@@ -118,7 +131,7 @@ export default function LeaderboardClient({ initialData }) {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm text-gray-300 font-medium truncate">{entry.username || 'Anonymous'}</span>
+                      <span className="text-sm text-gray-300 font-medium truncate">{getDisplayName(entry.username, entry.deviceId)}</span>
                       {isMe && <span className="ml-2 text-xs text-blue-400 font-medium">you</span>}
                     </div>
                     <div className="text-sm text-gray-500 flex-shrink-0">{formatClues(entry.cluesUsed)}</div>

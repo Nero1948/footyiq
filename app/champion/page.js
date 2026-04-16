@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Set For Six — Daily Champions',
+  title: 'Set For Six — Champions',
   description: 'Meet the fastest NRL guessers. Who cracked it first today?',
 };
 
@@ -16,6 +16,19 @@ function formatDisplayDate(dateStr) {
   return new Date(dateStr + 'T12:00:00Z').toLocaleDateString('en-AU', {
     weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
   });
+}
+
+const FALLBACK_NAMES = ['Mystery Fan', 'Secret Selector', 'Phantom Tipper', 'Ghost Player', 'Undercover Footy Brain', 'Anonymous Legend'];
+
+function getFallbackName(deviceId) {
+  let h = 0;
+  for (let i = 0; i < deviceId.length; i++) h = (h * 31 + deviceId.charCodeAt(i)) & 0x7fffffff;
+  return FALLBACK_NAMES[h % FALLBACK_NAMES.length];
+}
+
+function getDisplayName(username, deviceId) {
+  if (username && username !== 'Anonymous') return username;
+  return getFallbackName(deviceId);
 }
 
 function getTitleForClues(cluesUsed) {
@@ -57,7 +70,7 @@ async function getTodayChampion() {
       gameNumber: game.game_number,
       totalAttempts: totalAttempts ?? 0,
       champion: top ? {
-        name: (top.username && top.username !== 'Anonymous') ? top.username : `…${top.device_id.slice(-4)}`,
+        name: getDisplayName(top.username, top.device_id),
         cluesUsed: top.clues_used,
         totalTimeMs: top.total_time_ms,
       } : null,
@@ -100,7 +113,7 @@ async function getHallOfFame(days = 14) {
         date: g.date,
         gameNumber: g.game_number,
         champion: best ? {
-          name: (best.username && best.username !== 'Anonymous') ? best.username : `…${best.device_id.slice(-4)}`,
+          name: getDisplayName(best.username, best.device_id),
           cluesUsed: best.clues_used,
           totalTimeMs: best.total_time_ms,
         } : null,
@@ -135,8 +148,8 @@ export default async function ChampionPage() {
     if (c) winnerCounts[c.name] = (winnerCounts[c.name] || 0) + 1;
   }
 
-  // Beat percentage
-  const beatPct = totalAttempts > 1
+  // Beat percentage — only show when enough players have played
+  const beatPct = totalAttempts >= 20
     ? Math.round(((totalAttempts - 1) / totalAttempts) * 100)
     : null;
 
@@ -153,7 +166,7 @@ export default async function ChampionPage() {
         <section className="text-center pt-4">
           <div className="text-7xl mb-3" aria-hidden>🏆</div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-1">
-            Top Dog Today
+            Today&apos;s Champion
           </h1>
           <p className="text-sm text-gray-500 mb-6">Fastest solve. Cleanest flex.</p>
 

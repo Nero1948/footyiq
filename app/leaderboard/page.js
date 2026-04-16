@@ -70,6 +70,8 @@ export default function LeaderboardPage() {
       .channel(`leaderboard:${gameId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'attempts', filter: `game_id=eq.${gameId}` },
         (payload) => { if (payload.new?.solved) fetchLeaderboard(); })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'attempts', filter: `game_id=eq.${gameId}` },
+        () => { fetchLeaderboard(); })
       .subscribe();
 
     channelRef.current = channel;

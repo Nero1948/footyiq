@@ -13,6 +13,8 @@ export async function PATCH(request) {
 
   const { deviceId, gameId, username } = body;
 
+  console.log('[update-username] received:', { deviceId: deviceId?.slice(-6), gameId, username });
+
   if (!deviceId || typeof deviceId !== 'string') {
     return Response.json({ error: 'Missing or invalid deviceId' }, { status: 400 });
   }
@@ -30,17 +32,29 @@ export async function PATCH(request) {
     }
   }
 
+  console.log('[update-username] clean username:', cleanUsername);
+
   // ── Update attempt ─────────────────────────────────────────────────────────
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('attempts')
     .update({ username: cleanUsername })
     .eq('device_id', deviceId)
-    .eq('game_id', gameId);
+    .eq('game_id', gameId)
+    .select('id, username');
+
+  console.log('[update-username] supabase result:', { data, error });
 
   if (error) {
+    console.error('[update-username] supabase error:', error);
     return Response.json({ error: 'Failed to update username' }, { status: 500 });
   }
 
+  if (!data || data.length === 0) {
+    console.warn('[update-username] no rows matched — deviceId or gameId may be wrong');
+    return Response.json({ error: 'No matching attempt found' }, { status: 404 });
+  }
+
+  console.log('[update-username] updated', data.length, 'row(s)');
   return Response.json({ success: true, username: cleanUsername });
 }

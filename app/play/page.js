@@ -284,11 +284,17 @@ export default function PlayPage() {
     setUsername(trimmed);
     localStorage.setItem('setforsix_username', trimmed);
     if (game?.id && deviceId) {
-      fetch('/api/attempt/update-username', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deviceId, gameId: game.id, username: trimmed }),
-      }).catch(() => {});
+      try {
+        const res = await fetch('/api/attempt/update-username', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deviceId, gameId: game.id, username: trimmed }),
+        });
+        const result = await res.json();
+        console.log('[username save] response:', result);
+      } catch (e) {
+        console.error('[username save] fetch error:', e);
+      }
     }
     setUsernameSaved(true);
     setTimeout(() => setUsernameSaved(false), 2000);

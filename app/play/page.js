@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 
 // ── Confetti pieces (deterministic — no Math.random in render) ────────────────
@@ -40,12 +40,28 @@ function getSecondsUntilMidnightAEST() {
   return Math.max(0, Math.floor((aestMidnight - aestNow) / 1000));
 }
 
-function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs) {
+function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalPlayers, streak) {
   const squares = solved
     ? [...Array(cluesUsed - 1).fill('🟥'), '🟩', ...Array(6 - cluesUsed).fill('⬜')]
     : Array(6).fill('🟥');
   const clueWord = cluesUsed === 1 ? 'clue' : 'clues';
-  return `Set For Six #${gameNumber}\n${squares.join('')}\n${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}\nsetforsix.com`;
+
+  const lines = [`Set For Six #${gameNumber} 🏉`, squares.join(''), ''];
+
+  if (solved) {
+    lines.push(`🎯 Cracked it in ${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}`);
+    if (rank !== null && rank !== undefined && totalPlayers) {
+      lines.push(`📊 Ranked #${rank} of ${totalPlayers} players`);
+    }
+    lines.push(`🔥 ${streak} day streak`);
+  } else {
+    lines.push(`🎯 Didn't crack it · ${formatTime(totalTimeMs)}`);
+    if (totalPlayers) lines.push(`📊 ${totalPlayers} players attempted`);
+  }
+
+  lines.push('');
+  lines.push('Think you know footy? setforsix.com');
+  return lines.join('\n');
 }
 
 export default function PlayPage() {
@@ -67,10 +83,31 @@ export default function PlayPage() {
   const [yesterdayData, setYesterdayData] = useState(null);
   const [countdown, setCountdown] = useState('');
   const [username, setUsername] = useState('Anonymous');
+  const [usernameSaved, setUsernameSaved] = useState(false);
 
   const startTimeRef = useRef(null);
   const timerRef = useRef(null);
   const inputRef = useRef(null);
+
+  // ── Streak — count consecutive solved days from localStorage ──────────────
+
+  const streak = useMemo(() => {
+    if (typeof window === 'undefined') return 1;
+    if (!gameOverData?.solved || !game?.date) return 1;
+    let s = 1;
+    const base = new Date(game.date + 'T12:00:00Z');
+    for (let i = 1; i <= 365; i++) {
+      const d = new Date(base);
+      d.setDate(d.getDate() - i);
+      const k = d.toISOString().split('T')[0];
+      const r = localStorage.getItem(`setforsix_result_${k}`) || localStorage.getItem(`footyiq_result_${k}`);
+      if (r) {
+        try { if (JSON.parse(r).solved) { s++; } else break; }
+        catch { break; }
+      } else break;
+    }
+    return s;
+  }, [gameOverData, game]);
 
   // ── Device ID ──────────────────────────────────────────────────────────────
 
@@ -240,12 +277,30 @@ export default function PlayPage() {
     } catch { setEmailState('error'); }
   }
 
+  // ── Save username ──────────────────────────────────────────────────────────
+
+  async function handleUsernameSave() {
+    const trimmed = username.trim() || 'Anonymous';
+    setUsername(trimmed);
+    localStorage.setItem('setforsix_username', trimmed);
+    if (game?.id && deviceId) {
+      fetch('/api/attempt/update-username', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId, gameId: game.id, username: trimmed }),
+      }).catch(() => {});
+    }
+    setUsernameSaved(true);
+    setTimeout(() => setUsernameSaved(false), 2000);
+  }
+
   // ── Copy share text ────────────────────────────────────────────────────────
 
   function handleCopy() {
     if (!game || !gameOverData) return;
-    navigator.clipboard.writeText(buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs))
-      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+    navigator.clipboard.writeText(
+      buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak)
+    ).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   }
 
   // ── Render: loading / error ────────────────────────────────────────────────
@@ -273,9 +328,32 @@ export default function PlayPage() {
       className="min-h-screen text-white flex flex-col"
       style={{
         backgroundColor: '#0a0e13',
-        backgroundImage: 'radial-gradient(ellipse at 50% -10%, rgba(0,230,118,0.07) 0%, transparent 55%), repeating-linear-gradient(45deg, #0a0e13 0px, #0a0e13 38px, #0c1219 38px, #0c1219 40px)',
+        backgroundImage: 'radial-gradient(ellipse at 50% 45%, rgba(0,230,118,0.04) 0%, transparent 60%), repeating-linear-gradient(45deg, #0a0e13 0px, #0a0e13 38px, #0c1219 38px, #0c1219 40px)',
       }}
     >
+
+      {/* Background rugby ball — fixed, decorative */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 flex items-center justify-end overflow-hidden"
+        style={{ zIndex: 0, opacity: 0.04 }}
+      >
+        <svg
+          viewBox="0 0 500 300"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ width: '85vw', maxWidth: '480px', marginRight: '-60px', transform: 'rotate(-15deg)' }}
+        >
+          <path d="M 250,6 C 435,6 494,82 494,150 C 494,218 435,294 250,294 C 65,294 6,218 6,150 C 6,82 65,6 250,6 Z" stroke="#00e676" strokeWidth="4" fill="rgba(0,230,118,0.04)" />
+          <path d="M 6,150 C 82,170 166,177 250,177 C 334,177 418,170 494,150" stroke="#00e676" strokeWidth="2.5" fill="none" opacity="0.6" />
+          <line x1="250" y1="50" x2="250" y2="250" stroke="#00e676" strokeWidth="2" opacity="0.45" />
+          <line x1="233" y1="96"  x2="267" y2="96"  stroke="#00e676" strokeWidth="4" />
+          <line x1="231" y1="118" x2="269" y2="118" stroke="#00e676" strokeWidth="4" />
+          <line x1="231" y1="140" x2="269" y2="140" stroke="#00e676" strokeWidth="4" />
+          <line x1="231" y1="162" x2="269" y2="162" stroke="#00e676" strokeWidth="4" />
+          <line x1="233" y1="184" x2="267" y2="184" stroke="#00e676" strokeWidth="4" />
+        </svg>
+      </div>
 
       {/* Confetti overlay — only on correct answer */}
       {gameState === 'done' && gameOverData?.solved && (
@@ -433,20 +511,30 @@ export default function PlayPage() {
               style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
             >
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Your display name</p>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => {
-                  const val = e.target.value.slice(0, 20);
-                  setUsername(val);
-                  localStorage.setItem('setforsix_username', val);
-                }}
-                placeholder="Anonymous"
-                maxLength={20}
-                className="w-full rounded-lg px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-              />
-              <p className="text-xs text-gray-600 mt-1.5">Shows on the leaderboard. Applies from your next game.</p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.slice(0, 20))}
+                  onKeyDown={(e) => e.key === 'Enter' && handleUsernameSave()}
+                  placeholder="Anonymous"
+                  maxLength={20}
+                  className="flex-1 rounded-lg px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none"
+                  style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                />
+                <button
+                  onClick={handleUsernameSave}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold active:scale-95 transition-all whitespace-nowrap"
+                  style={{
+                    background: usernameSaved ? '#00e676' : 'rgba(0,230,118,0.12)',
+                    color: usernameSaved ? '#000' : '#00e676',
+                    border: '1px solid rgba(0,230,118,0.3)',
+                  }}
+                >
+                  {usernameSaved ? '✓ Saved!' : 'Save'}
+                </button>
+              </div>
+              <p className="text-xs text-gray-600 mt-1.5">Your name on the leaderboard</p>
             </div>
 
             {/* Did you know — player facts */}
@@ -525,19 +613,19 @@ export default function PlayPage() {
             {/* Share card */}
             <div
               className="rounded-xl p-4"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)' }}
+              style={{ background: 'rgba(0,230,118,0.04)', border: '1px solid rgba(0,230,118,0.15)', borderLeft: '3px solid #00e676' }}
             >
-              <p className="font-mono text-sm text-gray-300 whitespace-pre-line leading-relaxed">
-                {buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs)}
+              <p className="font-mono text-sm text-gray-200 whitespace-pre-line leading-relaxed">
+                {buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak)}
               </p>
             </div>
 
             <button
               onClick={handleCopy}
-              className="w-full font-semibold py-3 rounded-xl active:scale-95 transition-transform text-black"
-              style={{ background: '#00e676' }}
+              className="w-full font-bold py-3.5 rounded-xl active:scale-95 transition-transform text-base"
+              style={{ background: '#00e676', color: '#000' }}
             >
-              {copied ? 'Copied!' : 'Copy Result'}
+              {copied ? '✓ Copied!' : '📋 Copy & Share Result'}
             </button>
 
             {/* Email signup */}

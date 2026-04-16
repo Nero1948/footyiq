@@ -26,6 +26,14 @@ export default function Nav() {
         </Link>
 
         <div className="flex items-center gap-1">
+          <Link
+            href="/play"
+            className="px-4 py-2 rounded-lg text-sm font-bold text-black active:scale-95 transition-transform"
+            style={{ background: '#00e676' }}
+          >
+            Play
+          </Link>
+
           {navLinks.map(({ href, label }) => (
             <Link
               key={href}
@@ -39,14 +47,6 @@ export default function Nav() {
               {label}
             </Link>
           ))}
-
-          <Link
-            href="/play"
-            className="ml-2 px-4 py-2 rounded-lg text-sm font-bold text-black active:scale-95 transition-transform"
-            style={{ background: '#00e676' }}
-          >
-            Play
-          </Link>
         </div>
       </div>
     </nav>

@@ -1,136 +1,207 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Nav from '../components/Nav';
+import ChampionImage from './ChampionImage';
+import { supabase } from '@/lib/supabase';
 
-function formatSeconds(ms) {
-  return (ms / 1000).toFixed(1) + 's';
-}
+export const dynamic = 'force-dynamic';
 
-function formatClues(n) {
-  return n === 1 ? '1 clue' : `${n} clues`;
-}
+export const metadata = {
+  title: 'Set For Six — Daily Champions',
+  description: 'Meet the fastest NRL guessers. Who cracked it first today?',
+};
 
+function formatSeconds(ms) { return (ms / 1000).toFixed(1) + 's'; }
+function formatClues(n) { return n === 1 ? '1 clue' : `${n} clues`; }
 function formatDisplayDate(dateStr) {
   return new Date(dateStr + 'T12:00:00Z').toLocaleDateString('en-AU', {
     weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
   });
 }
 
-function isToday(dateStr) {
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
-  return dateStr === today;
+async function getTodayChampion() {
+  const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+  try {
+    const { data: game } = await supabase
+      .from('games').select('id, game_number').eq('date', todayAEST).single();
+
+    if (!game) return { todayAEST, gameNumber: null, champion: null };
+
+    const { data: attempts } = await supabase
+      .from('attempts')
+      .select('device_id, username, clues_used, total_time_ms')
+      .eq('game_id', game.id)
+      .eq('solved', true)
+      .order('clues_used', { ascending: true })
+      .order('total_time_ms', { ascending: true })
+      .limit(1);
+
+    const top = attempts?.[0] ?? null;
+    return {
+      todayAEST,
+      gameNumber: game.game_number,
+      champion: top ? {
+        name: (top.username && top.username !== 'Anonymous') ? top.username : `…${top.device_id.slice(-4)}`,
+        cluesUsed: top.clues_used,
+        totalTimeMs: top.total_time_ms,
+      } : null,
+    };
+  } catch {
+    const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+    return { todayAEST, gameNumber: null, champion: null };
+  }
 }
 
-export default function ChampionPage() {
-  const [champions, setChampions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [imageError, setImageError] = useState(false);
+async function getHallOfFame(days = 7) {
+  const dates = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' }));
+  }
+  try {
+    const { data: games } = await supabase
+      .from('games').select('id, game_number, date').in('date', dates).order('date', { ascending: false });
 
-  const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+    if (!games?.length) return [];
 
-  useEffect(() => {
-    async function loadChampions() {
-      try {
-        const res = await fetch('/api/champion/history?days=7');
-        if (!res.ok) { setError('Failed to load champion history'); return; }
-        const data = await res.json();
-        setChampions(data.champions ?? []);
-      } catch {
-        setError('Failed to load champion history');
-      } finally {
-        setLoading(false);
-      }
+    const { data: attempts } = await supabase
+      .from('attempts')
+      .select('game_id, device_id, username, clues_used, total_time_ms')
+      .in('game_id', games.map(g => g.id))
+      .eq('solved', true)
+      .order('clues_used', { ascending: true })
+      .order('total_time_ms', { ascending: true });
+
+    const bestByGame = {};
+    for (const a of attempts ?? []) {
+      if (!bestByGame[a.game_id]) bestByGame[a.game_id] = a;
     }
-    loadChampions();
-  }, []);
+
+    return games.map(g => {
+      const best = bestByGame[g.id] ?? null;
+      return {
+        date: g.date,
+        gameNumber: g.game_number,
+        champion: best ? {
+          name: (best.username && best.username !== 'Anonymous') ? best.username : `…${best.device_id.slice(-4)}`,
+          cluesUsed: best.clues_used,
+          totalTimeMs: best.total_time_ms,
+        } : null,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+export default async function ChampionPage() {
+  const [{ todayAEST, gameNumber, champion }, hallOfFame] = await Promise.all([
+    getTodayChampion(),
+    getHallOfFame(7),
+  ]);
 
   return (
     <div className="bg-texture min-h-screen text-white flex flex-col">
-
       <Nav />
 
       <main className="flex-1 px-4 py-6 w-full max-w-lg mx-auto space-y-8">
 
-        {/* Page title */}
-        <div>
-          <h1 className="text-2xl font-black text-white">Daily Champions</h1>
-          <p className="text-sm text-gray-500 mt-1">The fastest players to crack it</p>
-        </div>
-
-        {/* ── Today's champion card ────────────────────────────────────── */}
-        <section>
-          <p className="text-xs font-bold tracking-[0.25em] text-gray-500 uppercase mb-3">
-            Today's Champion
+        {/* ── Hero trophy + today's champion ──────────────────────────── */}
+        <section className="text-center pt-4">
+          <div className="text-7xl mb-3" aria-hidden>🏆</div>
+          <p
+            className="text-xs font-black tracking-[0.35em] uppercase mb-3"
+            style={{ color: '#f6b91f' }}
+          >
+            Today&apos;s Champion
           </p>
-          {imageError ? (
-            <div
-              className="rounded-xl flex items-center justify-center h-40 text-gray-600 text-sm"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
-            >
-              Card unavailable
-            </div>
+
+          {champion ? (
+            <>
+              <h1
+                className="text-4xl sm:text-5xl font-black tracking-tight mb-2"
+                style={{ color: '#ffffff' }}
+              >
+                {champion.name}
+              </h1>
+              <p className="text-sm text-gray-500 mb-1">
+                {formatClues(champion.cluesUsed)} · {formatSeconds(champion.totalTimeMs)}
+                {gameNumber ? ` · Game #${gameNumber}` : ''}
+              </p>
+            </>
           ) : (
-            <img
-              src={`/api/champion?date=${todayAEST}`}
-              alt="Today's Set For Six champion"
-              onError={() => setImageError(true)}
-              className="w-full rounded-xl"
-              style={{ aspectRatio: '1200 / 630', border: '1px solid rgba(255,255,255,0.08)' }}
-            />
+            <>
+              <h1 className="text-3xl font-black text-gray-600 mb-2">No champion yet</h1>
+              <p className="text-sm text-gray-600 mb-4">Be the first to crack today&apos;s game</p>
+              <Link
+                href="/play"
+                className="inline-block font-bold px-6 py-3 rounded-xl text-sm text-black"
+                style={{ background: '#00e676' }}
+              >
+                Play now →
+              </Link>
+            </>
           )}
         </section>
 
-        {/* ── Hall of fame ─────────────────────────────────────────────── */}
+        {/* ── Champion OG image ────────────────────────────────────────── */}
         <section>
-          <p className="text-xs font-bold tracking-[0.25em] text-gray-500 uppercase mb-3">
-            Hall of Fame
-          </p>
+          <ChampionImage date={todayAEST} />
+        </section>
 
-          {loading && <p className="text-gray-600 text-sm animate-pulse">Loading…</p>}
-          {!loading && error && <p className="text-red-400 text-sm">{error}</p>}
-          {!loading && !error && champions.length === 0 && (
+        {/* ── Wall of Fame ──────────────────────────────────────────────── */}
+        <section>
+          <div className="mb-4">
+            <h2
+              className="text-lg font-black text-white inline-block pb-1"
+              style={{ borderBottom: '2px solid rgba(246,185,31,0.5)' }}
+            >
+              Wall of Fame
+            </h2>
+          </div>
+
+          {hallOfFame.length === 0 && (
             <p className="text-gray-600 text-sm">No games played yet.</p>
           )}
 
-          {!loading && !error && champions.length > 0 && (
+          {hallOfFame.length > 0 && (
             <div className="space-y-2">
-              {champions.map(({ date, gameNumber, champion }) => {
-                const today = isToday(date);
+              {hallOfFame.map(({ date, gameNumber: gNum, champion: c }) => {
+                const isToday = date === todayAEST;
                 return (
                   <div
                     key={date}
                     className="flex items-center gap-3 px-4 py-3 rounded-xl"
                     style={{
-                      background: today ? 'rgba(0,230,118,0.05)' : 'rgba(255,255,255,0.03)',
-                      border: today ? '1px solid rgba(0,230,118,0.2)' : '1px solid rgba(255,255,255,0.06)',
+                      background: isToday ? 'rgba(0,230,118,0.05)' : 'rgba(255,255,255,0.03)',
+                      border: isToday ? '1px solid rgba(0,230,118,0.2)' : '1px solid rgba(255,255,255,0.06)',
                     }}
                   >
-                    <div className="flex-shrink-0 w-8 text-center">
-                      {today
-                        ? <span className="text-lg">🏆</span>
-                        : <span className="text-gray-600 text-sm font-mono">#{gameNumber}</span>
-                      }
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium ${today ? 'text-white' : 'text-gray-400'}`}>
-                        {today ? 'Today' : formatDisplayDate(date)}
-                      </p>
-                      {!today && (
-                        <p className="text-xs text-gray-600">Game #{gameNumber}</p>
+                    {/* Left: crown + game number */}
+                    <div className="flex-shrink-0 w-10 text-center">
+                      {c ? (
+                        <span className="text-lg">👑</span>
+                      ) : (
+                        <span className="text-gray-700 text-xs">—</span>
                       )}
                     </div>
 
-                    {champion ? (
+                    {/* Middle: date */}
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold ${isToday ? 'text-white' : 'text-gray-300'}`}>
+                        {isToday ? 'Today' : formatDisplayDate(date)}
+                      </p>
+                      <p className="text-xs text-gray-600">Game #{gNum}</p>
+                    </div>
+
+                    {/* Right: winner */}
+                    {c ? (
                       <div className="text-right flex-shrink-0">
-                        <p className={`text-sm font-mono font-semibold ${today ? 'text-[#00e676]' : 'text-white'}`}>
-                          …{champion.deviceSuffix}
+                        <p className={`text-sm font-semibold ${isToday ? 'text-[#00e676]' : 'text-white'}`}>
+                          {c.name}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {formatClues(champion.cluesUsed)} · {formatSeconds(champion.totalTimeMs)}
+                          {formatClues(c.cluesUsed)} · {formatSeconds(c.totalTimeMs)}
                         </p>
                       </div>
                     ) : (

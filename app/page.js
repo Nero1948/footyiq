@@ -199,18 +199,18 @@ export default function Home() {
             style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}
           >
             <span>🏉</span>
-            <span>Daily footy brain test</span>
+            <span>Daily NRL guessing game</span>
           </div>
 
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight leading-none mb-6 text-white">
-            Think you know footy?<br />
-            <span style={{ color: GREEN }}>Prove it.</span>
+            Guess today's NRL player<br />
+            <span style={{ color: GREEN }}>Before your mates do.</span>
           </h1>
 
           {/* Subtext */}
           <p className="text-xl text-gray-400 mb-8 max-w-xl mx-auto">
-            6 clues. 1 player. Daily.
+            Six clues. One player. Two minutes. New every day.
           </p>
 
           {/* Today's stats pill */}
@@ -240,7 +240,7 @@ export default function Home() {
               className="inline-block font-black text-xl uppercase tracking-widest rounded-2xl px-10 py-5 active:scale-95 transition-transform animate-cta-pulse"
               style={{ background: GREEN, color: '#000' }}
             >
-              Take the Test →
+              PLAY TODAY'S GAME →
             </Link>
           </div>
 
@@ -362,7 +362,7 @@ export default function Home() {
               Don't miss tomorrow's game
             </p>
             <p className="text-gray-400 text-sm mb-8">
-              Delivered to your inbox at 7am AEST. No spam, ever.
+              Fresh game every morning for Aus and NZ. No spam. Just footy.
             </p>
 
             {emailState === 'done' ? (
@@ -413,7 +413,7 @@ export default function Home() {
             <Link href="/champion"    className="hover:text-[#00e676] transition-colors">Champions</Link>
           </div>
           <p className="text-xs text-gray-700">
-            Built for NRL fans in Australia and New Zealand · footyiq.au
+            Made for rugby league tragics across Aus and NZ · setforsix.com.au
           </p>
         </div>
       </footer>

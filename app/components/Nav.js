@@ -21,8 +21,8 @@ export default function Nav() {
       }}
     >
       <div className="max-w-5xl mx-auto flex items-center justify-between">
-        <Link href="/" className="text-xl font-black tracking-tight text-white">
-          FootyIQ
+        <Link href="/" className="text-xl font-black tracking-tight text-white hover:text-[#00e676] transition-colors">
+          Set For Six
         </Link>
 
         <div className="flex items-center gap-1">

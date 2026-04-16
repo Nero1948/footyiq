@@ -1,0 +1,52 @@
+INSERT INTO games (game_number, date, answer_player, clue_1, clue_2, clue_3, clue_4, clue_5, clue_6, facts)
+VALUES
+(
+  2, '2026-04-17', 'Matt Bowen',
+  'Grew up in a remote Indigenous community in Far North Queensland — one of the most unlikely journeys to NRL stardom',
+  'Played every single NRL game of his career for the same Queensland club — a rare feat in the modern era',
+  'Was the NRL''s top try-scorer in 2007 with 22 tries, also making the most linebreaks and tackle breaks in the competition that season',
+  'Formed one of the most dangerous fullback-halfback combinations in NRL history after a champion playmaker arrived from Sydney in 2005',
+  'After leaving the NRL, joined a famous English Super League club and lost the Grand Final in both seasons he was there',
+  'North Queensland Cowboys fullback affectionately nicknamed ''Mango'' who played 270 NRL games and was the competition''s top try-scorer twice',
+  '["He scored the opening try in the 2005 NRL Grand Final but the Cowboys lost to the Wests Tigers 30-16", "Intercepted a Brett Kimmorley pass in 2005 Origin Game I and scored in golden point extra time to win it for Queensland", "He lost three Grand Finals across his career — the 2005 NRL Grand Final with the Cowboys, and both the 2014 and 2015 Super League Grand Finals with Wigan Warriors"]'::jsonb
+),
+(
+  3, '2026-04-18', 'Steve Menzies',
+  'Holds the record as the greatest try-scoring forward in NRL premiership history — a record built over a 16-year career',
+  'Wore headgear in every single game of his career — one of the most recognisable visual signatures in NRL history',
+  'His grandfather was a pioneer of his club, playing in the club''s inaugural first-grade match in 1947',
+  'Won two NRL premierships with the same Sydney club — 12 years apart',
+  'Continued playing professionally in England and France until just short of his 40th birthday, becoming the oldest player in Super League history',
+  'Manly Sea Eagles second-row forward nicknamed ''Beaver'' who scored 180 NRL tries — the most by a forward in Australian first-grade history',
+  '["He played in five Grand Finals for Manly and regards the 2008 premiership win over Melbourne as a career highlight — scoring a try off the bench in the dying minutes", "He was inducted into the NRL Hall of Fame in 2018, recognised for 180 NRL tries across 349 games", "His grandfather Mackie Campbell played in Manly''s inaugural first-grade match in 1947 — making Menzies a third-generation connection to the club"]'::jsonb
+),
+(
+  4, '2026-04-19', 'Mark Gasnier',
+  'Carries one of the most famous surnames in NRL history — his uncle is widely regarded as one of the greatest players the game has ever seen',
+  'At the peak of his powers, walked away from the NRL to play a completely different sport in Europe',
+  'Played rugby union in France for Stade Français on a deal worth approximately €300,000 a season',
+  'Was sensationally dropped from the NSW State of Origin squad before his debut for off-field behaviour — then recalled for the deciding game and scored two tries to win the series',
+  'Retired at age 30, walking away from over $1 million remaining on his contract — saying he had lost the mental drive to continue',
+  'St George Illawarra Dragons centre who won the 2010 NRL premiership after returning from two seasons of rugby union in France — nephew of Immortal Reg Gasnier',
+  '["He broke his collarbone scoring two tries in the deciding Origin game in 2004 and did not play again that year — one of the more dramatic Origin debuts on record", "He retired having played 174 NRL games, 12 State of Origin appearances for NSW, and 15 Tests for Australia — walking away from over $1 million remaining on his contract", "His uncle Reg Gasnier was named in Australia''s Team of the Century and is widely regarded as one of the greatest St George players of all time — giving Mark enormous expectations from day one"]'::jsonb
+),
+(
+  5, '2026-04-20', 'Robbie Farah',
+  'Won the NRL premiership in his third season of first-grade football',
+  'Set a record for most tackles in a State of Origin match with 63 in a single game',
+  'Won the Dally M Hooker of the Year award twice — in 2007 and 2010',
+  'His Lebanese heritage led him to represent a different country at the 2017 Rugby League World Cup',
+  'Captained his club for a club-record 148 matches — but his final years there were marked by public controversy and a messy departure',
+  'Wests Tigers hooker whose partnership with Benji Marshall was the cornerstone of the club''s only NRL premiership — and who later represented Lebanon at the World Cup',
+  '["His record of 63 tackles in State of Origin Game II of 2012 is the most in a single Origin match", "He played 303 NRL games, the vast majority for the Wests Tigers, where he became one of the club''s greatest ever players despite them winning only one premiership", "He was described by NRL.com as perhaps unlucky to be playing in the same generation as Cameron Smith — arguably the greatest dummy-half of all time"]'::jsonb
+),
+(
+  6, '2026-04-21', 'Willie Mason',
+  'Born in Auckland but grew up in regional NSW — and chose to represent Australia over both New Zealand and Tonga despite being eligible for all three',
+  'Won the Clive Churchill Medal as best on ground in a Grand Final — one of the standout individual performances in a premiership decider of his era',
+  'After his NRL career he played rugby union in France for one of the Top 14''s most famous clubs',
+  'Represented NSW in State of Origin 13 times and played 24 Tests for Australia as one of the most feared props of his generation',
+  'Became infamous during a 2006 international match for taunting the opposing team during their pre-match ceremony — and paid for it with a facial injury',
+  'Canterbury-Bankstown Bulldogs prop nicknamed ''Big Willie'' who won the 2004 Clive Churchill Medal and played 292 NRL games across five clubs',
+  '["In December 2006 Mason trialled with the New York Jets NFL team — the Jets coach said he was ''a pretty dynamic guy'' but a contract was never offered", "He represented Tonga at the 2000 Rugby League World Cup through his mother''s heritage — before later qualifying for and representing Australia", "The famous 2004 Bulldogs Grand Final squad that Mason was part of included Sonny Bill Williams, Johnathan Thurston, and Brent Sherwin — 15 of the 17 players had come through the same tough junior trainer''s program"]'::jsonb
+);

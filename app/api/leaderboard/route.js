@@ -24,7 +24,7 @@ export async function GET() {
 
   const { data: attempts, error: attemptsError } = await supabase
     .from('attempts')
-    .select('device_id, clues_used, total_time_ms, created_at')
+    .select('device_id, clues_used, total_time_ms, created_at, username')
     .eq('game_id', game.id)
     .eq('solved', true)
     .order('clues_used', { ascending: true })
@@ -37,12 +37,12 @@ export async function GET() {
 
   const entries = attempts.map((attempt, index) => ({
     rank: index + 1,
+    username: attempt.username || 'Anonymous',
     deviceSuffix: attempt.device_id.slice(-4),
     cluesUsed: attempt.clues_used,
     totalTimeMs: attempt.total_time_ms,
     createdAt: attempt.created_at,
     // Full device_id included only for client-side "is this me?" highlighting.
-    // It never renders in the UI — only the last 4 chars do.
     deviceId: attempt.device_id,
   }));
 

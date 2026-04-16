@@ -31,7 +31,7 @@ export default function LeaderboardPage() {
   const channelRef = useRef(null);
 
   useEffect(() => {
-    setDeviceId(localStorage.getItem('footyiq_device_id'));
+    setDeviceId(localStorage.getItem('setforsix_device_id') || localStorage.getItem('footyiq_device_id'));
   }, []);
 
   async function fetchLeaderboard() {
@@ -154,7 +154,7 @@ export default function LeaderboardPage() {
 
                     {/* Player */}
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm text-gray-300 font-mono">…{entry.deviceSuffix}</span>
+                      <span className="text-sm text-gray-300 font-medium truncate">{entry.username || 'Anonymous'}</span>
                       {isMe && (
                         <span className="ml-2 text-xs text-blue-400 font-medium">you</span>
                       )}

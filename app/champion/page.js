@@ -75,7 +75,7 @@ export default function ChampionPage() {
           ) : (
             <img
               src={`/api/champion?date=${todayAEST}`}
-              alt="Today's FootyIQ champion"
+              alt="Today's Set For Six champion"
               onError={() => setImageError(true)}
               className="w-full rounded-xl"
               style={{ aspectRatio: '1200 / 630', border: '1px solid rgba(255,255,255,0.08)' }}

@@ -1,4 +1,7 @@
 import { supabase } from '@/lib/supabase';
+import Filter from 'bad-words';
+
+const profanityFilter = new Filter();
 
 export async function POST(request) {
   let body;
@@ -9,7 +12,7 @@ export async function POST(request) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { gameId, deviceId, cluesUsed, totalTimeMs, guesses, solved } = body;
+  const { gameId, deviceId, cluesUsed, totalTimeMs, guesses, solved, username } = body;
 
   // ── Input validation ───────────────────────────────────────────────────────
 
@@ -30,6 +33,16 @@ export async function POST(request) {
   }
   if (typeof solved !== 'boolean') {
     return Response.json({ error: 'solved must be a boolean' }, { status: 400 });
+  }
+
+  // ── Sanitise username ──────────────────────────────────────────────────────
+
+  let cleanUsername = 'Anonymous';
+  if (username && typeof username === 'string') {
+    const trimmed = username.trim().slice(0, 20);
+    if (trimmed) {
+      cleanUsername = profanityFilter.isProfane(trimmed) ? 'Anonymous' : trimmed;
+    }
   }
 
   // ── Anti-cheat ─────────────────────────────────────────────────────────────
@@ -81,6 +94,7 @@ export async function POST(request) {
         total_time_ms: totalTimeMs,
         guesses,
         solved,
+        username: cleanUsername,
       });
 
     if (insertError) {

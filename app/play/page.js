@@ -45,7 +45,7 @@ function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs) {
     ? [...Array(cluesUsed - 1).fill('🟥'), '🟩', ...Array(6 - cluesUsed).fill('⬜')]
     : Array(6).fill('🟥');
   const clueWord = cluesUsed === 1 ? 'clue' : 'clues';
-  return `FootyIQ #${gameNumber}\n${squares.join('')}\n${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}\nfootyiq.au`;
+  return `Set For Six #${gameNumber}\n${squares.join('')}\n${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}\nsetforsix.com.au`;
 }
 
 export default function PlayPage() {
@@ -66,6 +66,7 @@ export default function PlayPage() {
   const [stats, setStats] = useState(null);
   const [yesterdayData, setYesterdayData] = useState(null);
   const [countdown, setCountdown] = useState('');
+  const [username, setUsername] = useState('Anonymous');
 
   const startTimeRef = useRef(null);
   const timerRef = useRef(null);
@@ -74,12 +75,14 @@ export default function PlayPage() {
   // ── Device ID ──────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    let id = localStorage.getItem('footyiq_device_id');
+    let id = localStorage.getItem('setforsix_device_id') || localStorage.getItem('footyiq_device_id');
     if (!id) {
       id = generateUUID();
-      localStorage.setItem('footyiq_device_id', id);
     }
+    localStorage.setItem('setforsix_device_id', id);
     setDeviceId(id);
+    const savedUsername = localStorage.getItem('setforsix_username');
+    if (savedUsername) setUsername(savedUsername);
   }, []);
 
   // ── Load today's game ──────────────────────────────────────────────────────
@@ -94,7 +97,7 @@ export default function PlayPage() {
         if (!res.ok) { setLoadError('Failed to load the game. Please refresh.'); setGameState('error'); return; }
 
         const data = await res.json();
-        const saved = localStorage.getItem(`footyiq_result_${data.date}`);
+        const saved = localStorage.getItem(`setforsix_result_${data.date}`) || localStorage.getItem(`footyiq_result_${data.date}`);
         if (saved) {
           setGame(data);
           setGameOverData(JSON.parse(saved));
@@ -159,10 +162,11 @@ export default function PlayPage() {
   const finishGame = useCallback(
     async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses, facts = [] }) => {
       try {
+        const currentUsername = localStorage.getItem('setforsix_username') || 'Anonymous';
         const res = await fetch('/api/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ gameId: game.id, deviceId, cluesUsed, totalTimeMs, guesses: allGuesses, solved }),
+          body: JSON.stringify({ gameId: game.id, deviceId, cluesUsed, totalTimeMs, guesses: allGuesses, solved, username: currentUsername }),
         });
         const submitData = await res.json();
         const rank = res.ok && submitData.success ? submitData.rank : null;
@@ -171,11 +175,12 @@ export default function PlayPage() {
         const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile, facts };
         setGameOverData(resultData);
         setGameState('done');
-        localStorage.setItem(`footyiq_result_${game.date}`, JSON.stringify(resultData));
+        localStorage.setItem(`setforsix_result_${game.date}`, JSON.stringify(resultData));
       } catch {
         const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts };
         setGameOverData(resultData);
         setGameState('done');
+        localStorage.setItem(`setforsix_result_${game.date}`, JSON.stringify(resultData));
       } finally {
         setIsGuessing(false);
       }
@@ -264,7 +269,13 @@ export default function PlayPage() {
   // ── Render: game ───────────────────────────────────────────────────────────
 
   return (
-    <div className="bg-texture min-h-screen text-white flex flex-col">
+    <div
+      className="min-h-screen text-white flex flex-col"
+      style={{
+        backgroundColor: '#0a0e13',
+        backgroundImage: 'radial-gradient(ellipse at 50% -10%, rgba(0,230,118,0.07) 0%, transparent 55%), repeating-linear-gradient(45deg, #0a0e13 0px, #0a0e13 38px, #0c1219 38px, #0c1219 40px)',
+      }}
+    >
 
       {/* Confetti overlay — only on correct answer */}
       {gameState === 'done' && gameOverData?.solved && (
@@ -293,7 +304,7 @@ export default function PlayPage() {
         style={{ background: 'rgba(10,14,19,0.96)', backdropFilter: 'blur(10px)', borderColor: 'rgba(255,255,255,0.06)' }}
       >
         <div>
-          <h1 className="text-xl font-black tracking-tight text-white">FootyIQ</h1>
+          <h1 className="text-xl font-black tracking-tight text-white">Set For Six</h1>
           {game && (
             <p className="text-xs text-gray-500 mt-0.5">Game #{game.game_number}</p>
           )}
@@ -412,6 +423,28 @@ export default function PlayPage() {
                   <p className="text-xs text-gray-500 mt-1">{label}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Display name */}
+            <div
+              className="rounded-xl p-4"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+            >
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Your display name</p>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => {
+                  const val = e.target.value.slice(0, 20);
+                  setUsername(val);
+                  localStorage.setItem('setforsix_username', val);
+                }}
+                placeholder="Anonymous"
+                maxLength={20}
+                className="w-full rounded-lg px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              />
+              <p className="text-xs text-gray-600 mt-1.5">Shows on the leaderboard. Applies from your next game.</p>
             </div>
 
             {/* Did you know — player facts */}

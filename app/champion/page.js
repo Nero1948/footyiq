@@ -12,14 +12,14 @@ export const metadata = {
     title: 'Set For Six — Champions',
     description: 'Meet the fastest NRL guessers. Who cracked it first today?',
     url: 'https://www.setforsix.com/champion',
-    images: [{ url: '/api/og', width: 1200, height: 630, alt: 'Set For Six Champions' }],
+    images: [{ url: 'https://www.setforsix.com/api/og', width: 1200, height: 630, alt: 'Set For Six Champions' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Set For Six — Champions',
     description: 'Meet the fastest NRL guessers. Who cracked it first today?',
-    images: ['/api/og'],
+    images: ['https://www.setforsix.com/api/og'],
   },
 };
 

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { sendDailyEmail } from '@/lib/sendDailyEmail';
 
 export async function GET(request) {
   // ── Auth ───────────────────────────────────────────────────────────────────
@@ -47,11 +48,19 @@ export async function GET(request) {
       );
     }
 
+    // ── Send daily reminder emails ─────────────────────────────────────────
+
+    let emailResult = { sent: 0, failed: 0 };
+    if (gameExists) {
+      emailResult = await sendDailyEmail(game.game_number);
+    }
+
     return Response.json({
       success: true,
       date: todayAEST,
       yesterday: yesterdayAEST,
       gameExists,
+      emails: emailResult,
     });
   } catch (err) {
     console.error('[daily-reset] Unexpected error:', err);

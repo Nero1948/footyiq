@@ -114,6 +114,8 @@ export async function GET(request) {
     day: 'numeric', month: 'short', year: 'numeric',
   }).toUpperCase();
 
+  const datePill = `${displayDate} · ${gameLabel}`;
+
   const beatBySecs = secondPlace && secondPlace.clues_used === cluesUsed
     ? Math.max(0, (secondPlace.total_time_ms - champion.total_time_ms) / 1000).toFixed(1)
     : null;
@@ -174,7 +176,7 @@ export async function GET(request) {
             fontWeight: 600,
             color: 'rgba(0,0,0,0.55)',
           }}>
-            {displayDate} · {gameLabel}
+            {datePill}
           </div>
         </div>
 

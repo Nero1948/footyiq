@@ -27,7 +27,7 @@ export async function GET(request) {
 
   if (gameError || !game) return renderNoChampion(dateParam);
 
-  // ── Fetch top 2 solved attempts (for beat-the-field calculation) ───────────
+  // ── Fetch top 2 solved attempts (for beat-the-field line) ─────────────────
 
   const { data: attempts, error: attemptsError } = await supabase
     .from('attempts')
@@ -45,13 +45,6 @@ export async function GET(request) {
   const champion = attempts[0];
   const secondPlace = attempts[1] ?? null;
 
-  // ── Fetch total attempts (all players, solved or not) ──────────────────────
-
-  const { count: totalAttempts } = await supabase
-    .from('attempts')
-    .select('id', { count: 'exact', head: true })
-    .eq('game_id', game.id);
-
   // ── Fetch total solved count ───────────────────────────────────────────────
 
   const { count: totalSolved } = await supabase
@@ -60,20 +53,67 @@ export async function GET(request) {
     .eq('game_id', game.id)
     .eq('solved', true);
 
+  // ── Compute champion streak ────────────────────────────────────────────────
+
+  let streak = 1;
+  try {
+    const last14Dates = [];
+    for (let i = 1; i <= 14; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      last14Dates.push(d.toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' }));
+    }
+
+    const { data: prevGames } = await supabase
+      .from('games')
+      .select('id, date')
+      .in('date', last14Dates)
+      .order('date', { ascending: false });
+
+    if (prevGames && prevGames.length > 0) {
+      const { data: prevAttempts } = await supabase
+        .from('attempts')
+        .select('game_id, device_id, clues_used, total_time_ms')
+        .in('game_id', prevGames.map((g) => g.id))
+        .eq('solved', true)
+        .order('clues_used', { ascending: true })
+        .order('total_time_ms', { ascending: true });
+
+      if (prevAttempts) {
+        const bestByGame = {};
+        for (const a of prevAttempts) {
+          if (!bestByGame[a.game_id]) bestByGame[a.game_id] = a;
+        }
+        for (const g of prevGames) {
+          if (bestByGame[g.id]?.device_id === champion.device_id) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  } catch {
+    // streak stays at 1
+  }
+
   // ── Derived display values ─────────────────────────────────────────────────
 
   const winnerName = (champion.username && champion.username !== 'Anonymous')
     ? champion.username
     : `…${champion.device_id.slice(-4)}`;
 
-  const cluesUsed   = champion.clues_used;
-  const cluesStr    = String(cluesUsed);
-  const clueWord    = cluesUsed === 1 ? 'clue' : 'clues';
-  const timeStr     = `${(champion.total_time_ms / 1000).toFixed(1)}s`;
-  const playersStr  = String(totalAttempts ?? 1);
-  const gameLabel   = `GAME #${game.game_number}`;
+  const cluesUsed  = champion.clues_used;
+  const cluesStr   = String(cluesUsed);
+  const clueWord   = cluesUsed === 1 ? 'clue' : 'clues';
+  const timeStr    = `${(champion.total_time_ms / 1000).toFixed(1)}s`;
+  const streakStr  = String(streak);
+  const gameLabel  = `Game #${game.game_number}`;
 
-  // Beat-the-field: only show when a second place exists and has same clue count
+  const displayDate = new Date(dateParam + 'T12:00:00Z').toLocaleDateString('en-AU', {
+    day: 'numeric', month: 'short', year: 'numeric',
+  }).toUpperCase();
+
   const beatBySecs = secondPlace && secondPlace.clues_used === cluesUsed
     ? Math.max(0, (secondPlace.total_time_ms - champion.total_time_ms) / 1000).toFixed(1)
     : null;
@@ -87,75 +127,87 @@ export async function GET(request) {
       <div style={{
         width: W,
         height: H,
-        background: '#060606',
+        backgroundColor: '#07111f',
+        backgroundImage:
+          'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'sans-serif',
       }}>
 
-        {/* ── Gold header band ──────────────────────────────────────────── */}
+        {/* ── Top gold band ─────────────────────────────────────────────── */}
         <div style={{
-          height: 82,
-          background: 'linear-gradient(90deg, #b8730a 0%, #ffc535 45%, #d4890c 100%)',
+          height: 80,
+          background: 'linear-gradient(90deg, #fff4c2, #f6b91f)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 52px',
+          padding: '0 48px',
           flexShrink: 0,
         }}>
           {/* Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <span style={{ color: '#000', fontSize: 28, fontWeight: 900, letterSpacing: 3 }}>
-              SET FOR SIX
-            </span>
             <div style={{
-              background: '#000',
-              color: '#ffc535',
-              borderRadius: 8,
-              width: 36,
-              height: 36,
+              background: 'linear-gradient(135deg, #f6b91f, #c8860a)',
+              border: '2px solid rgba(0,0,0,0.18)',
+              borderRadius: 10,
+              width: 44,
+              height: 44,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 20,
+              fontSize: 26,
               fontWeight: 900,
-            }}>
-              6
-            </div>
-            <span style={{ color: 'rgba(0,0,0,0.4)', fontSize: 15, fontWeight: 600, marginLeft: 8 }}>
-              {gameLabel}
+              color: '#000',
+            }}>6</div>
+            <span style={{ color: '#000', fontSize: 26, fontWeight: 900, letterSpacing: 3 }}>
+              SET FOR SIX
             </span>
           </div>
-          {/* Rank chip */}
+          {/* Date pill */}
           <div style={{
-            background: 'rgba(0,0,0,0.25)',
-            color: '#000',
-            borderRadius: 28,
-            padding: '8px 22px',
-            fontSize: 17,
-            fontWeight: 800,
+            border: '1px solid rgba(0,0,0,0.2)',
+            borderRadius: 20,
+            padding: '6px 20px',
+            fontSize: 14,
+            fontWeight: 600,
+            color: 'rgba(0,0,0,0.55)',
           }}>
-            🏆 #1 Today
+            {displayDate} · {gameLabel}
           </div>
         </div>
 
-        {/* ── Main content ──────────────────────────────────────────────── */}
+        {/* ── Main section ──────────────────────────────────────────────── */}
         <div style={{
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '20px 80px 24px',
+          padding: '24px 80px 20px',
         }}>
 
-          {/* Top Dog eyebrow */}
+          {/* Rank chip */}
+          <div style={{
+            background: 'linear-gradient(90deg, #fff4c2, #f6b91f)',
+            borderRadius: 24,
+            padding: '6px 22px',
+            fontSize: 15,
+            fontWeight: 800,
+            color: '#000',
+            marginBottom: 14,
+          }}>
+            🏆 #1 Today
+          </div>
+
+          {/* Green eyebrow */}
           <div style={{
             color: '#00e676',
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: 700,
-            letterSpacing: 12,
-            marginBottom: 14,
+            letterSpacing: 10,
+            marginBottom: 10,
           }}>
             TOP DOG
           </div>
@@ -163,83 +215,84 @@ export async function GET(request) {
           {/* Winner name */}
           <div style={{
             color: '#ffffff',
-            fontSize: 108,
+            fontSize: 56,
             fontWeight: 900,
-            lineHeight: 1,
-            letterSpacing: -4,
-            marginBottom: 18,
+            lineHeight: 1.1,
+            marginBottom: 10,
+            textAlign: 'center',
           }}>
             {winnerName}
           </div>
 
           {/* Description */}
           <div style={{
-            color: '#666',
-            fontSize: 18,
-            marginBottom: 32,
+            color: '#4a6a8a',
+            fontSize: 17,
+            marginBottom: 24,
             textAlign: 'center',
           }}>
             {descriptionLine}
           </div>
 
-          {/* Stat boxes */}
-          <div style={{ display: 'flex', gap: 14, marginBottom: 28 }}>
+          {/* Stats row */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 22 }}>
             {[
-              { label: 'CLUES',   value: cluesStr  },
-              { label: 'TIME',    value: timeStr   },
-              { label: 'PLAYERS', value: playersStr },
+              { label: 'CLUES',  value: cluesStr  },
+              { label: 'TIME',   value: timeStr   },
+              { label: 'STREAK', value: streakStr },
             ].map(({ label, value }) => (
               <div key={label} style={{
-                background: 'rgba(255,255,255,0.05)',
+                background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 12,
-                padding: '14px 38px',
+                padding: '14px 44px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: 8,
               }}>
-                <span style={{ color: '#fff', fontSize: 42, fontWeight: 900, lineHeight: 1 }}>{value}</span>
-                <span style={{ color: '#ffc535', fontSize: 11, fontWeight: 700, letterSpacing: 5 }}>{label}</span>
+                <span style={{ color: '#fff', fontSize: 40, fontWeight: 900, lineHeight: 1 }}>{value}</span>
+                <span style={{ color: '#f6b91f', fontSize: 11, fontWeight: 700, letterSpacing: 4 }}>{label}</span>
               </div>
             ))}
           </div>
 
-          {/* Official ruling callout */}
+          {/* Callout box */}
           <div style={{
-            borderLeft: '3px solid #ffc535',
-            border: '1px solid rgba(255,197,53,0.25)',
+            borderLeft: '3px solid #f6b91f',
+            border: '1px solid rgba(246,185,31,0.3)',
             borderRadius: 8,
-            padding: '12px 24px',
-            background: 'rgba(255,197,53,0.04)',
+            padding: '11px 24px',
+            background: 'rgba(246,185,31,0.04)',
             display: 'flex',
             flexDirection: 'column',
-            gap: 6,
+            gap: 5,
             maxWidth: 680,
           }}>
-            <span style={{ color: '#ffc535', fontSize: 11, fontWeight: 700, letterSpacing: 5 }}>
+            <span style={{ color: '#f6b91f', fontSize: 11, fontWeight: 700, letterSpacing: 5 }}>
               OFFICIAL RULING
             </span>
-            <span style={{ color: '#aaa', fontSize: 15 }}>
+            <span style={{ color: '#7a8fa8', fontSize: 15 }}>
               Certified group chat menace. Knows far too much ball.
             </span>
           </div>
 
         </div>
 
-        {/* ── Footer ────────────────────────────────────────────────────── */}
+        {/* ── Bottom gold band ──────────────────────────────────────────── */}
         <div style={{
-          height: 54,
-          background: '#0d0d0d',
+          height: 58,
+          background: 'linear-gradient(90deg, #fff4c2, #f6b91f)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          gap: 16,
+          justifyContent: 'space-between',
+          padding: '0 48px',
           flexShrink: 0,
         }}>
-          <span style={{ color: '#ffc535', fontSize: 16, fontWeight: 800 }}>setforsix.com.au</span>
-          <span style={{ color: '#333', fontSize: 18 }}>·</span>
-          <span style={{ color: '#444', fontSize: 14 }}>Daily NRL guessing game for proper league tragics</span>
+          <span style={{ color: '#000', fontSize: 16, fontWeight: 900 }}>setforsix.com.au</span>
+          <span style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14, fontWeight: 500 }}>
+            Daily NRL guessing game for proper league tragics
+          </span>
         </div>
 
       </div>
@@ -252,7 +305,7 @@ export async function GET(request) {
 
 function renderNoChampion(dateParam) {
   const displayDate = new Date(dateParam + 'T12:00:00Z').toLocaleDateString('en-AU', {
-    day: 'numeric', month: 'long', year: 'numeric',
+    day: 'numeric', month: 'short', year: 'numeric',
   }).toUpperCase();
 
   return new ImageResponse(
@@ -260,44 +313,44 @@ function renderNoChampion(dateParam) {
       <div style={{
         width: W,
         height: H,
-        background: '#060606',
+        backgroundColor: '#07111f',
+        backgroundImage:
+          'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'sans-serif',
       }}>
 
-        {/* Header */}
+        {/* Top band */}
         <div style={{
-          height: 82,
-          background: 'linear-gradient(90deg, #b8730a 0%, #ffc535 45%, #d4890c 100%)',
+          height: 80,
+          background: 'linear-gradient(90deg, #fff4c2, #f6b91f)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 52px',
+          padding: '0 48px',
           flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <span style={{ color: '#000', fontSize: 28, fontWeight: 900, letterSpacing: 3 }}>SET FOR SIX</span>
-            <div style={{ background: '#000', color: '#ffc535', borderRadius: 8, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 900 }}>6</div>
+            <div style={{ background: 'linear-gradient(135deg, #f6b91f, #c8860a)', border: '2px solid rgba(0,0,0,0.18)', borderRadius: 10, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 900, color: '#000' }}>6</div>
+            <span style={{ color: '#000', fontSize: 26, fontWeight: 900, letterSpacing: 3 }}>SET FOR SIX</span>
           </div>
-          <div style={{ background: 'rgba(0,0,0,0.25)', color: '#000', borderRadius: 28, padding: '8px 22px', fontSize: 17, fontWeight: 800 }}>
-            🏆 Daily Champion
-          </div>
+          <div style={{ border: '1px solid rgba(0,0,0,0.2)', borderRadius: 20, padding: '6px 20px', fontSize: 14, fontWeight: 600, color: 'rgba(0,0,0,0.55)' }}>{displayDate}</div>
         </div>
 
         {/* Main */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
-          <div style={{ color: '#222', fontSize: 15, fontWeight: 700, letterSpacing: 12, marginBottom: 28 }}>TODAY'S WINNER</div>
-          <div style={{ color: '#2a2a2a', fontSize: 96, fontWeight: 900, lineHeight: 1, marginBottom: 24 }}>???</div>
-          <div style={{ color: '#ffc535', fontSize: 17, fontWeight: 700, letterSpacing: 8 }}>NO CHAMPION YET</div>
-          <div style={{ color: '#2a2a2a', fontSize: 16, letterSpacing: 3, marginTop: 20 }}>{displayDate}</div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ color: '#1a2e42', fontSize: 15, fontWeight: 700, letterSpacing: 12, marginBottom: 28 }}>TODAY'S WINNER</div>
+          <div style={{ color: '#1a2e42', fontSize: 96, fontWeight: 900, lineHeight: 1, marginBottom: 24 }}>???</div>
+          <div style={{ color: '#f6b91f', fontSize: 17, fontWeight: 700, letterSpacing: 8 }}>NO CHAMPION YET</div>
+          <div style={{ color: '#1a2e42', fontSize: 15, letterSpacing: 3, marginTop: 16 }}>{displayDate}</div>
         </div>
 
-        {/* Footer */}
-        <div style={{ height: 54, background: '#0d0d0d', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexShrink: 0 }}>
-          <span style={{ color: '#ffc535', fontSize: 16, fontWeight: 800 }}>setforsix.com.au</span>
-          <span style={{ color: '#333', fontSize: 18 }}>·</span>
-          <span style={{ color: '#444', fontSize: 14 }}>Be the first. setforsix.com.au</span>
+        {/* Bottom band */}
+        <div style={{ height: 58, background: 'linear-gradient(90deg, #fff4c2, #f6b91f)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', flexShrink: 0 }}>
+          <span style={{ color: '#000', fontSize: 16, fontWeight: 900 }}>setforsix.com.au</span>
+          <span style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14 }}>Be the first to crack it today</span>
         </div>
 
       </div>

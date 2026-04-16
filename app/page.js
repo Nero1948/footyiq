@@ -23,22 +23,22 @@ const HOW_IT_WORKS = [
     step: '01',
     emoji: '🔍',
     title: 'Get a clue',
-    body: 'A mystery NRL player is revealed one clue at a time. Guess early, score big. Wait too long and everyone beats you to it.',
+    body: 'A mystery NRL player drops one clue at a time. Guess early for big bragging rights.',
     bg: '#0d1117',
   },
   {
     step: '02',
     emoji: '✏️',
     title: 'Make your guess',
-    body: "Type the player's name. Fewer clues used = higher score. Get it in 1 and you're a legend.",
+    body: "Type the player's name. Wait too long and everyone beats you to it.",
     bg: '#111a22',
     accent: true,
   },
   {
     step: '03',
     emoji: '📲',
-    title: 'Share the card',
-    body: "Post your spoiler-free result card in the group chat. Stir the pot without ruining the answer.",
+    title: 'Share the flex',
+    body: "Share your spoiler-free result card in the group chat. Stir things up without giving the answer away.",
     bg: '#0d1117',
   },
 ];
@@ -158,18 +158,14 @@ export default async function Home() {
 
         <div className="relative max-w-3xl mx-auto">
 
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-gray-400 mb-8"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}
-          >
-            <span>🏉</span>
-            <span>Daily NRL guessing game</span>
-          </div>
+          {/* Eyebrow */}
+          <p className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6">
+            The daily NRL guessing game
+          </p>
 
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight leading-none mb-6 text-white">
-            Guess today&apos;s NRL player<br />
+            Guess the NRL player<br />
             <span style={{ color: GREEN }}>Before your mates do.</span>
           </h1>
 
@@ -225,7 +221,7 @@ export default async function Home() {
               className="inline-block font-black text-xl uppercase tracking-widest rounded-2xl px-10 py-5 active:scale-95 transition-transform animate-cta-pulse"
               style={{ background: GREEN, color: '#000' }}
             >
-              PLAY TODAY&apos;S GAME →
+              Play today&apos;s game →
             </Link>
           </div>
 
@@ -313,10 +309,10 @@ export default async function Home() {
         >
           <div className="max-w-md mx-auto text-center">
             <p className="font-black text-3xl text-white mb-3 tracking-tight">
-              Don&apos;t miss tomorrow&apos;s game
+              Get tomorrow&apos;s game first
             </p>
             <p className="text-gray-400 text-sm mb-8">
-              Fresh game every morning. One email. No spam. Just league.
+              Fresh game every morning for Aus and NZ. No spam. Just league.
             </p>
             <EmailSignup />
           </div>

@@ -40,7 +40,7 @@ export async function POST(request) {
   try {
     ({ data: game, error: dbError } = await supabase
       .from('games')
-      .select('id, answer_player, clue_1, clue_2, clue_3, clue_4, clue_5, clue_6')
+      .select('id, answer_player, clue_1, clue_2, clue_3, clue_4, clue_5, clue_6, facts')
       .eq('id', gameId)
       .single());
   } catch (err) {
@@ -62,6 +62,7 @@ export async function POST(request) {
     return Response.json({
       correct: true,
       answer: game.answer_player,
+      facts: game.facts ?? [],
     });
   }
 
@@ -79,5 +80,6 @@ export async function POST(request) {
     correct: false,
     failed: true,
     answer: game.answer_player,
+    facts: game.facts ?? [],
   });
 }

@@ -32,6 +32,14 @@ function formatTime(ms) {
   return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 }
 
+function getSecondsUntilMidnightAEST() {
+  const now = new Date();
+  const aestNow = new Date(now.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
+  const aestMidnight = new Date(aestNow);
+  aestMidnight.setHours(24, 0, 0, 0);
+  return Math.max(0, Math.floor((aestMidnight - aestNow) / 1000));
+}
+
 function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs) {
   const squares = solved
     ? [...Array(cluesUsed - 1).fill('🟥'), '🟩', ...Array(6 - cluesUsed).fill('⬜')]
@@ -55,6 +63,9 @@ export default function PlayPage() {
   const [copied, setCopied] = useState(false);
   const [loadError, setLoadError] = useState(null);
   const [isGuessing, setIsGuessing] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [yesterdayData, setYesterdayData] = useState(null);
+  const [countdown, setCountdown] = useState('');
 
   const startTimeRef = useRef(null);
   const timerRef = useRef(null);
@@ -119,10 +130,34 @@ export default function PlayPage() {
     if (gameState === 'playing') inputRef.current?.focus();
   }, [gameState, clueNumber]);
 
+  // ── Fetch stats + yesterday when done ─────────────────────────────────────
+
+  useEffect(() => {
+    if (gameState !== 'done') return;
+    fetch('/api/stats').then(r => r.ok ? r.json() : null).then(d => d && setStats(d)).catch(() => {});
+    fetch('/api/yesterday').then(r => r.ok ? r.json() : null).then(d => d && setYesterdayData(d)).catch(() => {});
+  }, [gameState]);
+
+  // ── Countdown to midnight AEST ─────────────────────────────────────────────
+
+  useEffect(() => {
+    if (gameState !== 'done') return;
+    function tick() {
+      const secs = getSecondsUntilMidnightAEST();
+      const h = String(Math.floor(secs / 3600)).padStart(2, '0');
+      const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+      const s = String(secs % 60).padStart(2, '0');
+      setCountdown(`${h}:${m}:${s}`);
+    }
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [gameState]);
+
   // ── Finish game ────────────────────────────────────────────────────────────
 
   const finishGame = useCallback(
-    async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses }) => {
+    async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses, facts = [] }) => {
       try {
         const res = await fetch('/api/submit', {
           method: 'POST',
@@ -133,12 +168,12 @@ export default function PlayPage() {
         const rank = res.ok && submitData.success ? submitData.rank : null;
         const totalPlayers = res.ok && submitData.success ? submitData.totalPlayers : null;
         const percentile = res.ok && submitData.success ? submitData.percentile : null;
-        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile };
+        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile, facts };
         setGameOverData(resultData);
         setGameState('done');
         localStorage.setItem(`footyiq_result_${game.date}`, JSON.stringify(resultData));
       } catch {
-        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null };
+        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts };
         setGameOverData(resultData);
         setGameState('done');
       } finally {
@@ -170,12 +205,12 @@ export default function PlayPage() {
 
       if (data.correct) {
         clearInterval(timerRef.current);
-        await finishGame({ solved: true, answer: data.answer, cluesUsed: clueNumber, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses: [...wrongGuesses, guessText] });
+        await finishGame({ solved: true, answer: data.answer, cluesUsed: clueNumber, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses: [...wrongGuesses, guessText], facts: data.facts || [] });
       } else if (data.failed) {
         clearInterval(timerRef.current);
         const allGuesses = [...wrongGuesses, guessText];
         setWrongGuesses(allGuesses);
-        await finishGame({ solved: false, answer: data.answer, cluesUsed: 6, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses });
+        await finishGame({ solved: false, answer: data.answer, cluesUsed: 6, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses, facts: data.facts || [] });
       } else {
         setWrongGuesses((prev) => [...prev, guessText]);
         setClues((prev) => [...prev, data.nextClue]);
@@ -379,6 +414,79 @@ export default function PlayPage() {
               ))}
             </div>
 
+            {/* Did you know — player facts */}
+            {gameOverData.facts?.length > 0 && (
+              <div
+                className="rounded-xl p-4 space-y-3"
+                style={{ background: 'rgba(0,230,118,0.05)', border: '1px solid rgba(0,230,118,0.15)', borderLeft: '3px solid #00e676' }}
+              >
+                <p className="text-sm font-semibold text-[#00e676]">🧠 Did you know?</p>
+                <ul className="space-y-2">
+                  {gameOverData.facts.map((fact, i) => (
+                    <li key={i} className="text-sm text-gray-300 leading-relaxed">• {fact}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Clue distribution chart */}
+            {stats && stats.totalPlayers > 0 && (
+              <div
+                className="rounded-xl p-4 space-y-3"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+              >
+                <div className="flex items-baseline justify-between">
+                  <p className="text-sm font-semibold text-gray-300">How everyone did</p>
+                  <p className="text-xs text-gray-500">{stats.totalPlayers} {stats.totalPlayers === 1 ? 'player' : 'players'}</p>
+                </div>
+                {[1, 2, 3, 4, 5, 6, 'failed'].map((key) => {
+                  const count = stats.distribution[key] ?? 0;
+                  const pct = (count / stats.totalPlayers) * 100;
+                  const isYou = gameOverData.solved ? key === gameOverData.cluesUsed : key === 'failed';
+                  const label = key === 'failed' ? 'Failed' : `${key} clue${key === 1 ? '' : 's'}`;
+                  return (
+                    <div key={key} className="flex items-center gap-2 text-xs">
+                      <span className="w-14 text-right text-gray-500 shrink-0">{label}</span>
+                      <div className="flex-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)', height: 18 }}>
+                        <div
+                          style={{
+                            width: `${Math.max(pct, count > 0 ? 4 : 0)}%`,
+                            height: '100%',
+                            borderRadius: '9999px',
+                            background: isYou ? '#00e676' : key === 'failed' ? 'rgba(248,113,113,0.45)' : 'rgba(255,255,255,0.2)',
+                            transition: 'width 0.6s ease',
+                          }}
+                        />
+                      </div>
+                      <span className="w-5 text-right text-gray-500 shrink-0">{count}</span>
+                      {isYou
+                        ? <span className="text-[#00e676] font-bold shrink-0">YOU</span>
+                        : <span className="w-7 shrink-0" />
+                      }
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Yesterday's answer */}
+            {yesterdayData && (
+              <div
+                className="rounded-xl p-4 space-y-2"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+              >
+                <p className="text-xs text-gray-500 uppercase tracking-wider">Yesterday's answer</p>
+                <p className="text-lg font-bold text-white">{yesterdayData.answer}</p>
+                {yesterdayData.facts?.length > 0 && (
+                  <ul className="space-y-2 pt-1">
+                    {yesterdayData.facts.map((fact, i) => (
+                      <li key={i} className="text-sm text-gray-400 leading-relaxed">• {fact}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
             {/* Share card */}
             <div
               className="rounded-xl p-4"
@@ -432,6 +540,13 @@ export default function PlayPage() {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* Countdown to next game */}
+            <div className="text-center py-2 space-y-1">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Next game in</p>
+              <p className="text-3xl font-mono font-bold tabular-nums" style={{ color: '#00e676' }}>{countdown}</p>
+              <p className="text-xs text-gray-600">Don't break your streak</p>
             </div>
 
             <Link

@@ -1,482 +1,82 @@
 [
   {
     "game_number": 2,
-    "date": "2026-04-16",
-    "answer_player": "Payne Haas",
-    "clue_1": "Debuted in NRL first grade at age 17 — one of the youngest props ever to crack the top grade in the modern era",
-    "clue_2": "Although Sydney-born with Samoan heritage, he was recruited by a Queensland club before finishing school",
-    "clue_3": "By his second NRL season he was winning awards normally reserved for veteran front-rowers",
-    "clue_4": "Has played every season of his NRL career at the same Brisbane club without ever requesting a transfer",
-    "clue_5": "The Broncos' number 8 and Queensland cornerstone, renowned for running 20-plus times per game and bulldozing defenders rather than sidestepping them",
-    "clue_6": "Brisbane Broncos and Australian prop who debuted at 17 and became a multi-time Dally M Prop of the Year — regarded by many as the best front-rower in the world, his first name is an old word for a wager",
+    "date": "2026-04-17",
+    "answer_player": "Matt Bowen",
+    "clue_1": "Grew up in a remote Indigenous community in Far North Queensland — one of the most unlikely journeys to NRL stardom",
+    "clue_2": "Played every single NRL game of his career for the same Queensland club — a rare feat in the modern era",
+    "clue_3": "Was the NRL's top try-scorer in 2007 with 22 tries, also making the most linebreaks and tackle breaks in the competition that season",
+    "clue_4": "Formed one of the most dangerous fullback-halfback combinations in NRL history after a champion playmaker arrived from Sydney in 2005",
+    "clue_5": "After leaving the NRL, joined a famous English Super League club and lost the Grand Final in both seasons he was there",
+    "clue_6": "North Queensland Cowboys fullback affectionately nicknamed 'Mango' who played 270 NRL games and was the competition's top try-scorer twice",
     "facts": [
-      "He signed his first NRL contract with the Broncos while he was still completing Year 12 at school — making him simultaneously a student and a professional athlete",
-      "Despite being born and raised in Western Sydney, no Sydney-based NRL club recruited him — the Broncos spotted him at a junior representative carnival and moved quickly",
-      "His recorded sprint speed is comparable to some NRL wingers, extraordinary for a player who weighs over 120 kilograms"
+      "He scored the opening try in the 2005 NRL Grand Final but the Cowboys lost to the Wests Tigers 30-16",
+      "Intercepted a Brett Kimmorley pass in 2005 Origin Game I and scored in golden point extra time to win it for Queensland",
+      "He lost three Grand Finals across his career — the 2005 NRL Grand Final with the Cowboys, and both the 2014 and 2015 Super League Grand Finals with Wigan Warriors"
     ]
   },
   {
     "game_number": 3,
-    "date": "2026-04-17",
-    "answer_player": "James Tedesco",
-    "clue_1": "Grew up in Penrith, western Sydney — but ironically never played for the local NRL club that dominated the competition during his career",
-    "clue_2": "A multiple Dally M Award-winning fullback whose footwork was once described by a frustrated opponent as 'like chasing smoke'",
-    "clue_3": "Won back-to-back Premierships and was named Player of the Match in a Grand Final",
-    "clue_4": "Moved from the Wests Tigers to the Sydney Roosters and became their most important player within a season",
-    "clue_5": "NSW Blues captain for much of his prime, his ability to manufacture something from nothing — particularly off kick returns and out of dummy-half — elevated him above every other fullback of his era",
-    "clue_6": "Sydney Roosters fullback and long-serving NSW captain, won back-to-back Premierships in 2018 and 2019 — his Italian-origin surname, curiously, is the Italian word for 'German'",
+    "date": "2026-04-18",
+    "answer_player": "Steve Menzies",
+    "clue_1": "Holds the record as the greatest try-scoring forward in NRL premiership history — a record built over a 16-year career",
+    "clue_2": "Wore headgear in every single game of his career — one of the most recognisable visual signatures in NRL history",
+    "clue_3": "His grandfather was a pioneer of his club, playing in the club's inaugural first-grade match in 1947",
+    "clue_4": "Won two NRL premierships with the same Sydney club — 12 years apart",
+    "clue_5": "Continued playing professionally in England and France until just short of his 40th birthday, becoming the oldest player in Super League history",
+    "clue_6": "Manly Sea Eagles second-row forward nicknamed 'Beaver' who scored 180 NRL tries — the most by a forward in Australian first-grade history",
     "facts": [
-      "His surname 'Tedesco' literally means 'German' in Italian — making him arguably the first person of 'German' name to captain NSW in State of Origin",
-      "He grew up as a Roosters supporter while playing in the Tigers' development system — so his eventual switch to the Roosters was, in a sense, a homecoming",
-      "He played most of his junior career as a halfback before coaches converted him to fullback in his mid-teens — a switch that defined the rest of his career"
+      "He played in five Grand Finals for Manly and regards the 2008 premiership win over Melbourne as a career highlight — scoring a try off the bench in the dying minutes",
+      "He was inducted into the NRL Hall of Fame in 2018, recognised for 180 NRL tries across 349 games",
+      "His grandfather Mackie Campbell played in Manly's inaugural first-grade match in 1947 — making Menzies a third-generation connection to the club"
     ]
   },
   {
     "game_number": 4,
-    "date": "2026-04-18",
-    "answer_player": "Cameron Smith",
-    "clue_1": "When he retired, he held a games-played record so complete that the next-closest active player was over 100 appearances behind him",
-    "clue_2": "Grew up in Proserpine, a sugar-cane town in North Queensland with a population of roughly 3,000 — about as far from Melbourne as you can get",
-    "clue_3": "Won three NRL Premierships across eight years with the same club, anchoring a dynasty as its captain and its conscience",
-    "clue_4": "Spent his entire NRL career at the Melbourne Storm and never played a first-grade game for any other club",
-    "clue_5": "Queensland hooker and captain for over a decade, his trademark dummy-half run and ability to slow the play-the-ball almost redefined what the number 9 jersey meant in the modern game",
-    "clue_6": "Melbourne Storm hooker who played 431 NRL games — the all-time record — and captained Queensland in more State of Origin matches than any other player in history; wore the number 9 for his entire career",
+    "date": "2026-04-19",
+    "answer_player": "Mark Gasnier",
+    "clue_1": "Carries one of the most famous surnames in NRL history — his uncle is widely regarded as one of the greatest players the game has ever seen",
+    "clue_2": "At the peak of his powers, walked away from the NRL to play a completely different sport in Europe",
+    "clue_3": "Played rugby union in France for Stade Français on a deal worth approximately €300,000 a season",
+    "clue_4": "Was sensationally dropped from the NSW State of Origin squad before his debut for off-field behaviour — then recalled for the deciding game and scored two tries to win the series",
+    "clue_5": "Retired at age 30, walking away from over $1 million remaining on his contract — saying he had lost the mental drive to continue",
+    "clue_6": "St George Illawarra Dragons centre who won the 2010 NRL premiership after returning from two seasons of rugby union in France — nephew of Immortal Reg Gasnier",
     "facts": [
-      "He grew up in Proserpine, a small sugar-cane farming town in North Queensland — the most obscure hometown of any player widely considered the greatest in NRL history",
-      "He retired in 2020 without ever formally announcing his retirement — he simply went quiet, leaving fans and media in limbo for months before it was confirmed",
-      "Despite playing through the Melbourne Storm's salary cap scandal era, he was never personally implicated — a fact that preserved his reputation completely in an otherwise messy chapter of the club's history"
+      "He broke his collarbone scoring two tries in the deciding Origin game in 2004 and did not play again that year — one of the more dramatic Origin debuts on record",
+      "He retired having played 174 NRL games, 12 State of Origin appearances for NSW, and 15 Tests for Australia — walking away from over $1 million remaining on his contract",
+      "His uncle Reg Gasnier was named in Australia's Team of the Century and is widely regarded as one of the greatest St George players of all time — giving Mark enormous expectations from day one"
     ]
   },
   {
     "game_number": 5,
-    "date": "2026-04-19",
-    "answer_player": "Roger Tuivasa-Sheck",
-    "clue_1": "After establishing himself as one of the NRL's elite fullbacks, he made the extraordinary decision to leave the code entirely and chase an All Blacks jersey — and he got one",
-    "clue_2": "Started his NRL career at a Sydney club before the Warriors recruited him to Auckland, where he found his spiritual home",
-    "clue_3": "Won the Dally M Medal — the NRL's highest individual honour — while playing for a club that had never won a Premiership",
-    "clue_4": "Became the beloved captain of the New Zealand Warriors, the competition's only trans-Tasman club",
-    "clue_5": "Warriors fullback famous for his sudden changes of direction at full speed and his near-impossible-to-tackle running style; his departure for rugby union left Auckland fans devastated",
-    "clue_6": "New Zealand Warriors fullback and 2018 Dally M Medallist who crossed codes to join the All Blacks, then returned to the NRL — his first name is a common Polynesian greeting",
+    "date": "2026-04-20",
+    "answer_player": "Robbie Farah",
+    "clue_1": "Won the NRL premiership in his third season of first-grade football",
+    "clue_2": "Set a record for most tackles in a State of Origin match with 63 in a single game",
+    "clue_3": "Won the Dally M Hooker of the Year award twice — in 2007 and 2010",
+    "clue_4": "His Lebanese heritage led him to represent a different country at the 2017 Rugby League World Cup",
+    "clue_5": "Captained his club for a club-record 148 matches — but his final years there were marked by public controversy and a messy departure",
+    "clue_6": "Wests Tigers hooker whose partnership with Benji Marshall was the cornerstone of the club's only NRL premiership — and who later represented Lebanon at the World Cup",
     "facts": [
-      "He started his NRL career at the South Sydney Rabbitohs before the Warriors convinced him to move to Auckland — making him a player who crossed the Tasman twice in his career",
-      "During his New Zealand rugby stint he actually made the All Blacks squad, becoming one of the very few players to play rugby league at NRL level and rugby union at Test level",
-      "When it was announced he was returning to the Warriors, it became the biggest rugby league news story in New Zealand for weeks — the Warriors' social media broke their engagement records"
+      "His record of 63 tackles in State of Origin Game II of 2012 is the most in a single Origin match",
+      "He played 303 NRL games, the vast majority for the Wests Tigers, where he became one of the club's greatest ever players despite them winning only one premiership",
+      "He was described by NRL.com as perhaps unlucky to be playing in the same generation as Cameron Smith — arguably the greatest dummy-half of all time"
     ]
   },
   {
     "game_number": 6,
-    "date": "2026-04-20",
-    "answer_player": "Johnathan Thurston",
-    "clue_1": "Considered by many rugby league experts the greatest footballer ever produced by Queensland — a claim that generates fierce debate to this day",
-    "clue_2": "Was cut by his first NRL club and told he was too small and too slow — he then went on to win the game's highest individual award a record four times",
-    "clue_3": "The Dally M Medal, awarded annually to the NRL's best player, has been won more times by this player than anyone else in history",
-    "clue_4": "Spent most of his career at a North Queensland club that had never won a Premiership when he arrived",
-    "clue_5": "The Cowboys' halfback, goal-kicker, and heartbeat — his field goal in extra time of the 2015 Grand Final is the most celebrated single kick in the history of the competition",
-    "clue_6": "North Queensland Cowboys halfback who won four Dally M Medals — a record that still stands — and kicked the winning field goal in the 2015 Grand Final; widely known by the initials JT",
-    "facts": [
-      "He was cut by the Canterbury Bulldogs after being told he was too small to make it in the NRL — the club that released him then spent the next decade watching him dominate the competition they rejected him from",
-      "His full first name is spelled 'Johnathan' — with an extra 'a' that almost no one notices — making misspellings of his name one of rugby league's most common written errors",
-      "He won four Dally M Medals across nine years (2005, 2007, 2011, 2013) — a spread suggesting sustained excellence rather than just a golden streak, and a record that no player in the modern era has come close to matching"
-    ]
-  },
-  {
-    "game_number": 7,
     "date": "2026-04-21",
-    "answer_player": "Billy Slater",
-    "clue_1": "One of the most prolific try-scorers the game has seen, his ability to ground the ball in the corner from what looked like impossible positions was almost a superpower",
-    "clue_2": "Born in Innisfail, a small Far North Queensland sugar-cane town — as unlikely an origin for a rugby league legend as you could imagine",
-    "clue_3": "Won multiple NRL Premierships and was named in the game's all-time Team of the Century",
-    "clue_4": "Spent his entire career at the Melbourne Storm, becoming the fullback standard by which all others were measured",
-    "clue_5": "Queensland's fullback for over a decade and the player most responsible for redefining what the position demanded — his instinct for finding space and reading the kick game was unmatched",
-    "clue_6": "Melbourne Storm fullback who scored 215 NRL tries, was controversially ruled out in the 2012 Grand Final in a decision still debated today, and now coaches the Queensland Maroons",
+    "answer_player": "Willie Mason",
+    "clue_1": "Born in Auckland but grew up in regional NSW — and chose to represent Australia over both New Zealand and Tonga despite being eligible for all three",
+    "clue_2": "Won the Clive Churchill Medal as best on ground in a Grand Final — one of the standout individual performances in a premiership decider of his era",
+    "clue_3": "After his NRL career he played rugby union in France for one of the Top 14's most famous clubs",
+    "clue_4": "Represented NSW in State of Origin 13 times and played 24 Tests for Australia as one of the most feared props of his generation",
+    "clue_5": "Became infamous during a 2006 international match for taunting the opposing team during their pre-match ceremony — and paid for it with a facial injury",
+    "clue_6": "Canterbury-Bankstown Bulldogs prop nicknamed 'Big Willie' who won the 2004 Clive Churchill Medal and played 292 NRL games across five clubs",
     "facts": [
-      "He was raised in Innisfail, a Far North Queensland town most famous for its banana and sugar-cane farms — a remarkable origin for someone who became the benchmark for NRL fullbacks",
-      "His controversial no-try ruling in the 2012 Grand Final — when replays seemed to show the ball grounding — is still one of the most discussed refereeing decisions in NRL history",
-      "He holds the record for the most tries scored by a fullback in NRL history, finishing with 215 — a tally that most wingers would envy"
-    ]
-  },
-  {
-    "game_number": 8,
-    "date": "2026-04-22",
-    "answer_player": "Greg Inglis",
-    "clue_1": "Changed positions mid-career — transitioning from one of the most dominant centres in the competition to a fullback — and somehow became even more dangerous in the new role",
-    "clue_2": "Of Aboriginal and Torres Strait Islander descent, he became one of the most prominent Indigenous athletes in the modern era of the game",
-    "clue_3": "Won the 2014 Premiership as captain of his club and was named Man of the Match in the Grand Final",
-    "clue_4": "Began his NRL career at the Melbourne Storm before spending his most celebrated years at the South Sydney Rabbitohs",
-    "clue_5": "Known universally by his initials GI, his combination of size, pace and the trademark 'GI Joe' dipping step made him near-impossible to tackle one-on-one in open space",
-    "clue_6": "South Sydney Rabbitohs captain known as GI, won the 2014 Premiership and was one of the most physically dominant players ever seen in the NRL — retired in 2019 to prioritise his mental health and wellbeing",
-    "facts": [
-      "He began his career at the Melbourne Storm as a centre, not a fullback — it wasn't until his South Sydney years that coaches decided to use his natural reading of the game in the back position",
-      "His 'GI Joe' step — a dipping left-shoulder movement at pace that wrong-footed defenders — became so imitated in junior football that coaches began teaching it as a formal skill",
-      "His decision to retire and speak publicly about his mental health struggles helped shift the way rugby league clubs approach player welfare — he became an unlikely advocate for the cause"
-    ]
-  },
-  {
-    "game_number": 9,
-    "date": "2026-04-23",
-    "answer_player": "Daly Cherry-Evans",
-    "clue_1": "Born and raised in Rockhampton, central Queensland — about as far from the Manly beachside culture he would eventually represent as you can get",
-    "clue_2": "His most famous off-field moment involved a contract saga that left an entire NRL club stunned and generated weeks of media coverage",
-    "clue_3": "Won the 2011 Premiership in just his first full season as an NRL starter",
-    "clue_4": "Has played his entire career at the Manly Sea Eagles, becoming the definitive one-club man of his generation",
-    "clue_5": "Sea Eagles captain and Queensland's long-serving halfback, famous for his kicking game and ability to control tempo — and for turning down more money to stay loyal to a single club",
-    "clue_6": "Manly Sea Eagles one-club halfback and QLD Origin captain, won the 2011 Premiership and famously chose to stay at Manly over a bigger offer from another club — universally known as DCE",
-    "facts": [
-      "In 2014, he verbally agreed to join the Gold Coast Titans, then withdrew from the agreement and paid compensation to stay at Manly — a saga that dominated NRL headlines for weeks and led to rule changes around verbal contracts",
-      "Despite being a born-and-raised Queenslander, he spent his entire NRL career at a club based on Sydney's northern beaches — one of the most culturally contrasting one-club stories in NRL history",
-      "For most of his early prime, he was blocked from regular Queensland Origin selection because Johnathan Thurston held the halfback jersey — making his eventual ascension to QLD captain a long time coming"
-    ]
-  },
-  {
-    "game_number": 10,
-    "date": "2026-04-24",
-    "answer_player": "Andrew Johns",
-    "clue_1": "Holds a collection of records in his position that has led most serious analysts to place him above any other player who has ever laced up boots in the NRL",
-    "clue_2": "Despite being considered the greatest player in the history of the game, he spent his entire career at a club that has won only a single Premiership",
-    "clue_3": "The 1997 Premiership he won remains the Newcastle Knights' only title — and he was the creative force behind every moment of it",
-    "clue_4": "Retired earlier than expected due to injury and personal matters that were only fully understood by the public years after his career ended",
-    "clue_5": "NSW halfback known simply as Joey to everyone in the game — his combination of vision, passing, kicking, leadership and sheer competitiveness set a standard that no halfback has since matched",
-    "clue_6": "Newcastle Knights halfback and universal choice as the greatest NRL player of all time, won the 1997 Premiership; his epilepsy diagnosis was kept private throughout his career and only revealed after he retired",
-    "facts": [
-      "He played the latter years of his career while managing epilepsy — a condition he deliberately kept private, meaning his teammates, opponents and the public were unaware he was managing a serious health condition while winning Dally M Medals",
-      "After retiring, he disclosed personal struggles with substances during his playing days — a revelation that shocked the rugby league world given how composed and dominant he had appeared throughout his career",
-      "His brother Matthew Johns also played NRL and was his Knights teammate for several years — making them one of the great sibling combinations in the history of the competition"
-    ]
-  },
-  {
-    "game_number": 11,
-    "date": "2026-04-25",
-    "answer_player": "Laurie Daley",
-    "clue_1": "Debuted as a teenager for the Canberra Raiders and didn't hang up his boots until he had won three Premierships and become NSW's most celebrated leader of his era",
-    "clue_2": "Grew up in Junee, a small NSW country town that produced several elite NRL players — an unlikely nursery for a game dominated by the big cities",
-    "clue_3": "Won three NSWRL and ARL Premierships with the same club across six years, cementing a dynasty that transformed rugby league in the nation's capital",
-    "clue_4": "Became NSW's spiritual captain during the toughest Origin period in the Blues' history, leading through consecutive series losses with dignity",
-    "clue_5": "Canberra Raiders five-eighth who combined genuine toughness with elite footballing intelligence — the complete number 6 who commanded his team from the back of the ruck for over a decade",
-    "clue_6": "The Canberra Raiders' greatest ever player, three-time Premiership winner (1989, 1991, 1994), and NSW captain throughout the 1990s — his first name is a variation of Lawrence",
-    "facts": [
-      "He comes from Junee, a small NSW country town that produced a remarkable concentration of NRL talent relative to its size — a phenomenon that has never been adequately explained",
-      "Despite being widely considered the best five-eighth in the competition for stretches of the early 1990s, he never won the Dally M Player of the Year award — one of the award's most notable oversights",
-      "He was NSW captain during a period when Queensland dominated State of Origin, yet he never reduced his effort or commitment — his leadership during a losing era earned more respect than many winning captains received"
-    ]
-  },
-  {
-    "game_number": 12,
-    "date": "2026-04-26",
-    "answer_player": "Paul Gallen",
-    "clue_1": "One of the most polarising players of his era — supporters loved his will-to-win and never-say-die attitude, while opponents and rival fans had a very different opinion",
-    "clue_2": "Born in Cessnock, a Hunter Valley mining town that has quietly produced two of the toughest players in NRL history",
-    "clue_3": "Won the only Premiership in his club's then 49-year history, finally ending one of the game's longest title droughts",
-    "clue_4": "After retiring from rugby league, pursued a second professional sporting career that had never previously been attempted by a player of his profile",
-    "clue_5": "Cronulla Sharks captain and NSW leader through a turbulent Origin era — the sort of player who seemed to will teams to victory through sheer force of competitive aggression",
-    "clue_6": "Cronulla Sharks captain who led the club to their historic 2016 Premiership after a 49-year wait, captained NSW Origin for years, and became a professional heavyweight boxer after retiring from rugby league",
-    "facts": [
-      "He was born in Cessnock — the same Hunter Valley mining town that produced Andrew Johns, meaning two of the NRL's toughest-minded players came from the same small regional city",
-      "As a professional boxer after his NRL career, he defeated opponents decades younger than him — demonstrating a physical conditioning that was genuinely elite even in his 40s",
-      "Despite being NSW's most important forward for years and captaining the Sharks to a Premiership, he was consistently overlooked for Australian selection — a slight that supporters felt was never properly explained by selectors"
-    ]
-  },
-  {
-    "game_number": 13,
-    "date": "2026-04-27",
-    "answer_player": "Shaun Johnson",
-    "clue_1": "Represented New Zealand from a young age and became the Kiwis' most electrifying player across multiple World Cups, but it was his club career that generated true cult status",
-    "clue_2": "Was renowned for turning matches single-handedly with moments of individual brilliance that left coaches, commentators and opponents utterly speechless",
-    "clue_3": "Became a beloved figure at an NRL club that had never won a Premiership — earning the devotion usually reserved for title-winning heroes",
-    "clue_4": "Briefly left his Auckland club to play for a Sydney team, but the Warriors eventually brought him back — and the reunion was celebrated like a rock star's return",
-    "clue_5": "Warriors halfback whose dancing feet and unpredictable decision-making made him one of the most purely entertaining players to watch in the NRL over more than a decade",
-    "clue_6": "New Zealand Warriors cult hero halfback, multiple Dally M Halfback of the Year winner, had a brief stint at the Sharks before returning to Auckland — his first and last names are both among the most common in the English language",
-    "facts": [
-      "His mother is a former elite-level netball player in New Zealand — making him the product of a genuinely multi-sport elite athletic family",
-      "Warriors fans consistently vote him among the club's greatest players despite him winning no Premierships — an unusual honour for someone whose individual career statistics were the club's entire legacy for many years",
-      "He was courted by New Zealand rugby union as a junior before choosing rugby league — a decision that shaped the Warriors' entire identity for the better part of a decade"
-    ]
-  },
-  {
-    "game_number": 14,
-    "date": "2026-04-28",
-    "answer_player": "Tom Trbojevic",
-    "clue_1": "One of three brothers who have all played NRL — a family achievement that has occurred only a handful of times in the modern era of the competition",
-    "clue_2": "His Croatian double-barrelled surname is so difficult to pronounce that commentators have been known to practise it for minutes before a match",
-    "clue_3": "Won the Dally M Medal in 2021 in what was arguably the most dominant individual season by a fullback in recent NRL history",
-    "clue_4": "Has spent his entire career at the Manly Sea Eagles alongside his brother",
-    "clue_5": "NSW Blues fullback capable of scoring from anywhere on the field — his pace, footwork and football intelligence in open space have drawn comparisons to the greatest players in the position's history",
-    "clue_6": "Manly Sea Eagles fullback and 2021 Dally M Medal winner, plays alongside his brother Jake — the Trbojevic family's Croatian surname has defeated broadcasters and fans for years",
-    "facts": [
-      "He, his brother Jake, and their brother Ben have all played NRL — the Trbojevics are one of the few genuine three-brother combinations in the history of the modern competition",
-      "His surname is correctly pronounced 'Tr-BOY-ev-ich' — a pronunciation so counterintuitive that even long-time NRL fans frequently get it wrong, spawning endless social media debates",
-      "Despite a significant injury history that would have ended lesser careers, he consistently returned at his peak — leading some analysts to argue he is the best player in the competition per minute played when fully fit"
-    ]
-  },
-  {
-    "game_number": 15,
-    "date": "2026-04-29",
-    "answer_player": "Sam Burgess",
-    "clue_1": "Made the extraordinary decision to leave the NRL at the peak of his powers to play a different form of rugby for another country — a gamble that divided rugby league fans worldwide",
-    "clue_2": "Arrived in Australia from England and won a Premiership in his very first NRL season — an achievement almost without parallel in the game's history",
-    "clue_3": "Played the 2014 Grand Final with a fractured cheekbone sustained in the first 10 minutes, hiding the injury from coaches and medical staff for the remainder of the match",
-    "clue_4": "Returned to South Sydney after his rugby union adventure and captained the Rabbitohs for several seasons",
-    "clue_5": "South Sydney Rabbitohs' English captain whose 2014 Grand Final performance through a broken face became one of the defining moments of modern NRL toughness",
-    "clue_6": "South Sydney Rabbitohs captain who won the 2014 Premiership in his debut NRL season and played the Grand Final with a fractured eye socket — three of his brothers (George, Tom, Luke) also played professional rugby league in Australia",
-    "facts": [
-      "He played the entire 2014 Grand Final with a fractured cheekbone and broken eye socket after a high tackle in the opening minutes — the injury was not disclosed publicly until well after the match ended",
-      "He left the NRL to play rugby union for Bath in England and was selected for England's 2015 Rugby World Cup squad — but his union performances were widely considered below his NRL standard, with critics noting he looked uncomfortable in the 15-man game",
-      "Three of his brothers — George, Tom, and Luke — also played professional rugby league in Australia, with George and Tom also at the Rabbitohs, making the Burgess family one of the most remarkable rugby league dynasties in the trans-Tasman game"
-    ]
-  },
-  {
-    "game_number": 16,
-    "date": "2026-04-30",
-    "answer_player": "Brad Fittler",
-    "clue_1": "A naturally gifted athlete who played the demanding number 6 jersey with a rare combination of physicality and creative intelligence that defined the five-eighth position for a generation",
-    "clue_2": "Won Premierships at two different clubs — first as a teenager, and again almost a decade later — bookending a career of sustained excellence",
-    "clue_3": "Was NSW's captain during some of the most difficult years in the Blues' State of Origin history, but his personal performances were rarely the problem",
-    "clue_4": "Spent his most celebrated years at the Sydney Roosters, where his creativity and leadership made them one of the competition's dominant sides",
-    "clue_5": "Known as Freddy throughout the game, his relaxed off-field personality made him universally liked — which made his ruthlessness as a competitor even more surprising to opponents",
-    "clue_6": "Sydney Roosters five-eighth known as Freddy, won the 1991 Premiership with the Panthers and the 2002 Premiership with the Roosters, and is now the NSW State of Origin head coach",
-    "facts": [
-      "He won the 1991 Premiership as a teenager with the Penrith Panthers before winning another in 2002 with the Roosters — a span of 11 years between titles that speaks to his exceptional longevity at the elite level",
-      "As NSW State of Origin coach, he is credited with transforming the Blues' culture and selection philosophy, turning a team that had lost seven consecutive series into a consistent series winner",
-      "Despite being considered one of the greatest five-eighths in NRL history, he was never awarded the Dally M Player of the Year — a striking omission that analysts and peers have noted repeatedly over the decades"
-    ]
-  },
-  {
-    "game_number": 17,
-    "date": "2026-05-01",
-    "answer_player": "Cameron Murray",
-    "clue_1": "Debuted for the Rabbitohs as a teenager and was handed the club captaincy in his early 20s — one of the youngest players ever to lead one of the NRL's oldest and most storied clubs",
-    "clue_2": "Despite being born in Canberra, he became the face of South Sydney rugby league culture — a club over 1,000 kilometres from where he grew up",
-    "clue_3": "Was considered the best second-rower in Australia while still in his early 20s, earning representative honours at both state and international level",
-    "clue_4": "Has spent his entire career at the South Sydney Rabbitohs without ever seeking a move to another club",
-    "clue_5": "NSW Blues forward and Australian representative whose combination of defensive intensity, carrying ability and leadership made him the complete modern second-rower — a player coaches describe as the one they'd build a team around",
-    "clue_6": "South Sydney Rabbitohs captain and Australian representative, regarded as one of the best forwards of his generation — was handed the captaincy aged 22, one of the youngest in the club's history",
-    "facts": [
-      "He was born in Canberra — not a traditional NRL heartland — and grew up over 1,000 km from the South Sydney suburb he has since come to represent in rugby league",
-      "He was named Rabbitohs captain at 22, one of the youngest players to hold that role at a club founded in 1908 — a significant honour given the Rabbitohs' long and storied history",
-      "Despite his individual excellence, he has rarely attracted the individual awards that other high-profile forwards collect — a reflection of how comprehensively he performs every part of the game rather than excelling in one flashy statistic"
-    ]
-  },
-  {
-    "game_number": 18,
-    "date": "2026-05-02",
-    "answer_player": "Ryan Papenhuyzen",
-    "clue_1": "Regularly records some of the highest top-end speed readings in the NRL — remarkable for a fullback, whose starting position typically disadvantages them in pure sprint data",
-    "clue_2": "His career has been interrupted by multiple serious knee injuries, making his brilliance even more striking given how rarely he has been fully fit",
-    "clue_3": "Won NRL Premierships and produced individual performances in rep football that placed him alongside the all-time greats of his position",
-    "clue_4": "Plays for the Melbourne Storm — a club with a long tradition of developing elite fullbacks",
-    "clue_5": "Storm's electric number 1, whose combination of acceleration off the mark, unpredictable footwork and long-range try-scoring ability puts him in a category of one when fully fit",
-    "clue_6": "Melbourne Storm fullback famous for his electrifying speed and elusive running style, has won Premierships with the club — his Dutch-origin double-barrelled surname is one of the longest in NRL history",
-    "facts": [
-      "His surname has Dutch origins — a genuinely unusual background in a competition dominated by Australian, Pacific Island and UK heritage players, making him an ethnic curiosity in the sport",
-      "Despite his fame in the NRL, he grew up in Victoria — a state that produces significantly fewer elite NRL players than NSW and Queensland, where the game is most deeply embedded in local culture",
-      "When fit, his tackle-break rate per game is among the highest recorded for a fullback in the NRL — suggesting that defenders genuinely cannot stop him legally when he is running at his best"
-    ]
-  },
-  {
-    "game_number": 19,
-    "date": "2026-05-03",
-    "answer_player": "Nicho Hynes",
-    "clue_1": "Few NRL careers have transformed as dramatically as his — from overlooked utility reserve grader to the competition's best player in barely two seasons at a new club",
-    "clue_2": "Grew up in Queensland and was always considered a creative, instinctive footballer — just never specifically as a halfback",
-    "clue_3": "Won the Dally M Medal as the NRL's Player of the Year in just his second full season as a starting halfback — a timeline that shocked the entire competition",
-    "clue_4": "Left Melbourne Storm where he was stuck in reserve grade and reinvented himself completely at the Cronulla Sharks",
-    "clue_5": "Sharks halfback who surprised the competition by winning the Dally M Medal after years of being considered a useful utility back rather than an elite playmaker in any specific position",
-    "clue_6": "Cronulla Sharks halfback who won the 2022 Dally M Medal after transitioning from a utility role at Melbourne Storm — one of the most remarkable career reinventions in recent NRL history",
-    "facts": [
-      "He played over 30 NRL games as a utility back at Melbourne Storm without ever establishing himself as a first-choice starter in any position — making his Dally M Medal two seasons later at the Sharks all the more extraordinary",
-      "The Sharks signed him on a deal that was considered a modest punt at the time — within two seasons, his market value had multiplied several times over after winning the game's best player award",
-      "He was blocked from Queensland Origin selection for years by more established halfbacks — his ascension to a regular Origin jersey only happened after his remarkable form at the Sharks made him impossible to ignore"
-    ]
-  },
-  {
-    "game_number": 20,
-    "date": "2026-05-04",
-    "answer_player": "David Fifita",
-    "clue_1": "Born into one of NRL's most athletic families — his father was a professional player, and his brother also plays in the top grade, making the Fifita name synonymous with power in the competition",
-    "clue_2": "Commanded one of the largest contracts ever paid to a player his age when he chose to leave Brisbane for the Gold Coast",
-    "clue_3": "Won multiple Dally M Back-Rower of the Year awards and has been selected for Australian representative squads",
-    "clue_4": "Left the Brisbane Broncos to join the Gold Coast Titans on a landmark deal that made national headlines",
-    "clue_5": "Gold Coast Titans powerhouse who combines the size of a prop with the speed of a winger — the sort of combination that creates complete defensive panic when he receives the ball in space",
-    "clue_6": "Gold Coast Titans and Queensland back-rower, one of the most physically gifted players in NRL, son of former Broncos prop Arthur Fifita and brother of Tino Fifita — arguably the most explosive second-rower in the competition's history",
-    "facts": [
-      "His father Arthur Fifita played for the Brisbane Broncos — meaning David has already far surpassed his father's career profile while playing against teams his father once represented",
-      "His move from the Broncos to the Titans was reportedly worth around $1 million per season — making him one of the highest-paid players in the competition at the age of 21, before he had even won a Premiership",
-      "Despite being listed officially as a back-rower, he has occasionally played in the prop position and been just as dominant — raising genuine questions among coaches about how to best categorise and utilise his unique physical profile"
-    ]
-  },
-  {
-    "game_number": 21,
-    "date": "2026-05-05",
-    "answer_player": "Cooper Cronk",
-    "clue_1": "Became famous not for flamboyance but for something rarer — the ability to consistently do exactly the right thing at the right moment, making him perhaps the most reliable clutch performer of his generation",
-    "clue_2": "Made a highly publicised move from Melbourne to Sydney at the end of 2017, motivated at least in part by a personal reason that had nothing to do with football",
-    "clue_3": "Won four NRL Premierships across two clubs in two different cities — a feat almost unique in the modern era",
-    "clue_4": "Spent 12 seasons at the Melbourne Storm before finishing his career at the Sydney Roosters",
-    "clue_5": "Queensland halfback whose kicking game, defensive commitment and clutch decision-making were as important as his attack — the complete small man in an era when creative halves were often accused of defensive fragility",
-    "clue_6": "Melbourne Storm and Sydney Roosters halfback, four-time Premiership winner, who played the entire 2018 Grand Final with a partially separated shoulder and still won the title — arguably the greatest individual Grand Final performance in the modern era",
-    "facts": [
-      "He moved from Melbourne to Sydney primarily to be closer to his then-fiancée, TV presenter Tara Rushton — a very public 'following love' decision that surprised the NRL world and generated intense media coverage",
-      "He had surgery on his partially separated shoulder the morning after the 2018 Grand Final — having kept the full extent of the injury secret from teammates, coaches and medical staff during the match",
-      "Despite winning four Premierships and being considered by teammates as their most critical player, he never won the Dally M Player of the Year award — a reflection of how the award tends to reward individual brilliance over consistent excellence"
-    ]
-  },
-  {
-    "game_number": 22,
-    "date": "2026-05-06",
-    "answer_player": "Benji Marshall",
-    "clue_1": "Produced what many consider the single most iconic individual act in NRL Grand Final history — a moment that has been replayed in slow motion on highlight reels for two decades",
-    "clue_2": "Of Māori heritage, he grew up in Whakatane, a small North Island New Zealand town, before moving to Australia where he became a rugby league legend",
-    "clue_3": "Won the 2005 Premiership with his club in just his second full NRL season — as a 19-year-old",
-    "clue_4": "Had stints at numerous clubs across his long career, but always returned to the Wests Tigers, whom he went on to coach",
-    "clue_5": "The Wests Tigers' most iconic player, his no-look flick pass to Pat Richards in the dying moments of the 2005 Grand Final is the most replayed individual moment in the history of the competition's decider",
-    "clue_6": "Wests Tigers five-eighth and New Zealand representative, won the 2005 Premiership as a 19-year-old with a famous Grand Final flick pass — later became the Tigers' head coach",
-    "facts": [
-      "He was born in Whakatane, New Zealand and moved to Australia as a child — his Māori heritage and New Zealand upbringing gave him a cultural perspective that set him apart from most of his Australian-born contemporaries",
-      "The famous flick pass to Pat Richards in the 2005 Grand Final was so audacious and unexpected that even Richards, the recipient, admitted he was surprised the ball reached him — it was a no-look pass over a defender that only Marshall could have conceived",
-      "His playing career stretched across an extraordinary number of clubs in his later years — the Tigers, Warriors, Broncos, Titans, Dragons, Balmain — before he returned to the Tigers as head coach, completing one of rugby league's more unusual coaching origin stories"
-    ]
-  },
-  {
-    "game_number": 23,
-    "date": "2026-05-07",
-    "answer_player": "Latrell Mitchell",
-    "clue_1": "Has eligibility to represent multiple nations internationally due to his heritage — something that became a point of discussion whenever international selection windows opened",
-    "clue_2": "Was identified as a generational sporting talent from a young age in the NSW mid-north coast town of Taree — with multiple codes competing to sign him as a junior",
-    "clue_3": "Won the 2019 Premiership with a Sydney club before making a controversial high-profile departure",
-    "clue_4": "Moved from the Sydney Roosters to the South Sydney Rabbitohs in one of the most discussed transfers in recent NRL history",
-    "clue_5": "South Sydney fullback whose powerful frame and burning competitive streak made him one of the most physically imposing backs in the competition — and one of the most controversial after a State of Origin incident that resulted in a suspension",
-    "clue_6": "South Sydney Rabbitohs fullback and NSW representative, won the 2019 Premiership with the Roosters before moving to Redfern — an Aboriginal player from Taree who converted from dominant centre to fullback",
-    "facts": [
-      "He was born and raised in Taree, a regional NSW city on the mid-north coast — his Aboriginal heritage makes him one of the most prominent Indigenous figures in the current game, a role he has embraced publicly",
-      "He was recruited from Taree after scouts identified him playing multiple sports including rugby union — the NRL beat competing codes to sign him, a victory that proved decisive for the competition's talent pipeline",
-      "His transfer from the Roosters to the Rabbitohs was described by some NRL commentators as the biggest Sydney club switch since Greg Inglis left Melbourne for Redfern — creating intense storylines in the fiercest local rivalry"
-    ]
-  },
-  {
-    "game_number": 24,
-    "date": "2026-05-08",
-    "answer_player": "Gorden Tallis",
-    "clue_1": "Known by a nickname that perfectly captured his playing style — a force of nature on the field whose intensity left teammates in awe and opponents in genuine fear",
-    "clue_2": "Grew up in rural Queensland and arrived at the Brisbane Broncos as a raw, hard-to-manage talent who needed direction before becoming the club's most ferocious leader",
-    "clue_3": "Won multiple Premierships with the Brisbane Broncos during the club's most dominant era of the late 1990s and early 2000s",
-    "clue_4": "Became Queensland's captain and the spiritual enforcer of a Maroons team that dominated State of Origin series across his era",
-    "clue_5": "The Broncos' enforcer turned captain, 'The Raging Bull' was capable of changing the momentum of an entire match purely through the physical intensity of a single tackle or carry",
-    "clue_6": "Brisbane Broncos forward known as 'The Raging Bull', Queensland Origin captain and multiple Premiership winner — one of the most feared and intimidating forwards of the late 1990s and early 2000s",
-    "facts": [
-      "He grew up partly in Rockhampton and was well known as a physically confrontational kid before rugby league gave him an outlet — coaches often described managing him early in his career as genuinely challenging",
-      "Despite his ferocious on-field reputation, he became a prominent advocate for mental health awareness after his career ended, speaking candidly about personal struggles that humanised a persona the public had always assumed was impenetrable",
-      "His nickname 'The Raging Bull' became so widely associated with him that even opponents who feared him on the field used it affectionately — a rare example of a player whose intimidating nickname was used with genuine admiration"
-    ]
-  },
-  {
-    "game_number": 25,
-    "date": "2026-05-09",
-    "answer_player": "Craig Fitzgibbon",
-    "clue_1": "Spent his entire playing career at a single Sydney club, gave over a decade of consistent service, then transitioned directly into head coaching — one of rugby league's cleanest stories of loyalty and professional progression",
-    "clue_2": "Was known throughout the competition as a player who rarely made headlines for individual moments, but whose reliability and consistency made him one of the most valued players of his era",
-    "clue_3": "Won back-to-back Premierships in 2002 and 2003 as part of one of the competition's most dominant club dynasties",
-    "clue_4": "Made over 200 NRL appearances for the Sydney Roosters before retiring",
-    "clue_5": "NSW and Australian representative second-rower whose defensive efficiency, quiet leadership and professional approach were the foundation of some of the Roosters' greatest teams — a player coaches loved, headlines ignored",
-    "clue_6": "Sydney Roosters second-rower who won back-to-back Premierships in 2002 and 2003 and is now the Cronulla Sharks head coach — one of the few players to play their entire career at one club and then take charge of a rival",
-    "facts": [
-      "He is one of the very few players in NRL history who played their entire career at one club and then became head coach of a rival — he played exclusively for the Roosters, then took the Cronulla Sharks' head coaching role",
-      "Despite winning two Premierships and being a NSW and Australian representative, he was never selected for an Australian tour overseas — a consistent oversight that teammates and coaches quietly acknowledged was unjust",
-      "His coaching reputation has been built almost entirely on culture and defensive structure rather than attacking innovation — values that mirror his own playing career, where reliability and solidity were always his calling cards"
-    ]
-  },
-  {
-    "game_number": 26,
-    "date": "2026-05-10",
-    "answer_player": "Wendell Sailor",
-    "clue_1": "Made a dramatic mid-career code switch to pursue a Wallabies jersey, leaving the NRL at a time when he was considered one of the most powerful and complete wingers in the competition",
-    "clue_2": "Brought a bodybuilder's physique to a position typically occupied by lean speedsters — combining genuine size with the acceleration to score from anywhere along the wing",
-    "clue_3": "Won multiple Premierships with the Brisbane Broncos before departing the code",
-    "clue_4": "His return to rugby league after his union stint was heavily anticipated but proved difficult — he was no longer the player who had left",
-    "clue_5": "Broncos winger who used his combination of power and speed to run through defenders rather than around them — the sort of player who made opposition coaches specifically gameplan for his side of the field",
-    "clue_6": "Brisbane Broncos winger who won multiple Premierships before crossing codes to play rugby union for the Wallabies — his surname describes a profession found on ships, and his career crossed the codes as freely as any sailor crosses seas",
-    "facts": [
-      "During his rugby union career, he played Sevens rugby for Australia — a format that suited his power and pace, and where he was more effective than in the 15-man game",
-      "His return to rugby league after his union stint was at a different club from the one he left — the Broncos had moved on during his years away, forcing him to finish his career at other NRL sides",
-      "He is one of only a handful of players to have won NRL Premierships and also represented Australia in rugby union — a dual-code international achievement that very few have managed at the elite level of both sports"
-    ]
-  },
-  {
-    "game_number": 27,
-    "date": "2026-05-11",
-    "answer_player": "Jarome Luai",
-    "clue_1": "Has Samoan heritage and was eligible to represent Samoa internationally, but chose NSW in State of Origin — becoming a cornerstone of the Blues' most dominant Origin era in decades",
-    "clue_2": "Grew up in Penrith as a lifelong Panthers supporter before becoming one of the greatest players in the club's history — perhaps the purest 'living the dream' story in modern NRL",
-    "clue_3": "Was part of arguably the most dominant three-year run in NRL history, winning three consecutive Premierships with the same club",
-    "clue_4": "Plays as five-eighth alongside a halfback who forms one of the most feared playmaker partnerships the competition has ever seen",
-    "clue_5": "Panthers five-eighth whose explosive footwork, fast pass and fierce competitor's edge drove Penrith to three consecutive Premierships between 2021 and 2023 — the kind of sustained dominance that hadn't been seen since the Brisbane Broncos",
-    "clue_6": "Penrith Panthers five-eighth and NSW Blues player, three-time consecutive Premiership winner (2021-2023) — a Polynesian playmaker from Penrith whose first name is a variation of Jerome",
-    "facts": [
-      "He grew up in Penrith — the suburb where the Panthers are based — meaning he was quite literally living the boyhood dream when he won multiple Premierships for his hometown club as an adult",
-      "He is eligible to represent Samoa internationally through his heritage, but his decision to represent NSW in State of Origin means he became part of the Blues' resurgent era — a choice that effectively made him unavailable for Samoa's growing international programme",
-      "Three consecutive NRL Premierships with the Panthers (2021-2023) placed him in elite company historically — only a small number of players in NRL's modern era have won three straight titles, and doing so as a starting five-eighth is even rarer"
-    ]
-  },
-  {
-    "game_number": 28,
-    "date": "2026-05-12",
-    "answer_player": "Andrew Fifita",
-    "clue_1": "Made one of the most significant decisions in the history of international rugby league when he chose to represent a Pacific Island nation over Australia",
-    "clue_2": "Raised in Sydney's western suburbs and came through the NRL system as a typical Australian-born talent — which made his eventual international choice all the more surprising to the rugby league establishment",
-    "clue_3": "Won the 2016 Premiership with the Cronulla Sharks, ending the club's long wait and playing a critical physical role in their campaign",
-    "clue_4": "Was considered one of the most destructive front-rowers in the competition during the mid-2010s, renowned for his power carries and offloading ability",
-    "clue_5": "Sharks enforcer whose decision to represent Tonga in 2017 inspired a wave of Pacific Islander players to embrace their heritage over Australian eligibility — fundamentally changing the face of international rugby league",
-    "clue_6": "Cronulla Sharks prop and 2016 Premiership winner who famously chose to represent Tonga over Australia — a decision that became a watershed moment for Pacific Island representation and inspired many others to follow his lead",
-    "facts": [
-      "His 2017 decision to represent Tonga over Australia is widely credited as the catalyst that transformed Tonga into a genuine international rugby league force — within two years, Tonga were upsetting top-ranked nations at the World Cup",
-      "He is related to David Fifita, the Gold Coast back-rower — the Fifita family name has become one of the most powerful in the NRL, synonymous with physical dominance and Polynesian athleticism",
-      "Despite his enormous physical gifts and key role in a Premiership-winning side, he was consistently overlooked for Australian selection before his Tonga decision — an irony that was not lost on his supporters, given how quickly Australia expressed interest once he appeared lost to them"
-    ]
-  },
-  {
-    "game_number": 29,
-    "date": "2026-05-13",
-    "answer_player": "Ricky Stuart",
-    "clue_1": "Known throughout the game by the nickname 'Sticky' — a moniker that followed him from playing days through decades of coaching, making him one of the most recognisable figures in NRL history",
-    "clue_2": "Grew up in the ACT and became the heartbeat of the Canberra Raiders' most successful era — a period when the nation's bureaucratic capital became an unlikely centre of the rugby league universe",
-    "clue_3": "Won three NSWRL and ARL Premierships as the technical architect of his club's most celebrated dynasty",
-    "clue_4": "Has spent virtually his entire professional life associated with the Canberra Raiders — first as their greatest halfback, now as their long-serving head coach",
-    "clue_5": "Raiders halfback famous for his corkscrew step, pinpoint kicking game and leadership under pressure — the player who drove three Premiership campaigns and has never truly left the club he defined",
-    "clue_6": "Canberra Raiders halfback who won three Premierships (1989, 1991, 1994) and is now their long-serving head coach — one of very few people to have spent multiple decades as both a star player and senior coach of the same NRL club, universally known as Sticky",
-    "facts": [
-      "He has now spent more years coaching the Canberra Raiders than most NRL coaches spend at a single club in their entire careers — making his connection to Canberra one of the most enduring in any Australian professional sport",
-      "His nickname 'Sticky' reportedly originated from his tendency to hold the ball longer than other halfbacks before releasing it — making defenders commit before he finally passed, a technical quirk that was simultaneously maddening for opponents and brilliant in effect",
-      "He grew up in Canberra at a time when the city had almost no rugby league culture at all — the Raiders were founded in 1982, just years before he came through the system, making his timing almost perfect for a city and a club that were both finding their identity simultaneously"
-    ]
-  },
-  {
-    "game_number": 30,
-    "date": "2026-05-14",
-    "answer_player": "Steve Price",
-    "clue_1": "A rugged and relentless prop whose entire value to a team came from work ethic, durability and leadership — the kind of player whose impact never shows up in the highlight packages but is felt in every victory",
-    "clue_2": "Came through the Brisbane Broncos system but found his true professional home across the Tasman, where he became a beloved captain",
-    "clue_3": "Captained the New Zealand Warriors for several seasons, providing the kind of leadership consistency that the club had rarely enjoyed in its history",
-    "clue_4": "Represented New Zealand internationally throughout his career despite having developed entirely within the Australian club system",
-    "clue_5": "Warriors captain and Kiwis prop whose reliable carries and consistent work at dummy-half made him the backbone of a team that needed exactly his type of no-nonsense leadership",
-    "clue_6": "New Zealand Warriors captain and Kiwis prop who also played for the Brisbane Broncos and St George Illawarra Dragons — a Kiwi-eligible hard-working leader who gave the Warriors the stability they had long lacked",
-    "facts": [
-      "He was one of the few players to come through the Brisbane Broncos system — one of the most celebrated clubs in NRL history — and have a more celebrated career elsewhere, becoming a genuine icon at the New Zealand Warriors instead",
-      "During his captaincy of the Warriors, he became one of the most respected leaders in the NRL not for individual brilliance but for culture and consistency — qualities that the Warriors had historically struggled to sustain",
-      "He represented New Zealand despite having been entirely developed in the Australian rugby league system — a reminder that the NRL has always drawn from both sides of the Tasman, and that New Zealand rugby league heritage runs deep even in players raised in Australia"
-    ]
-  },
-  {
-    "game_number": 31,
-    "date": "2026-05-15",
-    "answer_player": "Mark Gasnier",
-    "clue_1": "Walked away from the NRL at age 26 to play a different code in a foreign country — leaving behind one of the most admired back lines in the competition just as it was approaching its peak",
-    "clue_2": "Was regarded during his prime as the most complete centre in Australia, combining finishing ability, pace and defensive commitment in a way that rarely appears in the same player",
-    "clue_3": "Won the 2010 Premiership with his club after returning from his European adventure — the club's first title in over 30 years",
-    "clue_4": "Spent most of his career at the St George Illawarra Dragons, becoming one of the most exciting backs the club had produced since its legendary era",
-    "clue_5": "Dragons centre whose return from rugby union was perfectly timed — his pace and finishing ability were crucial in the 2010 Premiership campaign and Grand Final, proving the experiment abroad had not diminished his elite-level skills",
-    "clue_6": "St George Illawarra Dragons centre who left the NRL to play rugby union in France before returning to help win the 2010 Premiership — his French-sounding surname made his European adventure seem almost predestined",
-    "facts": [
-      "He left the NRL to play rugby union for Stade Français in Paris — an unusual choice of both code and country that saw him living in one of Europe's most glamorous cities while his former NRL teammates continued competing for Premierships",
-      "He returned from France just in time for the Dragons' 2010 campaign — the club's first Premiership in 31 years — making his comeback one of the better-timed decisions in NRL history",
-      "His French-sounding surname is actually of French origin — a heritage that made his decision to play in France feel less like a random overseas experiment and more like a genuine connection to the country where his name originates"
+      "In December 2006 Mason trialled with the New York Jets NFL team — the Jets coach said he was 'a pretty dynamic guy' but a contract was never offered",
+      "He represented Tonga at the 2000 Rugby League World Cup through his mother's heritage — before later qualifying for and representing Australia",
+      "The famous 2004 Bulldogs Grand Final squad that Mason was part of included Sonny Bill Williams, Johnathan Thurston, and Brent Sherwin — 15 of the 17 players had come through the same tough junior trainer's program"
     ]
   }
 ]

@@ -5,23 +5,27 @@ import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
-  title: 'Set For Six — Champions',
-  description: 'Meet the fastest NRL guessers. Who cracked it first today?',
-  openGraph: {
+export async function generateMetadata() {
+  const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+  const cardUrl = `https://www.setforsix.com/api/champion?date=${todayAEST}`;
+  return {
     title: 'Set For Six — Champions',
     description: 'Meet the fastest NRL guessers. Who cracked it first today?',
-    url: 'https://www.setforsix.com/champion',
-    images: [{ url: 'https://www.setforsix.com/api/og', width: 1200, height: 630, alt: 'Set For Six Champions' }],
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Set For Six — Champions',
-    description: 'Meet the fastest NRL guessers. Who cracked it first today?',
-    images: ['https://www.setforsix.com/api/og'],
-  },
-};
+    openGraph: {
+      title: 'Set For Six — Champions',
+      description: 'Meet the fastest NRL guessers. Who cracked it first today?',
+      url: 'https://www.setforsix.com/champion',
+      images: [{ url: cardUrl, width: 1200, height: 630, alt: "Today's Set For Six champion" }],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Set For Six — Champions',
+      description: 'Meet the fastest NRL guessers. Who cracked it first today?',
+      images: [cardUrl],
+    },
+  };
+}
 
 function formatSeconds(ms) { return (ms / 1000).toFixed(1) + 's'; }
 function formatClues(n) { return n === 1 ? '1 clue' : `${n} clues`; }

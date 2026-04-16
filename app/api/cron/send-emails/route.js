@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { sendDailyEmail } from '@/lib/sendDailyEmail';
 
 export async function GET(request) {
   // ── Auth ───────────────────────────────────────────────────────────────────
@@ -13,19 +14,9 @@ export async function GET(request) {
   // ── Run ────────────────────────────────────────────────────────────────────
 
   try {
-    const now = new Date();
-
-    const todayAEST = now.toLocaleDateString('en-CA', {
+    const todayAEST = new Date().toLocaleDateString('en-CA', {
       timeZone: 'Australia/Sydney',
     });
-
-    const yesterdayDate = new Date(now);
-    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-    const yesterdayAEST = yesterdayDate.toLocaleDateString('en-CA', {
-      timeZone: 'Australia/Sydney',
-    });
-
-    // ── Check today's game exists ──────────────────────────────────────────
 
     const { data: game, error: gameError } = await supabase
       .from('games')
@@ -33,28 +24,17 @@ export async function GET(request) {
       .eq('date', todayAEST)
       .single();
 
-    const gameExists = !gameError && !!game;
-
-    if (!gameExists) {
-      console.warn(
-        `[daily-reset] WARNING: No game found for today (${todayAEST}). ` +
-        `Add a game row before players start.`
-      );
-    } else {
-      console.log(
-        `[daily-reset] Today's game: #${game.game_number} (${todayAEST}). ` +
-        `Yesterday: ${yesterdayAEST}.`
-      );
+    if (gameError || !game) {
+      console.warn(`[send-emails] No game found for ${todayAEST} — skipping emails`);
+      return Response.json({ success: true, date: todayAEST, emails: { sent: 0, failed: 0 } });
     }
 
-    return Response.json({
-      success: true,
-      date: todayAEST,
-      yesterday: yesterdayAEST,
-      gameExists,
-    });
+    const emails = await sendDailyEmail(game.game_number);
+    console.log(`[send-emails] Game #${game.game_number} — sent: ${emails.sent}, failed: ${emails.failed}`);
+
+    return Response.json({ success: true, date: todayAEST, gameNumber: game.game_number, emails });
   } catch (err) {
-    console.error('[daily-reset] Unexpected error:', err);
+    console.error('[send-emails] Unexpected error:', err);
     return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

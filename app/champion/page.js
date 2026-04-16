@@ -8,6 +8,19 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Set For Six — Champions',
   description: 'Meet the fastest NRL guessers. Who cracked it first today?',
+  openGraph: {
+    title: 'Set For Six — Champions',
+    description: 'Meet the fastest NRL guessers. Who cracked it first today?',
+    url: 'https://www.setforsix.com/champion',
+    images: [{ url: '/api/og', width: 1200, height: 630, alt: 'Set For Six Champions' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Set For Six — Champions',
+    description: 'Meet the fastest NRL guessers. Who cracked it first today?',
+    images: ['/api/og'],
+  },
 };
 
 function formatSeconds(ms) { return (ms / 1000).toFixed(1) + 's'; }

@@ -6,6 +6,24 @@ import { supabase } from '@/lib/supabase';
 
 export const revalidate = 60;
 
+export const metadata = {
+  title: 'Set For Six — The Daily NRL Guessing Game',
+  description: 'Six clues. One mystery NRL player. New every day. Can you beat your mates?',
+  openGraph: {
+    title: 'Set For Six — The Daily NRL Guessing Game',
+    description: 'Six clues. One mystery NRL player. New every day. Can you beat your mates?',
+    url: 'https://www.setforsix.com',
+    images: [{ url: '/api/og', width: 1200, height: 630, alt: 'Set For Six — Daily NRL Guessing Game' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Set For Six — The Daily NRL Guessing Game',
+    description: 'Six clues. One mystery NRL player. New every day. Can you beat your mates?',
+    images: ['/api/og'],
+  },
+};
+
 const GREEN = '#00e676';
 
 const PARTICLES = Array.from({ length: 18 }, (_, i) => ({

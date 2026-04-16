@@ -6,6 +6,19 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Set For Six — Leaderboard',
   description: "See today's fastest NRL guessers. Can you crack it in fewer clues?",
+  openGraph: {
+    title: 'Set For Six — Leaderboard',
+    description: "See today's fastest NRL guessers. Can you crack it in fewer clues?",
+    url: 'https://www.setforsix.com/leaderboard',
+    images: [{ url: '/api/og', width: 1200, height: 630, alt: 'Set For Six Leaderboard' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Set For Six — Leaderboard',
+    description: "See today's fastest NRL guessers. Can you crack it in fewer clues?",
+    images: ['/api/og'],
+  },
 };
 
 async function getLeaderboardData() {

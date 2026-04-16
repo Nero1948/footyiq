@@ -49,7 +49,7 @@ export default function EmailSignup() {
           className="font-bold px-5 py-3 rounded-xl text-sm text-white disabled:opacity-50 transition-colors whitespace-nowrap"
           style={{ background: '#1e2f45', border: '1px solid rgba(255,255,255,0.12)' }}
         >
-          {emailState === 'loading' ? '…' : 'Notify me'}
+          {emailState === 'loading' ? '…' : "Get tomorrow's game"}
         </button>
       </form>
       {emailState === 'error' && (

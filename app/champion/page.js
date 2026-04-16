@@ -18,27 +18,44 @@ function formatDisplayDate(dateStr) {
   });
 }
 
+function getTitleForClues(cluesUsed) {
+  if (cluesUsed === 1) return 'Clue Assassin 🔪';
+  if (cluesUsed === 2) return 'Group Chat Menace 😤';
+  if (cluesUsed === 3) return 'Knows Their Stuff 🧠';
+  if (cluesUsed === 4) return 'Had a Crack 💪';
+  if (cluesUsed === 5) return 'Scraped Through 😅';
+  if (cluesUsed === 6) return 'Won Ugly 🤕';
+  return 'Showed Up ❤️';
+}
+
 async function getTodayChampion() {
   const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
   try {
     const { data: game } = await supabase
       .from('games').select('id, game_number').eq('date', todayAEST).single();
 
-    if (!game) return { todayAEST, gameNumber: null, champion: null };
+    if (!game) return { todayAEST, gameNumber: null, champion: null, totalAttempts: 0 };
 
-    const { data: attempts } = await supabase
-      .from('attempts')
-      .select('device_id, username, clues_used, total_time_ms')
-      .eq('game_id', game.id)
-      .eq('solved', true)
-      .order('clues_used', { ascending: true })
-      .order('total_time_ms', { ascending: true })
-      .limit(1);
+    const [{ data: attempts }, { count: totalAttempts }] = await Promise.all([
+      supabase
+        .from('attempts')
+        .select('device_id, username, clues_used, total_time_ms')
+        .eq('game_id', game.id)
+        .eq('solved', true)
+        .order('clues_used', { ascending: true })
+        .order('total_time_ms', { ascending: true })
+        .limit(1),
+      supabase
+        .from('attempts')
+        .select('id', { count: 'exact', head: true })
+        .eq('game_id', game.id),
+    ]);
 
     const top = attempts?.[0] ?? null;
     return {
       todayAEST,
       gameNumber: game.game_number,
+      totalAttempts: totalAttempts ?? 0,
       champion: top ? {
         name: (top.username && top.username !== 'Anonymous') ? top.username : `…${top.device_id.slice(-4)}`,
         cluesUsed: top.clues_used,
@@ -47,11 +64,11 @@ async function getTodayChampion() {
     };
   } catch {
     const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
-    return { todayAEST, gameNumber: null, champion: null };
+    return { todayAEST, gameNumber: null, champion: null, totalAttempts: 0 };
   }
 }
 
-async function getHallOfFame(days = 7) {
+async function getHallOfFame(days = 14) {
   const dates = [];
   for (let i = 0; i < days; i++) {
     const d = new Date();
@@ -95,10 +112,36 @@ async function getHallOfFame(days = 7) {
 }
 
 export default async function ChampionPage() {
-  const [{ todayAEST, gameNumber, champion }, hallOfFame] = await Promise.all([
+  const [{ todayAEST, gameNumber, champion, totalAttempts }, hallOfFame] = await Promise.all([
     getTodayChampion(),
-    getHallOfFame(7),
+    getHallOfFame(14),
   ]);
+
+  // Streak: count consecutive days this champion has won (from hall of fame data)
+  let streak = 1;
+  if (champion) {
+    for (let i = 1; i < hallOfFame.length; i++) {
+      if (hallOfFame[i].champion?.name === champion.name) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+  }
+
+  // Multi-winner counts across 14 days (for 👑 display)
+  const winnerCounts = {};
+  for (const { champion: c } of hallOfFame) {
+    if (c) winnerCounts[c.name] = (winnerCounts[c.name] || 0) + 1;
+  }
+
+  // Beat percentage
+  const beatPct = totalAttempts > 1
+    ? Math.round(((totalAttempts - 1) / totalAttempts) * 100)
+    : null;
+
+  // Only display 7 days in the UI
+  const displayEntries = hallOfFame.slice(0, 7);
 
   return (
     <div className="bg-texture min-h-screen text-white flex flex-col">
@@ -106,32 +149,49 @@ export default async function ChampionPage() {
 
       <main className="flex-1 px-4 py-6 w-full max-w-lg mx-auto space-y-8">
 
-        {/* ── Hero trophy + today's champion ──────────────────────────── */}
+        {/* ── Hero ──────────────────────────────────────────────────────── */}
         <section className="text-center pt-4">
           <div className="text-7xl mb-3" aria-hidden>🏆</div>
-          <p
-            className="text-xs font-black tracking-[0.35em] uppercase mb-3"
-            style={{ color: '#f6b91f' }}
-          >
-            Today&apos;s Champion
-          </p>
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-1">
+            Top Dog Today
+          </h1>
+          <p className="text-sm text-gray-500 mb-6">Fastest solve. Cleanest flex.</p>
 
           {champion ? (
             <>
-              <h1
-                className="text-4xl sm:text-5xl font-black tracking-tight mb-2"
-                style={{ color: '#ffffff' }}
-              >
-                {champion.name}
-              </h1>
-              <p className="text-sm text-gray-500 mb-1">
-                {formatClues(champion.cluesUsed)} · {formatSeconds(champion.totalTimeMs)}
-                {gameNumber ? ` · Game #${gameNumber}` : ''}
+              <p className="text-4xl sm:text-5xl font-black mb-2 text-white">{champion.name}</p>
+              <p className="text-base font-bold mb-5" style={{ color: '#f6b91f' }}>
+                {getTitleForClues(champion.cluesUsed)}
               </p>
+
+              {/* Stats row */}
+              <div className="flex items-center justify-center gap-6 mb-3">
+                <div className="text-center">
+                  <p className="text-2xl font-black text-white">{champion.cluesUsed}</p>
+                  <p className="text-xs text-gray-600 uppercase tracking-wider">clues</p>
+                </div>
+                <div className="w-px h-8" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                <div className="text-center">
+                  <p className="text-2xl font-black text-white">{formatSeconds(champion.totalTimeMs)}</p>
+                  <p className="text-xs text-gray-600 uppercase tracking-wider">time</p>
+                </div>
+                <div className="w-px h-8" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                <div className="text-center">
+                  <p className="text-2xl font-black text-white">{streak}</p>
+                  <p className="text-xs text-gray-600 uppercase tracking-wider">day streak</p>
+                </div>
+              </div>
+
+              {beatPct !== null && (
+                <p className="text-xs text-gray-500 mb-1">
+                  Beat <span className="text-[#00e676] font-bold">{beatPct}%</span> of players today
+                </p>
+              )}
+              {gameNumber && <p className="text-xs text-gray-600">Game #{gameNumber}</p>}
             </>
           ) : (
             <>
-              <h1 className="text-3xl font-black text-gray-600 mb-2">No champion yet</h1>
+              <p className="text-2xl font-black text-gray-600 mb-2">No champion yet</p>
               <p className="text-sm text-gray-600 mb-4">Be the first to crack today&apos;s game</p>
               <Link
                 href="/play"
@@ -144,49 +204,59 @@ export default async function ChampionPage() {
           )}
         </section>
 
-        {/* ── Champion OG image ────────────────────────────────────────── */}
+        {/* ── Shareable card ────────────────────────────────────────────── */}
         <section>
           <ChampionImage date={todayAEST} />
         </section>
 
         {/* ── Wall of Fame ──────────────────────────────────────────────── */}
         <section>
-          <div className="mb-4">
+          <div className="mb-2">
             <h2
               className="text-lg font-black text-white inline-block pb-1"
               style={{ borderBottom: '2px solid rgba(246,185,31,0.5)' }}
             >
-              Wall of Fame
+              Wall of Fame 🏅
             </h2>
+            <p className="text-xs text-gray-600 mt-1.5">
+              All-time champions. The ones who cracked it first.
+            </p>
           </div>
 
-          {hallOfFame.length === 0 && (
-            <p className="text-gray-600 text-sm">No games played yet.</p>
+          {displayEntries.length === 0 && (
+            <p className="text-gray-600 text-sm mt-4">No games played yet.</p>
           )}
 
-          {hallOfFame.length > 0 && (
-            <div className="space-y-2">
-              {hallOfFame.map(({ date, gameNumber: gNum, champion: c }) => {
+          {displayEntries.length > 0 && (
+            <div className="space-y-2 mt-4">
+              {displayEntries.map(({ date, gameNumber: gNum, champion: c }, i) => {
                 const isToday = date === todayAEST;
+                const isMultiWinner = c && winnerCounts[c.name] > 1;
+                const isTopEntry = i === 0 && !!c;
+
                 return (
                   <div
                     key={date}
                     className="flex items-center gap-3 px-4 py-3 rounded-xl"
                     style={{
                       background: isToday ? 'rgba(0,230,118,0.05)' : 'rgba(255,255,255,0.03)',
-                      border: isToday ? '1px solid rgba(0,230,118,0.2)' : '1px solid rgba(255,255,255,0.06)',
+                      borderTop: '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
+                      borderRight: '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
+                      borderBottom: '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
+                      borderLeft: isTopEntry
+                        ? '3px solid #f6b91f'
+                        : '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
                     }}
                   >
-                    {/* Left: crown + game number */}
-                    <div className="flex-shrink-0 w-10 text-center">
-                      {c ? (
-                        <span className="text-lg">👑</span>
-                      ) : (
-                        <span className="text-gray-700 text-xs">—</span>
-                      )}
+                    <div className="flex-shrink-0 w-8 text-center">
+                      {isMultiWinner
+                        ? <span className="text-lg">👑</span>
+                        : c
+                          ? <span className="text-base">🏅</span>
+                          : <span className="text-gray-700 text-xs">—</span>
+                      }
                     </div>
 
-                    {/* Middle: date */}
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-semibold ${isToday ? 'text-white' : 'text-gray-300'}`}>
                         {isToday ? 'Today' : formatDisplayDate(date)}
@@ -194,7 +264,6 @@ export default async function ChampionPage() {
                       <p className="text-xs text-gray-600">Game #{gNum}</p>
                     </div>
 
-                    {/* Right: winner */}
                     {c ? (
                       <div className="text-right flex-shrink-0">
                         <p className={`text-sm font-semibold ${isToday ? 'text-[#00e676]' : 'text-white'}`}>

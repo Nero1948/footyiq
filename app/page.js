@@ -36,9 +36,9 @@ const HOW_IT_WORKS = [
   },
   {
     step: '03',
-    emoji: '🏆',
-    title: 'Share without spoilers',
-    body: "Your result tells mates you got it — without revealing the answer. Brag freely.",
+    emoji: '📲',
+    title: 'Share the card',
+    body: "Post your spoiler-free result card in the group chat. Stir the pot without ruining the answer.",
     bg: '#0d1117',
   },
 ];
@@ -50,20 +50,24 @@ async function getLandingStats() {
       .from('games').select('id').eq('date', todayAEST).single();
     if (!game) return null;
 
-    const [{ count: totalAttempts }, { data: solvedClues }] = await Promise.all([
+    const [{ count: totalAttempts }, { data: solvedAttempts }] = await Promise.all([
       supabase.from('attempts').select('id', { count: 'exact', head: true }).eq('game_id', game.id),
-      supabase.from('attempts').select('clues_used').eq('game_id', game.id).eq('solved', true),
+      supabase.from('attempts').select('clues_used, total_time_ms').eq('game_id', game.id).eq('solved', true),
     ]);
+
+    if (!totalAttempts) return null;
 
     let avgClues = null;
     let oneCluePercent = 0;
-    if (solvedClues?.length > 0) {
-      const total = solvedClues.reduce((s, a) => s + a.clues_used, 0);
-      avgClues = (total / solvedClues.length).toFixed(1);
-      const oneClue = solvedClues.filter(a => a.clues_used === 1).length;
-      oneCluePercent = Math.round((oneClue / solvedClues.length) * 100);
+    let fastestMs = null;
+    if (solvedAttempts?.length > 0) {
+      const total = solvedAttempts.reduce((s, a) => s + a.clues_used, 0);
+      avgClues = (total / solvedAttempts.length).toFixed(1);
+      const oneClue = solvedAttempts.filter(a => a.clues_used === 1).length;
+      oneCluePercent = Math.round((oneClue / solvedAttempts.length) * 100);
+      fastestMs = Math.min(...solvedAttempts.map(a => a.total_time_ms));
     }
-    return { totalAttempts: totalAttempts ?? 0, avgClues, oneCluePercent };
+    return { totalAttempts, avgClues, oneCluePercent, fastestMs };
   } catch {
     return null;
   }
@@ -78,13 +82,23 @@ async function getYesterday() {
       .from('games').select('id, answer_player').eq('date', yesterdayAEST).single();
     if (!game) return null;
 
-    const { data: solvedClues } = await supabase
-      .from('attempts').select('clues_used').eq('game_id', game.id).eq('solved', true);
+    const [{ count: totalAttempts }, { data: solvedAttempts }] = await Promise.all([
+      supabase.from('attempts').select('id', { count: 'exact', head: true }).eq('game_id', game.id),
+      supabase.from('attempts').select('clues_used, total_time_ms').eq('game_id', game.id).eq('solved', true),
+    ]);
 
-    const solvedCount = solvedClues?.length ?? 0;
-    const oneClue = solvedClues?.filter(a => a.clues_used === 1).length ?? 0;
-    const oneCluePercent = solvedCount > 0 ? Math.round((oneClue / solvedCount) * 100) : 0;
-    return { answer: game.answer_player, solvedCount, oneCluePercent };
+    const solvedCount = solvedAttempts?.length ?? 0;
+    let avgClues = null;
+    let oneCluePercent = 0;
+    let fastestMs = null;
+    if (solvedCount > 0) {
+      const total = solvedAttempts.reduce((s, a) => s + a.clues_used, 0);
+      avgClues = (total / solvedCount).toFixed(1);
+      const oneClue = solvedAttempts.filter(a => a.clues_used === 1).length;
+      oneCluePercent = Math.round((oneClue / solvedCount) * 100);
+      fastestMs = Math.min(...solvedAttempts.map(a => a.total_time_ms));
+    }
+    return { answer: game.answer_player, totalAttempts: totalAttempts ?? 0, solvedCount, avgClues, oneCluePercent, fastestMs };
   } catch {
     return null;
   }
@@ -92,6 +106,11 @@ async function getYesterday() {
 
 export default async function Home() {
   const [stats, yesterday] = await Promise.all([getLandingStats(), getYesterday()]);
+
+  // Use today's stats if available, fall back to yesterday's
+  const heroStats = (stats?.totalAttempts > 0)
+    ? { ...stats, isYesterday: false }
+    : (yesterday?.totalAttempts > 0 ? { ...yesterday, isYesterday: true } : null);
 
   return (
     <div className="bg-texture min-h-screen text-white">
@@ -159,20 +178,40 @@ export default async function Home() {
             Six clues. One player. Two minutes. New every day.
           </p>
 
-          {/* Today's stats pill */}
-          {stats && stats.totalAttempts > 0 && (
+          {/* 4-stat row */}
+          {heroStats && (
             <div
-              className="inline-flex items-center gap-3 rounded-full px-5 py-2 text-sm mb-8"
+              className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl px-5 py-2.5 text-sm mb-8"
               style={{ background: 'rgba(0,230,118,0.07)', border: '1px solid rgba(0,230,118,0.2)' }}
             >
+              {heroStats.isYesterday && (
+                <span className="text-xs text-gray-500 font-medium w-full text-center -mb-0.5">Yesterday</span>
+              )}
               <span className="text-gray-300">
-                <span className="text-white font-bold">{stats.totalAttempts}</span> playing today
+                <span className="font-bold text-white">{heroStats.totalAttempts}</span>
+                {heroStats.isYesterday ? ' played' : ' played today'}
               </span>
-              {stats.avgClues && (
+              {heroStats.avgClues && (
                 <>
-                  <span style={{ color: 'rgba(0,230,118,0.35)' }}>|</span>
+                  <span style={{ color: 'rgba(0,230,118,0.3)' }}>|</span>
                   <span className="text-gray-300">
-                    avg <span className="text-white font-bold">{stats.avgClues}</span> clues
+                    Avg solve: <span className="font-bold text-white">{heroStats.avgClues}</span> clues
+                  </span>
+                </>
+              )}
+              {heroStats.fastestMs != null && (
+                <>
+                  <span style={{ color: 'rgba(0,230,118,0.3)' }}>|</span>
+                  <span className="text-gray-300">
+                    Fastest: <span className="font-bold text-white">{(heroStats.fastestMs / 1000).toFixed(1)}s</span>
+                  </span>
+                </>
+              )}
+              {heroStats.oneCluePercent > 0 && (
+                <>
+                  <span style={{ color: 'rgba(0,230,118,0.3)' }}>|</span>
+                  <span className="text-gray-300">
+                    Only <span className="font-bold text-white">{heroStats.oneCluePercent}%</span> got it in 1
                   </span>
                 </>
               )}
@@ -188,16 +227,6 @@ export default async function Home() {
             >
               PLAY TODAY&apos;S GAME →
             </Link>
-          </div>
-
-          {/* Live stats row */}
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-600 flex-wrap min-h-[20px]">
-            {stats ? (
-              <>
-                {stats.totalAttempts === 0 && <span>No scores yet — be the first to play</span>}
-                {stats.oneCluePercent > 0 && <span>{stats.oneCluePercent}% cracked it in 1 clue</span>}
-              </>
-            ) : null}
           </div>
 
         </div>
@@ -287,7 +316,7 @@ export default async function Home() {
               Don&apos;t miss tomorrow&apos;s game
             </p>
             <p className="text-gray-400 text-sm mb-8">
-              Fresh game every morning for Aus and NZ. No spam. Just footy.
+              Fresh game every morning. One email. No spam. Just league.
             </p>
             <EmailSignup />
           </div>

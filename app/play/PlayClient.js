@@ -51,7 +51,7 @@ function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalP
     if (totalPlayers) lines.push(`📊 ${totalPlayers} players attempted`);
   }
   lines.push('');
-  lines.push('Think you know footy? setforsix.com');
+  lines.push('Think you know league? setforsix.com');
   return lines.join('\n');
 }
 

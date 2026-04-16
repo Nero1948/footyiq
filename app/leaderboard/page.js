@@ -23,7 +23,7 @@ async function getLeaderboardData() {
       .eq('solved', true)
       .order('clues_used', { ascending: true })
       .order('total_time_ms', { ascending: true })
-      .limit(50);
+      .limit(10);
 
     const entries = (attempts ?? []).map((a, i) => ({
       rank: i + 1,

@@ -57,9 +57,11 @@ function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalP
 
 export default function PlayClient({ initialGame }) {
   const [deviceId, setDeviceId] = useState(null);
-  const [gameState, setGameState] = useState('loading');
-  const [game, setGame] = useState(null);
-  const [clues, setClues] = useState([]);
+  // Derive initial UI state from server-provided initialGame so SSR HTML never
+  // shows a loading spinner — the game structure is visible immediately.
+  const [gameState, setGameState] = useState(initialGame ? 'playing' : 'error');
+  const [game, setGame] = useState(initialGame ?? null);
+  const [clues, setClues] = useState(initialGame ? [initialGame.clue_1] : []);
   const [wrongGuesses, setWrongGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [clueNumber, setClueNumber] = useState(1);
@@ -68,7 +70,7 @@ export default function PlayClient({ initialGame }) {
   const [emailInput, setEmailInput] = useState('');
   const [emailState, setEmailState] = useState('idle');
   const [copied, setCopied] = useState(false);
-  const [loadError, setLoadError] = useState(null);
+  const [loadError, setLoadError] = useState(initialGame ? null : 'No game today. Check back tomorrow!');
   const [isGuessing, setIsGuessing] = useState(false);
   const [stats, setStats] = useState(null);
   const [yesterdayData, setYesterdayData] = useState(null);
@@ -109,7 +111,9 @@ export default function PlayClient({ initialGame }) {
     if (savedUsername) setUsername(savedUsername);
   }, []);
 
-  // ── Load game from server-provided initialGame ─────────────────────────────
+  // ── Hydration: check localStorage once deviceId is available ─────────────
+  // game/clues are already seeded from initialGame; we only need to check
+  // whether the user has already completed today's game.
 
   useEffect(() => {
     if (!deviceId) return;
@@ -120,36 +124,31 @@ export default function PlayClient({ initialGame }) {
       return;
     }
 
-    const data = initialGame;
-    const saved = localStorage.getItem(`setforsix_result_${data.date}`) || localStorage.getItem(`footyiq_result_${data.date}`);
+    const saved =
+      localStorage.getItem(`setforsix_result_${initialGame.date}`) ||
+      localStorage.getItem(`footyiq_result_${initialGame.date}`);
     if (saved) {
       try {
-        setGame(data);
         setGameOverData(JSON.parse(saved));
         setGameState('done');
       } catch {
-        // Corrupt save — start fresh
-        setGame(data);
-        setClues([data.clue_1]);
-        startTimeRef.current = performance.now();
-        setGameState('playing');
+        // Corrupt save — stay in playing state; timer starts via the timer effect
       }
-      return;
     }
-
-    setGame(data);
-    setClues([data.clue_1]);
-    startTimeRef.current = performance.now();
-    setGameState('playing');
+    // Fresh game: timer starts via the timer effect once deviceId is known
   }, [deviceId, initialGame]);
 
   // ── Timer ──────────────────────────────────────────────────────────────────
+  // Only start after hydration (deviceId known) so the timer reference is valid.
+  // Adding deviceId as a dep means the timer starts once localStorage is read
+  // and we know whether the game is fresh or already done.
 
   useEffect(() => {
-    if (gameState !== 'playing') return;
+    if (gameState !== 'playing' || !deviceId) return;
+    startTimeRef.current = performance.now();
     timerRef.current = setInterval(() => setElapsedMs(performance.now() - startTimeRef.current), 100);
     return () => clearInterval(timerRef.current);
-  }, [gameState]);
+  }, [gameState, deviceId]);
 
   // ── Autofocus ─────────────────────────────────────────────────────────────
 
@@ -292,15 +291,7 @@ export default function PlayClient({ initialGame }) {
     ).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   }
 
-  // ── Render: loading / error ────────────────────────────────────────────────
-
-  if (gameState === 'loading') {
-    return (
-      <div className="bg-texture min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 text-sm animate-pulse">Starting…</p>
-      </div>
-    );
-  }
+  // ── Render: error ─────────────────────────────────────────────────────────
 
   if (gameState === 'error') {
     return (
@@ -385,11 +376,11 @@ export default function PlayClient({ initialGame }) {
                   placeholder="Type player name…"
                   autoComplete="off"
                   autoFocus
-                  disabled={isGuessing}
+                  disabled={isGuessing || !deviceId}
                   className="flex-1 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-base focus:outline-none disabled:opacity-50 transition-colors"
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                 />
-                <button onClick={handleGuess} disabled={isGuessing || !currentGuess.trim()} className="font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform text-white" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                <button onClick={handleGuess} disabled={isGuessing || !currentGuess.trim() || !deviceId} className="font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform text-white" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}>
                   {isGuessing ? '…' : 'Guess'}
                 </button>
               </div>

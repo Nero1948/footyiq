@@ -140,8 +140,8 @@ export default async function ChampionPage() {
     ? Math.round(((totalAttempts - 1) / totalAttempts) * 100)
     : null;
 
-  // Only display 7 days in the UI
-  const displayEntries = hallOfFame.slice(0, 7);
+  // Only display 10 days in the UI
+  const displayEntries = hallOfFame.slice(0, 10);
 
   return (
     <div className="bg-texture min-h-screen text-white flex flex-col">

@@ -291,7 +291,7 @@ export async function GET(request) {
           padding: '0 48px',
           flexShrink: 0,
         }}>
-          <span style={{ color: '#000', fontSize: 16, fontWeight: 900 }}>setforsix.com.au</span>
+          <span style={{ color: '#000', fontSize: 16, fontWeight: 900 }}>setforsix.com</span>
           <span style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14, fontWeight: 500 }}>
             Daily NRL guessing game for proper league tragics
           </span>
@@ -351,7 +351,7 @@ function renderNoChampion(dateParam) {
 
         {/* Bottom band */}
         <div style={{ height: 58, background: 'linear-gradient(90deg, #fff4c2, #f6b91f)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', flexShrink: 0 }}>
-          <span style={{ color: '#000', fontSize: 16, fontWeight: 900 }}>setforsix.com.au</span>
+          <span style={{ color: '#000', fontSize: 16, fontWeight: 900 }}>setforsix.com</span>
           <span style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14 }}>Be the first to crack it today</span>
         </div>
 

@@ -45,7 +45,7 @@ function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs) {
     ? [...Array(cluesUsed - 1).fill('🟥'), '🟩', ...Array(6 - cluesUsed).fill('⬜')]
     : Array(6).fill('🟥');
   const clueWord = cluesUsed === 1 ? 'clue' : 'clues';
-  return `Set For Six #${gameNumber}\n${squares.join('')}\n${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}\nsetforsix.com.au`;
+  return `Set For Six #${gameNumber}\n${squares.join('')}\n${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}\nsetforsix.com`;
 }
 
 export default function PlayPage() {

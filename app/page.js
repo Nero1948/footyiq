@@ -413,7 +413,7 @@ export default function Home() {
             <Link href="/champion"    className="hover:text-[#00e676] transition-colors">Champions</Link>
           </div>
           <p className="text-xs text-gray-700">
-            Made for rugby league tragics across Aus and NZ · setforsix.com.au
+            Made for rugby league tragics across Aus and NZ · setforsix.com
           </p>
         </div>
       </footer>

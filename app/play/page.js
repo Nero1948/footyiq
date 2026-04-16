@@ -304,7 +304,9 @@ export default function PlayPage() {
         style={{ background: 'rgba(10,14,19,0.96)', backdropFilter: 'blur(10px)', borderColor: 'rgba(255,255,255,0.06)' }}
       >
         <div>
-          <h1 className="text-xl font-black tracking-tight text-white">Set For Six</h1>
+          <Link href="/" className="text-xl font-black tracking-tight text-white hover:text-[#00e676] transition-colors">
+            Set For Six
+          </Link>
           {game && (
             <p className="text-xs text-gray-500 mt-0.5">Game #{game.game_number}</p>
           )}

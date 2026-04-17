@@ -53,23 +53,23 @@ const GAMES_TO_DELETE = [
 ];
 
 // ── Games to insert ────────────────────────────────────────────────────────────
+// READY: reviewed and approved — will be inserted on --commit
+// PENDING REVIEW: games 10–15 need clue/fact review before adding
 
 const NEW_GAMES = [
   {
-    game_number: 6,
+    game_number: 10,
     date: '2026-04-21',
     answer_player: 'Manu Vatuvei',
     clue_1: 'Became the first player in NRL history to score at least 10 tries in every one of 10 consecutive seasons — a feat of consistency no winger had ever managed before',
     clue_2: 'His try-scoring record for his country broke a mark that had stood for over a decade, surpassing a record set in 2006',
     clue_3: 'His 2011 season ended on the biggest stage — he scored a try in a grand final, but finished on the losing side despite playing all season in irresistible form',
-    clue_4: 'Of Tongan descent but raised in Auckland, he played his entire 14-season NRL career for a single New Zealand club',
-    clue_5: 'His physical presence and finishing ability earned him a nickname that summed up his impact — a force of nature on the wing feared by every opposing fullback',
-    clue_6: "New Zealand Warriors winger nicknamed 'The Beast' who scored 152 NRL tries — the club's all-time leading tryscorer — and broke the Kiwis' international try-scoring record with 22 tries in 28 Tests",
+    clue_4: 'Of Tongan descent but raised in Auckland, he played his entire 14-season NRL career for a single club',
+    clue_5: "His size, power and finishing ability earned him the nickname 'The Beast' — one of the most iconic wingers of the Warriors era",
+    clue_6: 'New Zealand Warriors winger who scored 152 NRL tries — the club\'s all-time leading tryscorer — and broke the Kiwis\' international try-scoring record with 22 tries in 28 Tests',
     facts: [
       'Vatuvei was the first player in NRL history to score 10 or more tries in 10 consecutive seasons — a record that still stands.',
       'He broke Nigel Vagana\'s New Zealand Kiwis try-scoring record of 19, finishing his Test career with 22 tries in 28 matches.',
-      'In the 2010 NRL season he scored 20 tries in just 19 matches — the most prolific individual season of his career.',
-      'Despite playing in the 2011 NRL Grand Final against Manly, Vatuvei and the Warriors lost 24–10 in the club\'s only grand final appearance.',
       'Born in Auckland of Tongan descent, he joined the Warriors development squad at just 16 and went on to play 226 first-grade games — all for the Warriors.',
     ],
   },
@@ -87,8 +87,6 @@ const NEW_GAMES = [
       'Campbell won the 2001 Dally M Medal by just one point over Andrew Johns — widely regarded as the best player in the world at the time.',
       'He played every minute of every match in Penrith\'s 2003 premiership-winning season, finishing as the club\'s top points scorer for the year.',
       'He was the inaugural signing for the Gold Coast Titans in 2005, two full years before the club played its first NRL game, and was later named the club\'s first life member in 2019.',
-      'Of Torres Strait Islander descent, Campbell has been a prominent advocate for Indigenous communities throughout his post-football career.',
-      'Over 267 NRL games spanning 14 seasons at three clubs — Cronulla, Penrith, and the Gold Coast — Campbell scored 84 tries.',
     ],
   },
   {
@@ -96,17 +94,15 @@ const NEW_GAMES = [
     date: '2026-04-23',
     answer_player: 'Paul Gallen',
     clue_1: 'Led his club to their first-ever NRL premiership after 49 years of trying — an achievement that reduced grown men to tears across an entire city',
-    clue_2: 'After retiring from league, he pursued a second professional sporting career and fought some of Australia\'s most recognisable sporting personalities in the ring',
+    clue_2: 'Played over 300 games for a single club without ever pulling on another team\'s jersey — a loyalty that defined his entire professional life',
     clue_3: 'Became the first player in NRL history to accumulate 50,000 career running metres — a record that speaks to his extraordinary durability and relentless work rate',
     clue_4: 'Won the Harry Sunderland Medal as Australian Player of the Year in back-to-back seasons — a rare distinction reserved for only the truly elite',
-    clue_5: 'Played every single one of his 348 NRL games for the same club — making him the most-capped player in that club\'s entire history',
+    clue_5: 'After retiring from league, he pursued a professional boxing career — stepping into the ring against some of Australia\'s most recognisable sporting names',
     clue_6: 'Cronulla-Sutherland Sharks captain and lock who led the club to their maiden 2016 NRL premiership, won back-to-back Harry Sunderland Medals in 2010 and 2011, played a record 348 games for the club, and became a professional boxer after retiring',
     facts: [
-      'Gallen led Cronulla to their first-ever NRL premiership in 2016, ending 49 years of heartbreak for the club\'s supporters.',
-      'He won the Harry Sunderland Medal as Australian Player of the Year in both 2010 and 2011 — one of only a handful of players to win the award in back-to-back seasons.',
-      'In 2018 Gallen became the first NRL player to reach 50,000 career running metres, a testament to his relentless work rate over nearly two decades.',
-      'After retiring from the NRL in 2019 at age 38, he pursued professional boxing, defeating several high-profile opponents including former athletes.',
-      'He played all 348 of his NRL games for the Sharks, never representing another club — a loyalty record at Cronulla that may stand for decades.',
+      'Gallen grew up a Penrith Panthers fan but signed with Cronulla at 17 — a decision that would define his entire career and make him the greatest player in the club\'s history.',
+      'He captained the Cronulla Sharks for over 200 matches — one of the longest club captaincy stints in NRL history. He also surpassed Danny Buderus\' record to become the longest-serving NSW State of Origin captain.',
+      'Despite being a lock forward, Gallen scored 63 NRL tries across his career — an impressive total for a player whose defensive contributions were equally valued.',
     ],
   },
   {
@@ -123,12 +119,16 @@ const NEW_GAMES = [
       'Jones was the grandson of Maunga Emery, a celebrated New Zealand rugby league player, making him part of one of the country\'s great football families.',
       'He made his NRL debut in the Warriors\' inaugural 1995 season at age 18 and went on to play over 100 consecutive first-grade matches between 1995 and 1999.',
       'Jones won the 2002 Golden Boot Award as the world\'s best international rugby league player — only the second New Zealander to receive the honour after Gary Freeman.',
-      'He led the Warriors to the 2002 NRL Grand Final against the Sydney Roosters — the club\'s only grand final appearance during his tenure.',
-      'After retiring as a player, Jones went on to coach in France with the Catalans Dragons, continuing his connection to the game at the highest level.',
     ],
   },
+];
+
+// ── PENDING REVIEW — not yet inserted ─────────────────────────────────────────
+// Run through each game, approve clues/facts, then move into NEW_GAMES above.
+
+const PENDING_GAMES = [
   {
-    game_number: 10,
+    game_number: 11,
     date: '2026-04-25',
     answer_player: 'Greg Inglis',
     clue_1: 'Born in a small NSW coastal town, he was signed as a teenager by a Melbourne club who recognised extraordinary potential in a raw but physically gifted young back',
@@ -250,11 +250,16 @@ for (const g of GAMES_TO_DELETE) {
   console.log(`     Reason: ${g.reason}\n`);
 }
 
-console.log('  INSERTIONS:\n');
+console.log('  INSERTIONS (approved):\n');
 for (const g of NEW_GAMES) {
   console.log(`  +  Game #${g.game_number} | ${g.date} | ${g.answer_player}`);
   console.log(`     Clue 1: ${g.clue_1.slice(0, 80)}…`);
   console.log(`     Facts: ${g.facts.length}\n`);
+}
+
+console.log('  PENDING REVIEW (not included in this run):\n');
+for (const g of PENDING_GAMES) {
+  console.log(`  ⏸  Game #${g.game_number} | ${g.date} | ${g.answer_player}`);
 }
 
 if (!COMMIT) {

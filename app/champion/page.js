@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Nav from '../components/Nav';
 import ChampionImage from './ChampionImage';
+import WallOfFame from './WallOfFame';
 import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -255,64 +256,11 @@ export default async function ChampionPage() {
             </p>
           </div>
 
-          {displayEntries.length === 0 && (
-            <p className="text-gray-600 text-sm mt-4">No games played yet.</p>
-          )}
-
-          {displayEntries.length > 0 && (
-            <div className="space-y-2 mt-4">
-              {displayEntries.map(({ date, gameNumber: gNum, champion: c }, i) => {
-                const isToday = date === todayAEST;
-                const isMultiWinner = c && winnerCounts[c.name] > 1;
-                const isTopEntry = i === 0 && !!c;
-
-                return (
-                  <div
-                    key={date}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                    style={{
-                      background: isToday ? 'rgba(0,230,118,0.05)' : 'rgba(255,255,255,0.03)',
-                      borderTop: '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
-                      borderRight: '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
-                      borderBottom: '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
-                      borderLeft: isTopEntry
-                        ? '3px solid #f6b91f'
-                        : '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
-                    }}
-                  >
-                    <div className="flex-shrink-0 w-8 text-center">
-                      {isMultiWinner
-                        ? <span className="text-lg">👑</span>
-                        : c
-                          ? <span className="text-base">🏅</span>
-                          : <span className="text-gray-700 text-xs">—</span>
-                      }
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-semibold ${isToday ? 'text-white' : 'text-gray-300'}`}>
-                        {isToday ? 'Today' : formatDisplayDate(date)}
-                      </p>
-                      <p className="text-xs text-gray-600">Game #{gNum}</p>
-                    </div>
-
-                    {c ? (
-                      <div className="text-right flex-shrink-0">
-                        <p className={`text-sm font-semibold ${isToday ? 'text-[#00e676]' : 'text-white'}`}>
-                          {c.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {formatClues(c.cluesUsed)} · {formatSeconds(c.totalTimeMs)}
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-600 flex-shrink-0">No scores yet</p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <WallOfFame
+            entries={displayEntries}
+            todayAEST={todayAEST}
+            winnerCounts={winnerCounts}
+          />
         </section>
 
         {/* ── Links ───────────────────────────────────────────────────── */}

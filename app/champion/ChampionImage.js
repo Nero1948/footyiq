@@ -24,6 +24,7 @@ export default function ChampionImage({ date }) {
       width={1200}
       height={630}
       priority
+      unoptimized
       onError={() => setImageError(true)}
       className="w-full rounded-xl"
       style={{ border: '1px solid rgba(255,255,255,0.08)' }}

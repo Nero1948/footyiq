@@ -44,7 +44,7 @@ function successPage() {
   <p style="font-size:20px;font-weight:900;margin:0 0 16px;">Set For Six &#127945;</p>
   <h1 style="font-size:22px;font-weight:700;margin:0 0 12px;">You&rsquo;ve been unsubscribed</h1>
   <p style="font-size:15px;color:#9ca3af;margin:0 0 28px;">You won&rsquo;t receive any more emails from us.</p>
-  <a href="https://setforsix.com.au"
+  <a href="https://www.setforsix.com"
      style="display:inline-block;background:#00e676;color:#000;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:10px;font-size:14px;">
     Back to the site
   </a>
@@ -64,7 +64,7 @@ function errorPage(message) {
   <p style="font-size:20px;font-weight:900;margin:0 0 16px;">Set For Six &#127945;</p>
   <h1 style="font-size:22px;font-weight:700;margin:0 0 12px;color:#f87171;">Something went wrong</h1>
   <p style="font-size:15px;color:#9ca3af;margin:0 0 28px;">${message}</p>
-  <a href="https://setforsix.com.au"
+  <a href="https://www.setforsix.com"
      style="display:inline-block;background:#00e676;color:#000;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:10px;font-size:14px;">
     Back to the site
   </a>

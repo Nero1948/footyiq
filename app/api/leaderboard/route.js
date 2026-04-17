@@ -1,5 +1,18 @@
 import { supabase } from '@/lib/supabase';
 
+const FALLBACK_NAMES = ['Mystery Fan', 'Secret Selector', 'Phantom Tipper', 'Ghost Player', 'Undercover Footy Brain', 'Anonymous Legend'];
+
+function getFallbackName(deviceId) {
+  let h = 0;
+  for (let i = 0; i < deviceId.length; i++) h = (h * 31 + deviceId.charCodeAt(i)) & 0x7fffffff;
+  return FALLBACK_NAMES[h % FALLBACK_NAMES.length];
+}
+
+function getDisplayName(username, deviceId) {
+  if (username && username !== 'Anonymous') return username;
+  return getFallbackName(deviceId);
+}
+
 export async function GET() {
   const todayAEST = new Date().toLocaleDateString('en-CA', {
     timeZone: 'Australia/Sydney',
@@ -37,13 +50,11 @@ export async function GET() {
 
   const entries = attempts.map((attempt, index) => ({
     rank: index + 1,
-    username: attempt.username || 'Anonymous',
+    displayName: getDisplayName(attempt.username, attempt.device_id),
     deviceSuffix: attempt.device_id.slice(-4),
     cluesUsed: attempt.clues_used,
     totalTimeMs: attempt.total_time_ms,
     createdAt: attempt.created_at,
-    // Full device_id included only for client-side "is this me?" highlighting.
-    deviceId: attempt.device_id,
   }));
 
   // ── Aggregate stats for the landing page ──────────────────────────────────

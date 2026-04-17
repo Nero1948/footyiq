@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { rateLimit, getIp } from '@/lib/rateLimit';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -9,6 +10,11 @@ export async function POST(request) {
     body = await request.json();
   } catch {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const ip = getIp(request);
+  if (!rateLimit(`subscribe:${ip}`, 5, 60 * 60_000)) {
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
   }
 
   const { email } = body;

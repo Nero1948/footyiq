@@ -28,8 +28,12 @@ export default function Nav() {
         <div className="flex items-center gap-1">
           <Link
             href="/play"
-            className="px-4 py-2 rounded-lg text-sm font-bold text-black active:scale-95 transition-transform"
-            style={{ background: '#00e676' }}
+            className={`px-4 py-2 rounded-lg text-sm font-bold active:scale-95 transition-all ${
+              pathname === '/play'
+                ? 'text-black'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+            style={pathname === '/play' ? { background: '#00e676' } : {}}
           >
             Play
           </Link>
@@ -40,7 +44,7 @@ export default function Nav() {
               href={href}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 pathname === href
-                  ? 'text-white bg-white/8'
+                  ? 'text-white bg-white/10'
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >

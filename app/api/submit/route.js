@@ -1,5 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { Filter } from 'bad-words';
+import { rateLimit, getIp } from '@/lib/rateLimit';
+import { matchAnswer } from '@/lib/matchAnswer';
 
 const profanityFilter = new Filter();
 
@@ -13,6 +15,13 @@ export async function POST(request) {
   }
 
   const { gameId, deviceId, cluesUsed, totalTimeMs, guesses, solved, username } = body;
+
+  // ── Rate limiting ──────────────────────────────────────────────────────────
+
+  const ip = getIp(request);
+  if (!rateLimit(`submit:${ip}`, 5, 10 * 60_000)) {
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
+  }
 
   // ── Input validation ───────────────────────────────────────────────────────
 
@@ -56,7 +65,7 @@ export async function POST(request) {
 
     const { data: game, error: gameError } = await supabase
       .from('games')
-      .select('id')
+      .select('id, answer_player')
       .eq('id', gameId)
       .single();
 
@@ -65,6 +74,15 @@ export async function POST(request) {
         return Response.json({ error: 'Game not found' }, { status: 404 });
       }
       return Response.json({ error: 'Failed to verify game' }, { status: 500 });
+    }
+
+    // ── Verify solved claim ──────────────────────────────────────────────────
+
+    if (solved) {
+      const lastGuess = guesses[guesses.length - 1];
+      if (!lastGuess || !matchAnswer(lastGuess, game.answer_player).matched) {
+        return Response.json({ error: 'Invalid submission' }, { status: 400 });
+      }
     }
 
     // ── Duplicate submission check ───────────────────────────────────────────

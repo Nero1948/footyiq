@@ -1,24 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import Nav from '../components/Nav';
 
 function formatSeconds(ms) { return (ms / 1000).toFixed(1) + 's'; }
 function formatClues(n) { return n === 1 ? '1 clue' : `${n} clues`; }
 
-const FALLBACK_NAMES = ['Mystery Fan', 'Secret Selector', 'Phantom Tipper', 'Ghost Player', 'Undercover Footy Brain', 'Anonymous Legend'];
-
-function getFallbackName(deviceId) {
-  let h = 0;
-  for (let i = 0; i < deviceId.length; i++) h = (h * 31 + deviceId.charCodeAt(i)) & 0x7fffffff;
-  return FALLBACK_NAMES[h % FALLBACK_NAMES.length];
-}
-
-function getDisplayName(username, deviceId) {
-  if (username && username !== 'Anonymous') return username;
-  return getFallbackName(deviceId);
-}
 
 const MEDAL = { 1: '🥇', 2: '🥈', 3: '🥉' };
 const RANK_STYLES = {
@@ -40,7 +28,7 @@ export default function LeaderboardClient({ initialData }) {
     setDeviceId(localStorage.getItem('setforsix_device_id') || localStorage.getItem('footyiq_device_id'));
   }, []);
 
-  async function fetchLeaderboard() {
+  const fetchLeaderboard = useCallback(async () => {
     try {
       const res = await fetch('/api/leaderboard');
       if (!res.ok) { const d = await res.json(); setError(d.error || 'Failed to load leaderboard'); return; }
@@ -52,7 +40,7 @@ export default function LeaderboardClient({ initialData }) {
     } catch {
       setError('Failed to load leaderboard');
     }
-  }
+  }, [gameId]);
 
   useEffect(() => {
     if (!gameId) return;
@@ -68,7 +56,7 @@ export default function LeaderboardClient({ initialData }) {
 
     channelRef.current = channel;
     return () => supabase.removeChannel(channel);
-  }, [gameId]);
+  }, [gameId, fetchLeaderboard]);
 
   return (
     <div className="bg-texture min-h-screen text-white flex flex-col">
@@ -104,13 +92,13 @@ export default function LeaderboardClient({ initialData }) {
 
             <div className="space-y-2">
               {entries.map((entry) => {
-                const isMe = deviceId && entry.deviceId === deviceId;
+                const isMe = deviceId && entry.deviceSuffix === deviceId.slice(-4);
                 const rankStyle = RANK_STYLES[entry.rank];
                 const medal = MEDAL[entry.rank];
 
                 return (
                   <div
-                    key={`${entry.deviceId}-${entry.rank}`}
+                    key={`${entry.deviceSuffix}-${entry.rank}`}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl ${
                       isMe
                         ? 'border border-blue-600 bg-blue-950/50'
@@ -131,7 +119,7 @@ export default function LeaderboardClient({ initialData }) {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm text-gray-300 font-medium truncate">{getDisplayName(entry.username, entry.deviceId)}</span>
+                      <span className="text-sm text-gray-300 font-medium truncate">{entry.displayName}</span>
                       {isMe && <span className="ml-2 text-xs text-blue-400 font-medium">you</span>}
                     </div>
                     <div className="text-sm text-gray-500 flex-shrink-0">{formatClues(entry.cluesUsed)}</div>

@@ -88,6 +88,7 @@ async function getTodayChampion() {
       totalAttempts: totalAttempts ?? 0,
       champion: top ? {
         name: getDisplayName(top.username, top.device_id),
+        deviceId: top.device_id,
         cluesUsed: top.clues_used,
         totalTimeMs: top.total_time_ms,
       } : null,
@@ -131,6 +132,7 @@ async function getHallOfFame(days = 14) {
         gameNumber: g.game_number,
         champion: best ? {
           name: getDisplayName(best.username, best.device_id),
+          deviceId: best.device_id,
           cluesUsed: best.clues_used,
           totalTimeMs: best.total_time_ms,
         } : null,
@@ -151,7 +153,7 @@ export default async function ChampionPage() {
   let streak = 1;
   if (champion) {
     for (let i = 1; i < hallOfFame.length; i++) {
-      if (hallOfFame[i].champion?.name === champion.name) {
+      if (hallOfFame[i].champion?.deviceId === champion.deviceId) {
         streak++;
       } else {
         break;

@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { matchAnswer } from '@/lib/matchAnswer';
+import { rateLimit, getIp } from '@/lib/rateLimit';
 
 export async function POST(request) {
   let body;
@@ -11,6 +12,13 @@ export async function POST(request) {
   }
 
   const { gameId, deviceId, guess, clueNumber, totalTimeMs } = body;
+
+  // ── Rate limiting ──────────────────────────────────────────────────────────
+
+  const ip = getIp(request);
+  if (!rateLimit(`guess:${ip}`, 30, 60_000)) {
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
+  }
 
   // ── Input validation ───────────────────────────────────────────────────────
 

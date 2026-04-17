@@ -274,10 +274,8 @@ export default function PlayClient({ initialGame }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ deviceId, gameId: game.id, username: trimmed }),
         });
-        const result = await res.json();
-        console.log('[username save] response:', result);
-      } catch (e) {
-        console.error('[username save] fetch error:', e);
+        await res.json();
+      } catch {
       }
     }
     setUsernameSaved(true);
@@ -288,9 +286,30 @@ export default function PlayClient({ initialGame }) {
 
   function handleCopy() {
     if (!game || !gameOverData) return;
-    navigator.clipboard.writeText(
-      buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak)
-    ).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+    const text = buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak);
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); })
+        .catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   }
 
   // ── Render: error ─────────────────────────────────────────────────────────

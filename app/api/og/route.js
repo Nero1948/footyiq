@@ -56,7 +56,7 @@ export async function GET() {
             display: 'flex',
           }}
         >
-          The daily NRL guessing game
+          6 clues. 1 player. Can you guess who?
         </div>
 
         {/* CTA */}

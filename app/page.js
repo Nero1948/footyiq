@@ -62,6 +62,21 @@ const HOW_IT_WORKS = [
   },
 ];
 
+async function getDemoPlayers() {
+  const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+  try {
+    const { data } = await supabase
+      .from('games')
+      .select('answer_player, clue_1, clue_2, clue_3')
+      .lt('date', todayAEST)
+      .order('date', { ascending: false })
+      .limit(3);
+    return data ?? [];
+  } catch {
+    return [];
+  }
+}
+
 async function getLandingStats() {
   const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
   try {
@@ -124,7 +139,7 @@ async function getYesterday() {
 }
 
 export default async function Home() {
-  const [stats, yesterday] = await Promise.all([getLandingStats(), getYesterday()]);
+  const [stats, yesterday, demoPlayers] = await Promise.all([getLandingStats(), getYesterday(), getDemoPlayers()]);
 
   const STATS_THRESHOLD = 20;
   const todayHasEnoughStats = (stats?.totalAttempts ?? 0) >= STATS_THRESHOLD;
@@ -272,7 +287,7 @@ export default async function Home() {
               Can you name this NRL player?
             </p>
           </ScrollReveal>
-          <GamePreview />
+          <GamePreview players={demoPlayers} />
         </div>
       </section>
 

@@ -373,25 +373,76 @@ export default function PlayClient({ initialGame }) {
         {/* Playing state */}
         {gameState === 'playing' && (
           <>
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-black text-white">Can you name this NRL player?</h2>
+            <div className="mb-6">
+              <h2 className="text-2xl font-black text-white mb-4">Can you name this NRL player?</h2>
+
+              {/* Progress bar — 6 segments */}
+              <div className="flex gap-1.5">
+                {[1, 2, 3, 4, 5, 6].map((n) => {
+                  const revealed = n <= clueNumber;
+                  const isCurrent = n === clueNumber;
+                  return (
+                    <div
+                      key={n}
+                      className="flex-1 rounded-full transition-all duration-300"
+                      style={{
+                        height: '5px',
+                        background: revealed
+                          ? isCurrent ? '#00e676' : 'rgba(0,230,118,0.35)'
+                          : 'rgba(255,255,255,0.07)',
+                        boxShadow: isCurrent ? '0 0 8px rgba(0,230,118,0.5)' : 'none',
+                      }}
+                    />
+                  );
+                })}
+              </div>
             </div>
-            <div className="rounded-2xl p-6 space-y-6 mb-8" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+
+            {/* Clue cards */}
+            <div className="space-y-3 mb-6">
               {clues.map((clueText, index) => {
                 const clueNum = index + 1;
                 const wrongGuessForClue = wrongGuesses[index];
                 const isNew = index === clues.length - 1 && index > 0;
+                const isCurrent = clueNum === clueNumber;
+
                 return (
-                  <div key={clueNum} className={isNew ? 'animate-fade-slide-in' : ''}>
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Clue {clueNum}</span>
-                      {wrongGuessForClue && <span className="text-sm text-red-400 font-medium truncate">— {wrongGuessForClue}</span>}
+                  <div
+                    key={clueNum}
+                    className={`rounded-xl p-4 ${isNew ? 'animate-fade-slide-in' : ''}`}
+                    style={{
+                      background: isCurrent ? 'rgba(0,230,118,0.04)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${isCurrent ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'}`,
+                      borderLeft: `3px solid ${isCurrent ? '#00e676' : 'rgba(255,255,255,0.1)'}`,
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      {/* Numbered badge */}
+                      <div
+                        className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5"
+                        style={{
+                          background: isCurrent ? '#00e676' : 'rgba(255,255,255,0.08)',
+                          color: isCurrent ? '#0a0e13' : '#6b7280',
+                        }}
+                      >
+                        {clueNum}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-base font-semibold text-white leading-relaxed">{clueText}</p>
+                        {wrongGuessForClue && (
+                          <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold" style={{ background: 'rgba(248,113,113,0.12)', color: '#f87171', border: '1px solid rgba(248,113,113,0.2)' }}>
+                            <span>✕</span>
+                            <span>{wrongGuessForClue}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-lg font-semibold text-white leading-relaxed">{clueText}</p>
                   </div>
                 );
               })}
             </div>
+
+            {/* Guess input */}
             <div>
               <p className="text-xs text-gray-500 mb-2">Type a player&apos;s name</p>
               <div className="flex gap-2">
@@ -412,7 +463,6 @@ export default function PlayClient({ initialGame }) {
                   {isGuessing ? '…' : 'Lock it in'}
                 </button>
               </div>
-              <p className="text-xs text-gray-600 mt-2 text-center">Clue {clueNumber} of 6</p>
             </div>
           </>
         )}

@@ -13,6 +13,11 @@ const CONFETTI = Array.from({ length: 40 }, (_, i) => ({
   round: i % 3 !== 0,
 }));
 
+const ls = {
+  get: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
+  set: (key, val) => { try { localStorage.setItem(key, val); } catch {} },
+};
+
 function generateUUID() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -70,7 +75,6 @@ export default function PlayClient({ initialGame }) {
   const [emailInput, setEmailInput] = useState('');
   const [emailState, setEmailState] = useState('idle');
   const [copied, setCopied] = useState(false);
-  const [timerVisible, setTimerVisible] = useState(false);
   const [loadError, setLoadError] = useState(initialGame ? null : 'No game today. Check back tomorrow!');
   const [isGuessing, setIsGuessing] = useState(false);
   const [stats, setStats] = useState(null);
@@ -94,7 +98,7 @@ export default function PlayClient({ initialGame }) {
       const d = new Date(base);
       d.setDate(d.getDate() - i);
       const k = d.toISOString().split('T')[0];
-      const r = localStorage.getItem(`setforsix_result_${k}`) || localStorage.getItem(`footyiq_result_${k}`);
+      const r = ls.get(`setforsix_result_${k}`) || ls.get(`footyiq_result_${k}`);
       if (r) { try { if (JSON.parse(r).solved) { s++; } else break; } catch { break; } }
       else break;
     }
@@ -104,11 +108,11 @@ export default function PlayClient({ initialGame }) {
   // ── Device ID + username ───────────────────────────────────────────────────
 
   useEffect(() => {
-    let id = localStorage.getItem('setforsix_device_id') || localStorage.getItem('footyiq_device_id');
+    let id = ls.get('setforsix_device_id') || ls.get('footyiq_device_id');
     if (!id) id = generateUUID();
-    localStorage.setItem('setforsix_device_id', id);
+    ls.set('setforsix_device_id', id);
     setDeviceId(id);
-    const savedUsername = localStorage.getItem('setforsix_username');
+    const savedUsername = ls.get('setforsix_username');
     if (savedUsername) setUsername(savedUsername);
   }, []);
 
@@ -126,8 +130,8 @@ export default function PlayClient({ initialGame }) {
     }
 
     const saved =
-      localStorage.getItem(`setforsix_result_${initialGame.date}`) ||
-      localStorage.getItem(`footyiq_result_${initialGame.date}`);
+      ls.get(`setforsix_result_${initialGame.date}`) ||
+      ls.get(`footyiq_result_${initialGame.date}`);
     if (saved) {
       try {
         setGameOverData(JSON.parse(saved));
@@ -186,7 +190,7 @@ export default function PlayClient({ initialGame }) {
   const finishGame = useCallback(
     async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses, facts = [] }) => {
       try {
-        const currentUsername = localStorage.getItem('setforsix_username') || 'Anonymous';
+        const currentUsername = ls.get('setforsix_username') || 'Anonymous';
         const res = await fetch('/api/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -199,12 +203,12 @@ export default function PlayClient({ initialGame }) {
         const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile, facts };
         setGameOverData(resultData);
         setGameState('done');
-        localStorage.setItem(`setforsix_result_${game.date}`, JSON.stringify(resultData));
+        ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
       } catch {
         const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts };
         setGameOverData(resultData);
         setGameState('done');
-        localStorage.setItem(`setforsix_result_${game.date}`, JSON.stringify(resultData));
+        ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
       } finally {
         setIsGuessing(false);
       }
@@ -217,7 +221,6 @@ export default function PlayClient({ initialGame }) {
   const handleGuess = useCallback(async () => {
     const guessText = currentGuess.trim();
     if (!guessText || isGuessing) return;
-    setTimerVisible(true);
     const timeMs = Math.round(performance.now() - startTimeRef.current);
     setIsGuessing(true);
     setCurrentGuess('');
@@ -266,16 +269,16 @@ export default function PlayClient({ initialGame }) {
   async function handleUsernameSave() {
     const trimmed = username.trim() || 'Anonymous';
     setUsername(trimmed);
-    localStorage.setItem('setforsix_username', trimmed);
+    ls.set('setforsix_username', trimmed);
     if (game?.id && deviceId) {
       try {
-        const res = await fetch('/api/attempt/update-username', {
+        await fetch('/api/attempt/update-username', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ deviceId, gameId: game.id, username: trimmed }),
         });
-        await res.json();
       } catch {
+        // localStorage is updated — leaderboard will reflect on next submission
       }
     }
     setUsernameSaved(true);
@@ -361,7 +364,7 @@ export default function PlayClient({ initialGame }) {
           <Link href="/" className="text-xl font-black tracking-tight text-white hover:text-[#00e676] transition-colors">Set For Six</Link>
           {game && <p className="text-xs text-gray-500 mt-0.5">Game #{game.game_number}</p>}
         </div>
-        {gameState === 'playing' && timerVisible && <div className="text-2xl font-mono font-bold tabular-nums animate-timer-glow">{formatTime(elapsedMs)}</div>}
+        {gameState === 'playing' && deviceId && <div className="text-2xl font-mono font-bold tabular-nums animate-timer-glow">{formatTime(elapsedMs)}</div>}
         {gameState === 'done' && gameOverData && <div className="text-sm text-gray-400 font-mono tabular-nums">{formatTime(gameOverData.totalTimeMs)}</div>}
       </header>
 

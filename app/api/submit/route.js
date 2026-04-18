@@ -56,7 +56,7 @@ export async function POST(request) {
 
   // ── Anti-cheat ─────────────────────────────────────────────────────────────
 
-  if (totalTimeMs < 500) {
+  if (totalTimeMs < 500 || totalTimeMs > 3_600_000) {
     return Response.json({ error: 'Invalid submission time' }, { status: 400 });
   }
 
@@ -116,6 +116,9 @@ export async function POST(request) {
       });
 
     if (insertError) {
+      if (insertError.code === '23505') {
+        return Response.json({ error: 'Already submitted' }, { status: 409 });
+      }
       return Response.json({ error: 'Failed to save attempt' }, { status: 500 });
     }
 

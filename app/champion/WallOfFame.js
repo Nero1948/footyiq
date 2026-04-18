@@ -15,7 +15,7 @@ export default function WallOfFame({ entries, todayAEST, winnerCounts }) {
   const [expandedDate, setExpandedDate] = useState(null);
 
   if (!entries.length) {
-    return <p className="text-gray-600 text-sm mt-4">No games played yet.</p>;
+    return <p className="text-gray-600 text-sm mt-4">Champions will appear here once games are played.</p>;
   }
 
   return (
@@ -73,7 +73,7 @@ export default function WallOfFame({ entries, todayAEST, winnerCounts }) {
                   <span className="text-gray-600 text-xs ml-1">{isExpanded ? '▲' : '▼'}</span>
                 </div>
               ) : (
-                <p className="text-sm text-gray-600 flex-shrink-0">No scores yet</p>
+                <p className="text-sm text-gray-600 flex-shrink-0">No players yet</p>
               )}
             </div>
 

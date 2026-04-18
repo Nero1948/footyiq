@@ -38,14 +38,20 @@ async function getLeaderboardData() {
       .order('total_time_ms', { ascending: true })
       .limit(10);
 
+    const FALLBACK_NAMES = ['Mystery Fan', 'Secret Selector', 'Phantom Tipper', 'Ghost Player', 'Undercover Footy Brain', 'Anonymous Legend'];
+    const getFallback = (id) => {
+      let h = 0;
+      for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0x7fffffff;
+      return FALLBACK_NAMES[h % FALLBACK_NAMES.length];
+    };
+
     const entries = (attempts ?? []).map((a, i) => ({
       rank: i + 1,
-      username: a.username || 'Anonymous',
+      displayName: (a.username && a.username !== 'Anonymous') ? a.username : getFallback(a.device_id),
       deviceSuffix: a.device_id.slice(-4),
       cluesUsed: a.clues_used,
       totalTimeMs: a.total_time_ms,
       createdAt: a.created_at,
-      deviceId: a.device_id,
     }));
 
     return { gameId: game.id, gameNumber: game.game_number, entries };

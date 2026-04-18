@@ -5,9 +5,9 @@ export async function GET(request) {
   // ── Auth ───────────────────────────────────────────────────────────────────
 
   const cronSecret = process.env.CRON_SECRET;
-  const headerSecret = request.headers.get('x-cron-secret');
+  const authHeader = request.headers.get('authorization');
 
-  if (!cronSecret || headerSecret !== cronSecret) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return Response.json({ error: 'Unauthorised' }, { status: 401 });
   }
 

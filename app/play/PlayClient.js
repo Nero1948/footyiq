@@ -419,34 +419,81 @@ export default function PlayClient({ initialGame }) {
 
         {/* Done state */}
         {gameState === 'done' && gameOverData && (
-          <div className="space-y-5">
+          <div className="space-y-4">
 
-            <div className="text-center pt-2">
-              <p className="text-sm text-gray-500 mb-2">The answer was</p>
-              <p className={`text-3xl font-bold ${gameOverData.solved ? 'text-[#00e676]' : 'text-red-400'}`}>{gameOverData.answer}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                {gameOverData.solved ? `Solved in ${gameOverData.cluesUsed} ${gameOverData.cluesUsed === 1 ? 'clue' : 'clues'}` : 'Better luck tomorrow'}
+            {/* Badge + headline */}
+            <div className="pt-2">
+              <div className="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-widest mb-3"
+                style={{ background: gameOverData.solved ? 'rgba(0,230,118,0.12)' : 'rgba(248,113,113,0.12)', color: gameOverData.solved ? '#00e676' : '#f87171' }}>
+                {gameOverData.solved ? 'SOLVED' : 'FAILED'}
+              </div>
+              <h1 className="text-3xl font-black text-white leading-tight mb-1">
+                {gameOverData.solved ? 'Nailed it.' : 'Better luck tomorrow.'}
+              </h1>
+              <p className="text-sm text-gray-400">
+                {gameOverData.solved
+                  ? `${gameOverData.cluesUsed} ${gameOverData.cluesUsed === 1 ? 'clue' : 'clues'} · ${formatTime(gameOverData.totalTimeMs)}${gameOverData.percentile && gameOverData.totalPlayers >= 20 ? ` · beat ${gameOverData.percentile}% of players` : ''}`
+                  : `${formatTime(gameOverData.totalTimeMs)} · didn't crack it`}
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { value: gameOverData.cluesUsed, label: 'Clues used' },
-                { value: formatTime(gameOverData.totalTimeMs), label: 'Time', mono: true },
-                ...(gameOverData.rank !== null ? [
-                  { value: `#${gameOverData.rank}`, label: `Rank of ${gameOverData.totalPlayers}` },
-                  ...(gameOverData.totalPlayers >= 20 ? [{ value: `${gameOverData.percentile}%`, label: 'Percentile' }] : []),
-                ] : []),
-              ].map(({ value, label, mono }) => (
-                <div key={label} className="rounded-xl py-4 px-3 text-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <p className={`text-2xl font-bold ${mono ? 'font-mono tabular-nums' : ''}`}>{value}</p>
-                  <p className="text-xs text-gray-500 mt-1">{label}</p>
+            {/* Player reveal card */}
+            <div className="rounded-2xl p-4" style={{ background: '#121821', border: '1px solid rgba(0,230,118,0.2)' }}>
+              <p className="text-xs font-bold tracking-widest mb-3" style={{ color: '#00e676' }}>TODAY&apos;S PLAYER</p>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-black text-white"
+                  style={{ background: 'rgba(0,230,118,0.15)', border: '1px solid rgba(0,230,118,0.3)' }}>
+                  {gameOverData.answer.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
-              ))}
+                <div>
+                  <p className="text-xl font-black text-white">{gameOverData.answer}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Game #{game.game_number}</p>
+                </div>
+              </div>
             </div>
 
+            {/* Clue tiles */}
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5, 6].map((n) => {
+                const isCorrect = gameOverData.solved && n === gameOverData.cluesUsed;
+                const wasRevealed = n <= gameOverData.cluesUsed;
+                return (
+                  <div key={n} className="flex-1 rounded-lg flex items-center justify-center text-sm font-bold" style={{ aspectRatio: '1', background: isCorrect ? '#00e676' : wasRevealed ? 'rgba(248,113,113,0.25)' : 'rgba(255,255,255,0.04)', color: isCorrect ? '#0a0e13' : wasRevealed ? '#f87171' : '#374151', border: `1px solid ${isCorrect ? '#00e676' : wasRevealed ? 'rgba(248,113,113,0.3)' : 'rgba(255,255,255,0.06)'}` }}>
+                    {n}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Stats grid */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-xl p-3" style={{ background: '#121821' }}>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Time</p>
+                <p className="text-xl font-black font-mono tabular-nums text-white">{formatTime(gameOverData.totalTimeMs)}</p>
+              </div>
+              <div className="rounded-xl p-3" style={{ background: '#121821' }}>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Rank</p>
+                <p className="text-xl font-black text-white">{gameOverData.rank !== null ? `#${gameOverData.rank} of ${gameOverData.totalPlayers}` : '—'}</p>
+              </div>
+              <div className="rounded-xl p-3" style={{ background: '#121821' }}>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Percentile</p>
+                <p className="text-xl font-black text-white">{gameOverData.totalPlayers >= 20 && gameOverData.percentile ? `${gameOverData.percentile}%` : '—'}</p>
+              </div>
+              <div className="rounded-xl p-3" style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)' }}>
+                <p className="text-xs uppercase tracking-wider mb-1" style={{ color: '#00e676' }}>Streak</p>
+                <p className="text-xl font-black" style={{ color: '#00e676' }}>{streak} {streak === 1 ? 'day' : 'days'} 🔥</p>
+              </div>
+            </div>
+
+            {/* Share — primary CTA */}
+            <button onClick={handleCopy} className="w-full font-bold py-3.5 rounded-xl active:scale-95 transition-transform text-base flex items-center justify-center gap-2" style={{ background: '#00e676', color: '#000' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              {copied ? '✓ Copied!' : 'Share your result'}
+            </button>
+
+            {/* Save name — secondary */}
             <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Your display name</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Your name on the leaderboard</p>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -466,9 +513,9 @@ export default function PlayClient({ initialGame }) {
                   {usernameSaved ? '✓ Saved!' : 'Save'}
                 </button>
               </div>
-              <p className="text-xs text-gray-600 mt-1.5">Your name on the leaderboard</p>
             </div>
 
+            {/* Facts */}
             {gameOverData.facts?.length > 0 && (
               <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(0,230,118,0.05)', border: '1px solid rgba(0,230,118,0.15)', borderLeft: '3px solid #00e676' }}>
                 <p className="text-sm font-semibold text-[#00e676]">🧠 Did you know?</p>
@@ -480,6 +527,7 @@ export default function PlayClient({ initialGame }) {
               </div>
             )}
 
+            {/* How everyone did */}
             {stats && stats.totalPlayers >= 20 && (
               <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
                 <div className="flex items-baseline justify-between">
@@ -505,6 +553,7 @@ export default function PlayClient({ initialGame }) {
               </div>
             )}
 
+            {/* Yesterday's answer */}
             {yesterdayData && (
               <div className="rounded-xl p-4 space-y-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
                 <p className="text-xs text-gray-500 uppercase tracking-wider">Yesterday&apos;s answer</p>
@@ -519,42 +568,41 @@ export default function PlayClient({ initialGame }) {
               </div>
             )}
 
-            <div className="rounded-xl p-4" style={{ background: 'rgba(0,230,118,0.04)', border: '1px solid rgba(0,230,118,0.15)', borderLeft: '3px solid #00e676' }}>
-              <p className="font-mono text-sm text-gray-200 whitespace-pre-line leading-relaxed">
-                {buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak)}
-              </p>
-            </div>
+            {/* Bottom section */}
+            <div className="pt-2 space-y-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
 
-            <button onClick={handleCopy} className="w-full font-bold py-3.5 rounded-xl active:scale-95 transition-transform text-base" style={{ background: '#00e676', color: '#000' }}>
-              {copied ? '✓ Copied!' : '📋 Copy & Share Result'}
-            </button>
+              {/* Countdown */}
+              <div className="text-center py-2">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Next game in</p>
+                <p className="text-3xl font-mono font-black tabular-nums" style={{ color: '#00e676' }}>{countdown}</p>
+              </div>
 
-            <div className="rounded-xl p-5" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+              {/* Email signup — subtle */}
               {emailState === 'done' ? (
-                <p className="text-center text-[#00e676] text-sm">You&apos;re in! We&apos;ll remind you tomorrow at 7am.</p>
+                <p className="text-center text-[#00e676] text-sm">You&apos;re in! We&apos;ll remind you tomorrow at 9am.</p>
               ) : (
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-400 text-center">Get tomorrow&apos;s game at 7am</p>
-                  <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-2">
-                    <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" className="flex-1 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 text-sm focus:outline-none transition-colors" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} />
-                    <button type="submit" disabled={emailState === 'loading'} className="text-white text-sm font-medium px-4 py-2.5 rounded-xl disabled:opacity-50 transition-colors whitespace-nowrap" style={{ background: '#1a2535', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      {emailState === 'loading' ? '…' : 'Notify me'}
+                <div className="rounded-xl p-3" style={{ background: '#121821' }}>
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <div>
+                      <p className="text-sm text-white font-medium">Daily reminder at 9am</p>
+                      <p className="text-xs text-gray-500">Keep your streak alive.</p>
+                    </div>
+                  </div>
+                  <form onSubmit={handleEmailSubmit} className="flex gap-2">
+                    <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" disabled={emailState === 'loading'} className="flex-1 rounded-lg px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                    <button type="submit" disabled={emailState === 'loading'} className="text-sm font-semibold px-4 py-2 rounded-lg disabled:opacity-50 whitespace-nowrap" style={{ background: 'rgba(0,230,118,0.12)', color: '#00e676', border: '1px solid rgba(0,230,118,0.2)' }}>
+                      {emailState === 'loading' ? '…' : 'Opt in'}
                     </button>
                   </form>
-                  {emailState === 'error' && <p className="text-xs text-red-400 text-center">Something went wrong. Try again.</p>}
+                  {emailState === 'error' && <p className="text-xs text-red-400 mt-2">Something went wrong. Try again.</p>}
                 </div>
               )}
-            </div>
 
-            <div className="text-center py-2 space-y-1">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Next game in</p>
-              <p className="text-3xl font-mono font-bold tabular-nums" style={{ color: '#00e676' }}>{countdown}</p>
-              <p className="text-xs text-gray-600">Don&apos;t break your streak</p>
-            </div>
+              <Link href="/leaderboard" className="block text-center text-sm text-gray-500 hover:text-gray-300 transition-colors pb-4">
+                View leaderboard →
+              </Link>
 
-            <Link href="/leaderboard" className="block text-center text-sm text-gray-500 hover:text-gray-300 transition-colors pb-4">
-              View leaderboard →
-            </Link>
+            </div>
 
           </div>
         )}

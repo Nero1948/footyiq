@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Nav from './components/Nav';
 import ScrollReveal from './components/ScrollReveal';
 import EmailSignup from './components/EmailSignup';
+import GamePreview from './components/GamePreview';
 import { supabase } from '@/lib/supabase';
 
 export const revalidate = 60;
@@ -259,6 +260,23 @@ export default async function Home() {
 
       {/* Divider */}
       <div style={{ height: '1px', background: `linear-gradient(90deg, transparent, ${GREEN}, transparent)`, opacity: 0.5 }} />
+
+      {/* ════════════ GAME PREVIEW ════════════ */}
+      <section className="px-4 py-16 md:py-20" style={{ background: 'rgba(7,11,16,0.95)' }}>
+        <div className="max-w-xl mx-auto">
+          <ScrollReveal>
+            <p className="text-center text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-3">
+              See how it works
+            </p>
+            <p className="text-center text-2xl font-black text-white mb-10">
+              Can you name this NRL player?
+            </p>
+          </ScrollReveal>
+          <GamePreview />
+        </div>
+      </section>
+
+      <div style={{ height: '1px', background: `linear-gradient(90deg, transparent, ${GREEN}, transparent)`, opacity: 0.3 }} />
 
       {/* ════════════ HOW IT WORKS ════════════ */}
       <section className="px-4 py-16 md:py-20" style={{ background: 'rgba(7,11,16,0.95)' }}>

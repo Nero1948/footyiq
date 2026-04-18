@@ -471,74 +471,58 @@ export default function PlayClient({ initialGame }) {
         {gameState === 'done' && gameOverData && (
           <div className="space-y-4">
 
-            {/* Badge + headline */}
-            <div className="pt-2">
-              <div className="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-widest mb-3"
-                style={{ background: gameOverData.solved ? 'rgba(0,230,118,0.12)' : 'rgba(248,113,113,0.12)', color: gameOverData.solved ? '#00e676' : '#f87171' }}>
-                {gameOverData.solved ? 'SOLVED' : 'FAILED'}
-              </div>
-              <h1 className="text-3xl font-black text-white leading-tight mb-1">
-                {gameOverData.solved ? 'Nailed it.' : 'Better luck tomorrow.'}
-              </h1>
-              <p className="text-sm text-gray-400">
-                {gameOverData.solved
-                  ? `${gameOverData.cluesUsed} ${gameOverData.cluesUsed === 1 ? 'clue' : 'clues'} · ${formatTime(gameOverData.totalTimeMs)}${gameOverData.percentile && gameOverData.totalPlayers >= 20 ? ` · beat ${gameOverData.percentile}% of players` : ''}`
-                  : `${formatTime(gameOverData.totalTimeMs)} · didn't crack it`}
+            {/* Result hero card */}
+            <div className="rounded-2xl p-5 text-center" style={{ background: '#0f1419', border: `1px solid ${gameOverData.solved ? 'rgba(0,230,118,0.2)' : 'rgba(248,113,113,0.2)'}` }}>
+              {/* Icon */}
+              <div className="text-4xl mb-3">{gameOverData.solved ? '🏉' : '😤'}</div>
+
+              {/* Player name — the hero */}
+              <p className="text-xs font-bold tracking-widest mb-1" style={{ color: gameOverData.solved ? '#00e676' : '#f87171' }}>
+                {gameOverData.solved ? 'YOU GOT IT' : 'TODAY\'S PLAYER'}
               </p>
-            </div>
+              <h1 className="text-3xl font-black text-white leading-tight mb-3">{gameOverData.answer}</h1>
 
-            {/* Player reveal card */}
-            <div className="rounded-2xl p-4" style={{ background: '#121821', border: '1px solid rgba(0,230,118,0.2)' }}>
-              <p className="text-xs font-bold tracking-widest mb-3" style={{ color: '#00e676' }}>TODAY&apos;S PLAYER</p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-black text-white"
-                  style={{ background: 'rgba(0,230,118,0.15)', border: '1px solid rgba(0,230,118,0.3)' }}>
-                  {gameOverData.answer.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                </div>
-                <div>
-                  <p className="text-xl font-black text-white">{gameOverData.answer}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Game #{game.game_number}</p>
+              {/* Score fraction + dots in one row */}
+              <div className="flex items-center justify-center gap-3 mb-1">
+                <span className="text-lg font-black tabular-nums" style={{ color: gameOverData.solved ? '#00e676' : '#f87171' }}>
+                  {gameOverData.solved ? gameOverData.cluesUsed : '✗'}<span className="text-gray-600 font-normal text-base"> / 6</span>
+                </span>
+                <div className="flex gap-1.5">
+                  {[1, 2, 3, 4, 5, 6].map((n) => {
+                    const isCorrect = gameOverData.solved && n === gameOverData.cluesUsed;
+                    const wasRevealed = n <= gameOverData.cluesUsed;
+                    return (
+                      <div key={n} className="rounded-full" style={{
+                        width: 10, height: 10,
+                        background: isCorrect ? '#00e676' : wasRevealed ? 'rgba(248,113,113,0.6)' : 'rgba(255,255,255,0.08)',
+                        border: `1px solid ${isCorrect ? '#00e676' : wasRevealed ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.12)'}`,
+                      }} />
+                    );
+                  })}
                 </div>
               </div>
+              <p className="text-xs text-gray-500">Game #{game.game_number}</p>
             </div>
 
-            {/* Clue tiles */}
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5, 6].map((n) => {
-                const isCorrect = gameOverData.solved && n === gameOverData.cluesUsed;
-                const wasRevealed = n <= gameOverData.cluesUsed;
-                return (
-                  <div key={n} className="flex-1 rounded-lg flex items-center justify-center text-sm font-bold" style={{ aspectRatio: '1', background: isCorrect ? '#00e676' : wasRevealed ? 'rgba(248,113,113,0.25)' : 'rgba(255,255,255,0.04)', color: isCorrect ? '#0a0e13' : wasRevealed ? '#f87171' : '#374151', border: `1px solid ${isCorrect ? '#00e676' : wasRevealed ? 'rgba(248,113,113,0.3)' : 'rgba(255,255,255,0.06)'}` }}>
-                    {n}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Stats grid */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-xl p-3" style={{ background: '#121821' }}>
+            {/* Horizontal stats strip */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Time</p>
-                <p className="text-xl font-black font-mono tabular-nums text-white">{formatTime(gameOverData.totalTimeMs)}</p>
+                <p className="text-lg font-black font-mono tabular-nums text-white">{formatTime(gameOverData.totalTimeMs)}</p>
               </div>
-              <div className="rounded-xl p-3" style={{ background: '#121821' }}>
+              <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Rank</p>
-                <p className="text-xl font-black text-white">{gameOverData.rank !== null ? `#${gameOverData.rank} of ${gameOverData.totalPlayers}` : '—'}</p>
+                <p className="text-lg font-black text-white">{gameOverData.rank !== null ? `#${gameOverData.rank}` : '—'}</p>
               </div>
-              <div className="rounded-xl p-3" style={{ background: '#121821' }}>
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Percentile</p>
-                <p className="text-xl font-black text-white">{gameOverData.totalPlayers >= 20 && gameOverData.percentile ? `${gameOverData.percentile}%` : '—'}</p>
-              </div>
-              <div className="rounded-xl p-3" style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)' }}>
+              <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(0,230,118,0.06)', border: '1px solid rgba(0,230,118,0.15)' }}>
                 <p className="text-xs uppercase tracking-wider mb-1" style={{ color: '#00e676' }}>Streak</p>
-                <p className="text-xl font-black" style={{ color: '#00e676' }}>{streak} {streak === 1 ? 'day' : 'days'} 🔥</p>
+                <p className="text-lg font-black" style={{ color: '#00e676' }}>{streak}🔥</p>
               </div>
             </div>
 
             {/* Share — primary CTA */}
-            <button onClick={handleCopy} className="w-full font-bold py-3.5 rounded-xl active:scale-95 transition-transform text-base flex items-center justify-center gap-2" style={{ background: '#00e676', color: '#000' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-              {copied ? '✓ Copied!' : 'Share your result'}
+            <button onClick={handleCopy} className="w-full font-bold py-4 rounded-xl active:scale-95 transition-transform text-base" style={{ background: '#00e676', color: '#000' }}>
+              {copied ? '✓ Copied to clipboard!' : 'Share your result'}
             </button>
 
             {/* Save name — secondary */}

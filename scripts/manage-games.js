@@ -77,7 +77,23 @@ const DRAMA_UPDATES = [
 // Move approved PENDING_GAMES here when ready to go live.
 
 const NEW_GAMES = [
-  // empty — add pending games here once approved
+  {
+    game_number: 11,
+    date: '2026-04-25',
+    answer_player: 'Greg Inglis',
+    clue_1: 'As a teenager from regional NSW, he was already being talked about as an exceptional all-round back with the frame, speed and instincts to become a future superstar',
+    clue_2: 'Won the Clive Churchill Medal as player of the match in his first NRL grand final — a remarkable individual honour for someone only in his early twenties',
+    clue_3: 'When he moved clubs, he helped end a 43-year premiership drought for one of the most storied franchises in the history of the game',
+    clue_4: 'His try celebration after the match-clinching score in his second premiership victory — crawling on all fours — became one of the most iconic and culturally significant images in modern NRL history',
+    clue_5: 'Retired as Queensland\'s all-time leading try-scorer in State of Origin history with 18 tries in 32 appearances across an 11-year period of Maroons dominance',
+    clue_6: "Melbourne Storm and South Sydney Rabbitohs centre/fullback nicknamed 'GI' who scored 149 NRL tries, won the 2014 NRL premiership (the 2007 Storm premiership was stripped for salary cap breaches), the 2009 Golden Boot, and retired as Queensland's all-time State of Origin top tryscorer",
+    facts: [
+      'His "Goanna crawl" celebration after scoring the match-clinching try in the 2014 NRL Grand Final became one of rugby league\'s most iconic and culturally significant images.',
+      'Inglis retired as Queensland\'s all-time top try-scorer in State of Origin history with 18 tries in 32 matches across an 11-year period.',
+      'He won the 2009 Golden Boot as the world\'s best rugby league player — the same year he won the Wally Lewis Medal as Queensland\'s player of the series. His 2007 NRL premiership with Melbourne Storm was later stripped when the club\'s systematic salary cap rorting was exposed in 2010.',
+    ],
+    drama: "In 2019, Inglis was caught drink-driving and speeding in Queensland and resigned the Australian captaincy the following morning — just months before the World Cup. He later said the arrest was the moment he finally confronted his struggles with alcohol and mental health.",
+  },
 ];
 
 // ── Already-inserted games (reference only, not re-inserted) ──────────────────
@@ -154,23 +170,6 @@ const _INSERTED_REFERENCE = [
 // Run through each game, approve clues/facts, then move into NEW_GAMES above.
 
 const PENDING_GAMES = [
-  {
-    game_number: 11,
-    date: '2026-04-25',
-    answer_player: 'Greg Inglis',
-    clue_1: 'As a teenager from regional NSW, he was already being talked about as an exceptional all-round back with the frame, speed and instincts to become a future superstar',
-    clue_2: 'Won the Clive Churchill Medal as player of the match in his first NRL grand final — a remarkable individual honour for someone only in his early twenties',
-    clue_3: 'When he moved clubs, he helped end a 43-year premiership drought for one of the most storied franchises in the history of the game',
-    clue_4: 'His try celebration after the match-clinching score in his second premiership victory — crawling on all fours — became one of the most iconic and culturally significant images in modern NRL history',
-    clue_5: 'Retired as Queensland\'s all-time leading try-scorer in State of Origin history with 18 tries in 32 appearances across an 11-year period of Maroons dominance',
-    clue_6: "Melbourne Storm and South Sydney Rabbitohs centre/fullback nicknamed 'GI' who scored 149 NRL tries, won the 2014 NRL premiership (the 2007 Storm premiership was stripped for salary cap breaches), the 2009 Golden Boot, and retired as Queensland's all-time State of Origin top tryscorer",
-    facts: [
-      'His "Goanna crawl" celebration after scoring the match-clinching try in the 2014 NRL Grand Final became one of rugby league\'s most iconic and culturally significant images.',
-      'Inglis retired as Queensland\'s all-time top try-scorer in State of Origin history with 18 tries in 32 matches across an 11-year period.',
-      'He won the 2009 Golden Boot as the world\'s best rugby league player — the same year he won the Wally Lewis Medal as Queensland\'s player of the series. His 2007 NRL premiership with Melbourne Storm was later stripped when the club\'s systematic salary cap rorting was exposed in 2010.',
-    ],
-    drama: "In 2019, Inglis was caught drink-driving and speeding in Queensland and resigned the Australian captaincy the following morning — just months before the World Cup. He later said the arrest was the moment he finally confronted his struggles with alcohol and mental health.",
-  },
   {
     game_number: 12,
     date: '2026-04-26',

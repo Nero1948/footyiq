@@ -110,6 +110,22 @@ const NEW_GAMES = [
       'After retiring in 2016, Parker moved straight into a media career with Fox Sports, becoming one of the network\'s most recognised NRL analysts and commentators.',
     ],
   },
+  {
+    game_number: 13,
+    date: '2026-04-27',
+    answer_player: 'Laurie Daley',
+    clue_1: 'Was spotted by a club talent scout at just 15 years of age playing senior first-grade club football in the country — and debuted in the top grade at 17 without ever playing a reserve grade match',
+    clue_2: 'Won three NRL premierships with the same club across a six-year span — a dynasty built around his ability to control a game from five-eighth',
+    clue_3: 'Of Aboriginal heritage, born in a small country town, he became one of the most beloved and influential players in the history of his club and a trailblazer for Indigenous footballers',
+    clue_4: 'When he retired, his club unveiled a life-size statue in his honour at their home ground — recognition usually reserved for only the very greatest players of a generation',
+    clue_5: 'Captained both his state and his country, winning the Dally M Medal as the competition\'s best player in 1995 and being named club Player of the Year on five separate occasions',
+    clue_6: 'Canberra Raiders five-eighth who won three NRL premierships (1989, 1991, 1994), the 1995 Dally M Medal, captained Australia in 26 Tests, and had a statue erected in his honour at Bruce Stadium',
+    facts: [
+      'Growing up in Junee, Daley was the only boy among seven sisters — a detail that surprises most people who picture the fiercely competitive player he became.',
+      'Coach Tim Sheens deliberately moved him from centre to five-eighth in 1990 with a specific plan — to groom him as the long-term successor to Wally Lewis at Test five-eighth. The gamble paid off spectacularly.',
+      'Daley scored 87 tries across his career — a remarkable total for a player whose defensive work and playmaking ability were considered equally valuable.',
+    ],
+  },
 ];
 
 // ── Already-inserted games (reference only, not re-inserted) ──────────────────
@@ -186,24 +202,6 @@ const _INSERTED_REFERENCE = [
 // Run through each game, approve clues/facts, then move into NEW_GAMES above.
 
 const PENDING_GAMES = [
-  {
-    game_number: 13,
-    date: '2026-04-27',
-    answer_player: 'Laurie Daley',
-    clue_1: 'Was spotted by a club talent scout at just 15 years of age playing senior first-grade club football in the country — and debuted in the top grade at 17 without ever playing a reserve grade match',
-    clue_2: 'Won three NRL premierships with the same club across a six-year span — a dynasty built around his ability to control a game from five-eighth',
-    clue_3: 'Of Aboriginal heritage, born in a small country town, he became one of the most beloved and influential players in the history of his club and a trailblazer for Indigenous footballers',
-    clue_4: 'When he retired, his club unveiled a life-size statue in his honour at their home ground — recognition usually reserved for only the very greatest players of a generation',
-    clue_5: 'Captained both his state and his country, winning the Dally M Medal as the competition\'s best player in 1995 and being named club Player of the Year on five separate occasions',
-    clue_6: 'Canberra Raiders five-eighth who won three NRL premierships (1989, 1991, 1994), the 1995 Dally M Medal, captained Australia in 26 Tests, and had a statue erected in his honour at Bruce Stadium',
-    facts: [
-      'Daley was talent-spotted at 15 while playing first grade for the Junee Diesels in the country competition — and debuted for the Raiders at 17 without ever playing reserve grade.',
-      'He won three NRL premierships with the Raiders — in 1989, 1991, and 1994 — as the heartbeat of one of the greatest club sides in Australian rugby league history.',
-      'Of Aboriginal heritage, born in the country town of Junee, Daley became a prominent advocate for Indigenous communities and a trailblazer for the next generation.',
-      'When he retired mid-season in 2000 due to chronic knee problems, the Raiders unveiled a statue at Bruce Stadium — one of only a handful of players to receive such recognition.',
-      'Daley won the Dally M Medal in 1995 and was named Canberra Raiders Player of the Year on five occasions, cementing his status as the club\'s greatest ever player.',
-    ],
-  },
   {
     game_number: 14,
     date: '2026-04-28',

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { supabase } from '@/lib/supabase';
 import PlayClient from './PlayClient';
 
@@ -11,29 +12,7 @@ const PLAY_OG = {
   type: 'website',
 };
 
-export async function generateMetadata() {
-  const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
-  try {
-    const { data: game } = await supabase
-      .from('games').select('game_number').eq('date', todayAEST).single();
-    if (game) {
-      return {
-        title: `Set For Six — Game #${game.game_number}`,
-        description: 'Six clues. One mystery NRL player. Can you crack it before your mates?',
-        openGraph: PLAY_OG,
-        twitter: { card: 'summary_large_image', ...PLAY_OG },
-      };
-    }
-  } catch { /* fall through */ }
-  return {
-    title: 'Set For Six — Play',
-    description: 'Six clues. One mystery NRL player. Can you crack it before your mates?',
-    openGraph: PLAY_OG,
-    twitter: { card: 'summary_large_image', ...PLAY_OG },
-  };
-}
-
-async function getTodayGame() {
+const getTodayGame = cache(async function getTodayGame() {
   const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
   try {
     const { data: game } = await supabase
@@ -45,6 +24,24 @@ async function getTodayGame() {
   } catch {
     return null;
   }
+});
+
+export async function generateMetadata() {
+  const game = await getTodayGame();
+  if (game) {
+    return {
+      title: `Set For Six — Game #${game.game_number}`,
+      description: 'Six clues. One mystery NRL player. Can you crack it before your mates?',
+      openGraph: PLAY_OG,
+      twitter: { card: 'summary_large_image', ...PLAY_OG },
+    };
+  }
+  return {
+    title: 'Set For Six — Play',
+    description: 'Six clues. One mystery NRL player. Can you crack it before your mates?',
+    openGraph: PLAY_OG,
+    twitter: { card: 'summary_large_image', ...PLAY_OG },
+  };
 }
 
 export default async function PlayPage() {

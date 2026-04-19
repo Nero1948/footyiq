@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
-const SCRIPTS = [
+const FALLBACK_SCRIPTS = [
   {
     name: 'Cameron Smith',
     label: 'Solved in 2 clues',
@@ -39,6 +39,32 @@ const SCRIPTS = [
   },
 ];
 
+// Wrong guess pools for each demo game (plausible NRL names that won't match real answers)
+const WRONG_GUESS_POOLS = [
+  ['James Tedesco', 'Nathan Cleary'],
+  ['Latrell Mitchell', 'Ryan Papenhuyzen', 'Tom Trbojevic'],
+  ['Kalyn Ponga', 'Daly Cherry-Evans', 'Nicho Hynes', 'Reece Walsh', 'Dylan Brown'],
+];
+
+// How many clues each of the 3 demo games "solves" at
+const SOLVE_AT = [2, 4, 6];
+
+function buildScripts(players) {
+  if (!players || players.length < 3) return FALLBACK_SCRIPTS;
+  return players.slice(0, 3).map((p, i) => {
+    const solveAt = SOLVE_AT[i];
+    const allClues = [p.clue_1, p.clue_2, p.clue_3, p.clue_4, p.clue_5, p.clue_6].filter(Boolean);
+    const clues = allClues.slice(0, solveAt);
+    if (clues.length < solveAt) return FALLBACK_SCRIPTS[i]; // not enough clues in DB
+    return {
+      name: p.answer_player,
+      label: `Solved in ${solveAt} clue${solveAt === 1 ? '' : 's'}`,
+      clues,
+      wrongGuesses: WRONG_GUESS_POOLS[i].slice(0, solveAt - 1),
+    };
+  });
+}
+
 // Timing constants (ms)
 const THINK_MS = 2000;      // pause before typing starts
 const TYPE_MS = 65;          // ms per character typed
@@ -48,7 +74,9 @@ const NEW_CLUE_PAUSE_MS = 1400; // pause after new clue appears before next typi
 const SUCCESS_HOLD_MS = 4000;   // how long success screen shows
 const FADE_MS = 500;            // fade between games
 
-export default function GamePreview() {
+export default function GamePreview({ players = [] }) {
+  const scripts = buildScripts(players);
+
   const [gameIdx, setGameIdx] = useState(0);
   const [revealedClues, setRevealedClues] = useState(1);
   const [wrongGuesses, setWrongGuesses] = useState([]); // wrong text per clue index
@@ -59,7 +87,7 @@ export default function GamePreview() {
   const timerRef = useRef(null);
   const clueListRef = useRef(null);
 
-  const script = SCRIPTS[gameIdx];
+  const script = scripts[gameIdx];
   const guessIndex = wrongGuesses.length; // which guess we're on
   const isCorrectGuess = guessIndex >= script.wrongGuesses.length;
   const targetText = isCorrectGuess ? script.name : script.wrongGuesses[guessIndex];
@@ -111,7 +139,7 @@ export default function GamePreview() {
       timerRef.current = setTimeout(() => {
         setFading(true);
         timerRef.current = setTimeout(() => {
-          setGameIdx((i) => (i + 1) % SCRIPTS.length);
+          setGameIdx((i) => (i + 1) % scripts.length);
           setRevealedClues(1);
           setWrongGuesses([]);
           setTypingText('');
@@ -264,7 +292,7 @@ export default function GamePreview() {
 
       {/* Game dots */}
       <div className="flex justify-center gap-1.5 mt-4">
-        {SCRIPTS.map((_, i) => (
+        {scripts.map((_, i) => (
           <div
             key={i}
             className="rounded-full transition-all duration-300"

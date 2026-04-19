@@ -52,11 +52,38 @@ const GAMES_TO_DELETE = [
   { game_number: 1, player: 'Nathan Cleary', reason: 'Trial game — weak clues, no facts' },
 ];
 
+// ── Drama updates for already-inserted games ───────────────────────────────────
+// These games are live in the DB — we only need to SET the drama column.
+
+const DRAMA_UPDATES = [
+  {
+    game_number: 5,
+    player: 'Robbie Farah',
+    drama: "During his final years at the Tigers, Farah was reportedly at the centre of a player-led push to have head coach Jason Taylor sacked — triggering a formal NRL investigation and making his departure from the club he captained for 15 years deeply bitter.",
+  },
+  {
+    game_number: 10,
+    player: 'Manu Vatuvei',
+    drama: "In 2016, Vatuvei appeared in court charged with importing MDMA — he told the court the drugs were intended as gifts for friends. He received an intensive corrections order and avoided a prison sentence.",
+  },
+  {
+    game_number: 8,
+    player: 'Paul Gallen',
+    drama: "Gallen was at the centre of the 2011 Cronulla peptides scandal — players were injected with substances including Thymosin Beta-4 under the club's supplements programme. He faced a lengthy ASADA investigation but was ultimately cleared of intentional doping.",
+  },
+];
+
 // ── Games to insert ────────────────────────────────────────────────────────────
-// READY: reviewed and approved — will be inserted on --commit
-// PENDING REVIEW: games 10–15 need clue/fact review before adding
+// Move approved PENDING_GAMES here when ready to go live.
 
 const NEW_GAMES = [
+  // empty — add pending games here once approved
+];
+
+// ── Already-inserted games (reference only, not re-inserted) ──────────────────
+// Games 7, 8, 9, 10 are confirmed in the DB from a previous session.
+// Keeping here for reference:
+const _INSERTED_REFERENCE = [
   {
     game_number: 10,
     date: '2026-04-21',
@@ -121,7 +148,7 @@ const NEW_GAMES = [
       'Jones won the 2002 Golden Boot Award as the world\'s best international rugby league player — only the second New Zealander to receive the honour after Gary Freeman.',
     ],
   },
-];
+]; // end _INSERTED_REFERENCE
 
 // ── PENDING REVIEW — not yet inserted ─────────────────────────────────────────
 // Run through each game, approve clues/facts, then move into NEW_GAMES above.
@@ -131,22 +158,21 @@ const PENDING_GAMES = [
     game_number: 11,
     date: '2026-04-25',
     answer_player: 'Greg Inglis',
-    clue_1: 'Born in a small NSW coastal town, he was signed as a teenager by a Melbourne club who recognised extraordinary potential in a raw but physically gifted young back',
+    clue_1: 'As a teenager from regional NSW, he was already being talked about as an exceptional all-round back with the frame, speed and instincts to become a future superstar',
     clue_2: 'Won the Clive Churchill Medal as player of the match in his first NRL grand final — a remarkable individual honour for someone only in his early twenties',
     clue_3: 'When he moved clubs, he helped end a 43-year premiership drought for one of the most storied franchises in the history of the game',
     clue_4: 'His try celebration after the match-clinching score in his second premiership victory — crawling on all fours — became one of the most iconic and culturally significant images in modern NRL history',
     clue_5: 'Retired as Queensland\'s all-time leading try-scorer in State of Origin history with 18 tries in 32 appearances across an 11-year period of Maroons dominance',
-    clue_6: "Melbourne Storm and South Sydney Rabbitohs centre/fullback nicknamed 'GI' who scored 149 NRL tries, won the 2007 and 2014 premierships, the 2009 Golden Boot, and retired as Queensland's all-time State of Origin top tryscorer",
+    clue_6: "Melbourne Storm and South Sydney Rabbitohs centre/fullback nicknamed 'GI' who scored 149 NRL tries, won the 2014 NRL premiership (the 2007 Storm premiership was stripped for salary cap breaches), the 2009 Golden Boot, and retired as Queensland's all-time State of Origin top tryscorer",
     facts: [
-      'Inglis was born in Kempsey, New South Wales, of Indigenous Australian heritage, and became one of the most celebrated Indigenous players in the history of the game.',
-      'He won the Clive Churchill Medal in the 2007 NRL Grand Final as a 20-year-old, playing for Melbourne Storm in their 34–8 defeat of Manly.',
       'His "Goanna crawl" celebration after scoring the match-clinching try in the 2014 NRL Grand Final became one of rugby league\'s most iconic and culturally significant images.',
       'Inglis retired as Queensland\'s all-time top try-scorer in State of Origin history with 18 tries in 32 matches across an 11-year period.',
-      'He won the Golden Boot Award as the world\'s best rugby league player in 2009 — the same year he won the Wally Lewis Medal as Queensland\'s player of the Origin series.',
+      'He won the 2009 Golden Boot as the world\'s best rugby league player — the same year he won the Wally Lewis Medal as Queensland\'s player of the series. His 2007 NRL premiership with Melbourne Storm was later stripped when the club\'s systematic salary cap rorting was exposed in 2010.',
     ],
+    drama: "In 2019, Inglis was caught drink-driving and speeding in Queensland and resigned the Australian captaincy the following morning — just months before the World Cup. He later said the arrest was the moment he finally confronted his struggles with alcohol and mental health.",
   },
   {
-    game_number: 11,
+    game_number: 12,
     date: '2026-04-26',
     answer_player: 'Corey Parker',
     clue_1: 'Scored a try in his very first NRL match — a debut that hinted at the longevity and loyalty that would define an entire career at a single club',
@@ -164,7 +190,7 @@ const PENDING_GAMES = [
     ],
   },
   {
-    game_number: 12,
+    game_number: 13,
     date: '2026-04-27',
     answer_player: 'Laurie Daley',
     clue_1: 'Was spotted by a club talent scout at just 15 years of age playing senior first-grade club football in the country — and debuted in the top grade at 17 without ever playing a reserve grade match',
@@ -182,7 +208,7 @@ const PENDING_GAMES = [
     ],
   },
   {
-    game_number: 13,
+    game_number: 14,
     date: '2026-04-28',
     answer_player: 'Anthony Minichiello',
     clue_1: 'Won two NRL premierships 11 years apart at the same club — once as a young winger early in his career, and once as captain and fullback more than a decade later',
@@ -200,7 +226,7 @@ const PENDING_GAMES = [
     ],
   },
   {
-    game_number: 14,
+    game_number: 15,
     date: '2026-04-29',
     answer_player: 'Jason Croker',
     clue_1: 'Despite being named Rookie of the Year in his debut season, he never became a household name in the way flashier players did — instead building a quiet reputation as one of the most durable and versatile forwards of his era',
@@ -218,7 +244,7 @@ const PENDING_GAMES = [
     ],
   },
   {
-    game_number: 15,
+    game_number: 16,
     date: '2026-04-30',
     answer_player: 'Daly Cherry-Evans',
     clue_1: 'Won an NRL premiership in his debut season — scoring a try in the grand final — a fairytale introduction to the highest level of the game',
@@ -234,6 +260,7 @@ const PENDING_GAMES = [
       'Cherry-Evans captained Queensland to State of Origin series victories in 2020, 2022, and 2023, leading the Maroons in 18 of his 25 Origin appearances.',
       'He became the first halfback in NRL history to play 300 games in the same position, and is the most-capped player in the Manly Sea Eagles\' history.',
     ],
+    drama: "In 2014, Cherry-Evans signed a contract with the Gold Coast Titans worth an estimated $10 million over five years — then sensationally withdrew weeks later and recommitted to Manly. The Titans received $900,000 in NRL compensation. It remains one of the most controversial off-season sagas in NRL history.",
   },
 ];
 
@@ -255,6 +282,12 @@ for (const g of NEW_GAMES) {
   console.log(`  +  Game #${g.game_number} | ${g.date} | ${g.answer_player}`);
   console.log(`     Clue 1: ${g.clue_1.slice(0, 80)}…`);
   console.log(`     Facts: ${g.facts.length}\n`);
+}
+
+console.log('  DRAMA UPDATES (live games):\n');
+for (const g of DRAMA_UPDATES) {
+  console.log(`  🔥  Game #${g.game_number} — ${g.player}`);
+  console.log(`     ${g.drama.slice(0, 80)}…\n`);
 }
 
 console.log('  PENDING REVIEW (not included in this run):\n');
@@ -303,12 +336,27 @@ for (const g of NEW_GAMES) {
       clue_5: g.clue_5,
       clue_6: g.clue_6,
       facts: g.facts,
+      drama: g.drama ?? null,
     });
 
   if (error) {
     console.error(`  ✕  Failed to insert Game #${g.game_number} (${g.answer_player}): ${error.message}`);
   } else {
     console.log(`  ✓  Inserted Game #${g.game_number} | ${g.date} | ${g.answer_player}`);
+  }
+}
+
+// Drama updates for already-inserted games
+for (const g of DRAMA_UPDATES) {
+  const { error } = await supabase
+    .from('games')
+    .update({ drama: g.drama })
+    .eq('game_number', g.game_number);
+
+  if (error) {
+    console.error(`  ✕  Failed to update drama for Game #${g.game_number} (${g.player}): ${error.message}`);
+  } else {
+    console.log(`  ✓  Drama updated — Game #${g.game_number} | ${g.player}`);
   }
 }
 

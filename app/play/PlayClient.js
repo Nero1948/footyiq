@@ -188,7 +188,7 @@ export default function PlayClient({ initialGame }) {
   // ── Finish game ────────────────────────────────────────────────────────────
 
   const finishGame = useCallback(
-    async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses, facts = [] }) => {
+    async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses, facts = [], drama = null }) => {
       try {
         const currentUsername = ls.get('setforsix_username') || 'Anonymous';
         const res = await fetch('/api/submit', {
@@ -200,12 +200,12 @@ export default function PlayClient({ initialGame }) {
         const rank = res.ok && submitData.success ? submitData.rank : null;
         const totalPlayers = res.ok && submitData.success ? submitData.totalPlayers : null;
         const percentile = res.ok && submitData.success ? submitData.percentile : null;
-        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile, facts };
+        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile, facts, drama };
         setGameOverData(resultData);
         setGameState('done');
         ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
       } catch {
-        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts };
+        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts, drama };
         setGameOverData(resultData);
         setGameState('done');
         ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
@@ -234,12 +234,12 @@ export default function PlayClient({ initialGame }) {
       if (!res.ok) { setCurrentGuess(guessText); setIsGuessing(false); return; }
       if (data.correct) {
         clearInterval(timerRef.current);
-        await finishGame({ solved: true, answer: data.answer, cluesUsed: clueNumber, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses: [...wrongGuesses, guessText], facts: data.facts || [] });
+        await finishGame({ solved: true, answer: data.answer, cluesUsed: clueNumber, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses: [...wrongGuesses, guessText], facts: data.facts || [], drama: data.drama || null });
       } else if (data.failed) {
         clearInterval(timerRef.current);
         const allGuesses = [...wrongGuesses, guessText];
         setWrongGuesses(allGuesses);
-        await finishGame({ solved: false, answer: data.answer, cluesUsed: 6, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses, facts: data.facts || [] });
+        await finishGame({ solved: false, answer: data.answer, cluesUsed: 6, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses, facts: data.facts || [], drama: data.drama || null });
       } else {
         setWrongGuesses((prev) => [...prev, guessText]);
         setClues((prev) => [...prev, data.nextClue]);
@@ -565,6 +565,14 @@ export default function PlayClient({ initialGame }) {
                     <li key={i} className="text-sm text-gray-300 leading-relaxed">• {fact}</li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {/* Drama */}
+            {gameOverData.drama && (
+              <div className="rounded-xl p-4 space-y-2" style={{ background: 'rgba(251,146,60,0.05)', border: '1px solid rgba(251,146,60,0.2)', borderLeft: '3px solid #fb923c' }}>
+                <p className="text-sm font-semibold" style={{ color: '#fb923c' }}>🔥 Drama</p>
+                <p className="text-sm text-gray-300 leading-relaxed">{gameOverData.drama}</p>
               </div>
             )}
 

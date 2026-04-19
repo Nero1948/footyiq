@@ -1,7 +1,7 @@
 # Set For Six
 
 ## What this project is
-A daily NRL "Guess the Player" game at setforsix.com.au. Players get 6 progressive
+A daily NRL "Guess the Player" game at setforsix.com. Players get 6 progressive
 clues about a mystery NRL player and type their guess. Fewer clues = better
 score. Ties broken by speed (fastest time wins).
 

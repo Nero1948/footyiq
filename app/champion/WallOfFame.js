@@ -57,7 +57,6 @@ export default function WallOfFame({ entries, todayAEST, winnerCounts }) {
                 <p className={`text-sm font-semibold ${isToday ? 'text-white' : 'text-gray-300'}`}>
                   {isToday ? 'Today' : formatDisplayDate(date)}
                 </p>
-                <p className="text-xs text-gray-600">Game #{gNum}</p>
               </div>
 
               {c ? (

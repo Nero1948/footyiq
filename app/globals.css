@@ -98,6 +98,13 @@ body {
   animation: timer-glow 2s ease-in-out infinite;
 }
 
+/* ── Cursor blink (demo typing) ─────────────────────────────────────────────── */
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
 /* ── Confetti fall ─────────────────────────────────────────────────────────── */
 
 @keyframes confetti-fall {

@@ -362,7 +362,6 @@ export default function PlayClient({ initialGame }) {
       <header className="flex items-center justify-between px-4 py-3.5 border-b" style={{ background: 'rgba(10,14,19,0.96)', backdropFilter: 'blur(10px)', borderColor: 'rgba(255,255,255,0.06)' }}>
         <div>
           <Link href="/" className="text-xl font-black tracking-tight text-white hover:text-[#00e676] transition-colors">Set For Six</Link>
-          {game && <p className="text-xs text-gray-500 mt-0.5">Game #{game.game_number}</p>}
         </div>
         {gameState === 'playing' && deviceId && <div className="text-2xl font-mono font-bold tabular-nums animate-timer-glow">{formatTime(elapsedMs)}</div>}
         {gameState === 'done' && gameOverData && <div className="text-sm text-gray-400 font-mono tabular-nums">{formatTime(gameOverData.totalTimeMs)}</div>}
@@ -501,7 +500,6 @@ export default function PlayClient({ initialGame }) {
                   })}
                 </div>
               </div>
-              <p className="text-xs text-gray-500">Game #{game.game_number}</p>
             </div>
 
             {/* Horizontal stats strip */}
@@ -548,6 +546,15 @@ export default function PlayClient({ initialGame }) {
                 </button>
               </div>
             </div>
+
+            {/* Leaderboard button — prominent, right under name box */}
+            <Link
+              href="/leaderboard"
+              className="block w-full text-center font-bold py-3.5 rounded-xl text-sm active:scale-95 transition-transform"
+              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', color: 'white' }}
+            >
+              View Leaderboard →
+            </Link>
 
             {/* Facts */}
             {gameOverData.facts?.length > 0 && (
@@ -631,10 +638,6 @@ export default function PlayClient({ initialGame }) {
                   {emailState === 'error' && <p className="text-xs text-red-400 mt-2">Something went wrong. Try again.</p>}
                 </div>
               )}
-
-              <Link href="/leaderboard" className="block text-center text-sm text-gray-500 hover:text-gray-300 transition-colors pb-4">
-                View leaderboard →
-              </Link>
 
             </div>
 

@@ -62,21 +62,6 @@ const HOW_IT_WORKS = [
   },
 ];
 
-async function getDemoPlayers() {
-  const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
-  try {
-    const { data } = await supabase
-      .from('games')
-      .select('answer_player, clue_1, clue_2, clue_3')
-      .lt('date', todayAEST)
-      .order('date', { ascending: false })
-      .limit(3);
-    return data ?? [];
-  } catch {
-    return [];
-  }
-}
-
 async function getLandingStats() {
   const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
   try {
@@ -139,7 +124,7 @@ async function getYesterday() {
 }
 
 export default async function Home() {
-  const [stats, yesterday, demoPlayers] = await Promise.all([getLandingStats(), getYesterday(), getDemoPlayers()]);
+  const [stats, yesterday] = await Promise.all([getLandingStats(), getYesterday()]);
 
   const STATS_THRESHOLD = 20;
   const todayHasEnoughStats = (stats?.totalAttempts ?? 0) >= STATS_THRESHOLD;
@@ -283,11 +268,11 @@ export default async function Home() {
             <p className="text-center text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-3">
               See how it works
             </p>
-            <p className="text-center text-2xl font-black text-white mb-10">
-              Can you name this NRL player?
-            </p>
+            <h2 className="text-center text-3xl sm:text-4xl font-black text-white mb-10">
+              Watch a game in action
+            </h2>
           </ScrollReveal>
-          <GamePreview players={demoPlayers} />
+          <GamePreview />
         </div>
       </section>
 

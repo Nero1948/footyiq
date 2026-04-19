@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Nav from '../components/Nav';
-import ChampionImage from './ChampionImage';
 import WallOfFame from './WallOfFame';
 import { supabase } from '@/lib/supabase';
 
@@ -220,7 +219,6 @@ export default async function ChampionPage() {
                   Beat <span className="text-[#00e676] font-bold">{beatPct}%</span> of players today
                 </p>
               )}
-              {gameNumber && <p className="text-xs text-gray-600">Game #{gameNumber}</p>}
             </>
           ) : (
             <>
@@ -235,11 +233,6 @@ export default async function ChampionPage() {
               </Link>
             </>
           )}
-        </section>
-
-        {/* ── Shareable card ────────────────────────────────────────────── */}
-        <section>
-          <ChampionImage date={todayAEST} />
         </section>
 
         {/* ── Wall of Fame ──────────────────────────────────────────────── */}

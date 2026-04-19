@@ -94,6 +94,22 @@ const NEW_GAMES = [
     ],
     drama: "In 2019, Inglis was caught drink-driving and speeding in Queensland and resigned the Australian captaincy the following morning — just months before the World Cup. He later said the arrest was the moment he finally confronted his struggles with alcohol and mental health.",
   },
+  {
+    game_number: 12,
+    date: '2026-04-26',
+    answer_player: 'Corey Parker',
+    clue_1: 'Scored a try in his very first NRL match — a debut that hinted at the longevity and loyalty that would define an entire career at a single club',
+    clue_2: 'Surpassed one of Queensland rugby league\'s most celebrated names to become his club\'s all-time highest points scorer — 1,328 points over 16 seasons',
+    clue_3: 'Was given the captaincy in the final year of his career — a fitting honour for a player who had given everything to one club across nearly two decades',
+    clue_4: 'Swept every major forward award available in a single season — Dally M Lock of the Year, International Lock of the Year, and Rugby League Week Player of the Year all in 2013',
+    clue_5: 'When he retired, he was placed fourth on the all-time list of most NRL games played — all 347 of them for the same club',
+    clue_6: 'Brisbane Broncos lock who played 347 NRL games across 16 seasons — all for the Broncos — surpassed Darren Lockyer as the club\'s all-time points scorer, and won the 2006 premiership',
+    facts: [
+      'Parker finished with 1,328 career points — 586 goals and 39 tries across 347 games, all for Brisbane. The vast majority came through his boot, making him one of the most prolific goal-kicking forwards in NRL history.',
+      'He spent the majority of his career under legendary coach Wayne Bennett, who described Parker as the ultimate professional — a player who maximised every ounce of his ability through dedication rather than natural flair.',
+      'After retiring in 2016, Parker moved straight into a media career with Fox Sports, becoming one of the network\'s most recognised NRL analysts and commentators.',
+    ],
+  },
 ];
 
 // ── Already-inserted games (reference only, not re-inserted) ──────────────────
@@ -170,24 +186,6 @@ const _INSERTED_REFERENCE = [
 // Run through each game, approve clues/facts, then move into NEW_GAMES above.
 
 const PENDING_GAMES = [
-  {
-    game_number: 12,
-    date: '2026-04-26',
-    answer_player: 'Corey Parker',
-    clue_1: 'Scored a try in his very first NRL match — a debut that hinted at the longevity and loyalty that would define an entire career at a single club',
-    clue_2: 'Surpassed one of Queensland rugby league\'s most celebrated names to become his club\'s all-time highest points scorer — 1,302 points over 16 seasons',
-    clue_3: 'Was given the captaincy in the final year of his career — a fitting honour for a player who had given everything to one club across nearly two decades',
-    clue_4: 'Swept every major forward award available in a single season — Dally M Lock of the Year, International Lock of the Year, and Rugby League Week Player of the Year all in 2013',
-    clue_5: 'When he retired, he was placed fourth on the all-time list of most NRL games played — all 347 of them for the same club',
-    clue_6: 'Brisbane Broncos lock who played 347 NRL games across 16 seasons — all for the Broncos — surpassed Darren Lockyer as the club\'s all-time points scorer, and won the 2006 premiership',
-    facts: [
-      'Parker scored a try in his very first NRL match in 2001 — and went on to play 347 games, all for the Brisbane Broncos.',
-      'He surpassed Darren Lockyer as the Brisbane Broncos\' all-time leading points scorer in 2015, finishing with 1,302 career points.',
-      'Parker swept the major forward awards in 2013 — winning the Dally M Lock of the Year, International Lock of the Year, and Rugby League Week Player of the Year all in the same season.',
-      'He retired fourth on the all-time list of most NRL games played, having never pulled on a jersey for any club other than the Broncos.',
-      'Parker won the 2015 Wally Lewis Medal as Queensland\'s player of the State of Origin series after the Maroons\' dominant series victory.',
-    ],
-  },
   {
     game_number: 13,
     date: '2026-04-27',

@@ -143,6 +143,23 @@ const NEW_GAMES = [
     ],
   },
   {
+    game_number: 16,
+    date: '2026-04-30',
+    answer_player: 'Daly Cherry-Evans',
+    clue_1: 'Won an NRL premiership in his debut season — scoring a try in the grand final — a fairytale introduction to the highest level of the game',
+    clue_2: 'Was at the centre of one of the most dramatic contract sagas of the modern era',
+    clue_3: 'Holds the NRL era record for most field goals — a precision skill under pressure that became one of his most reliable trademarks as a halfback',
+    clue_4: 'He eventually took charge of his state side during a new era, captaining Queensland to repeated Origin success',
+    clue_5: 'Became the first halfback in NRL history to play 300 games in the same position — and the most-capped player in his club\'s entire history',
+    clue_6: 'Manly-Warringah Sea Eagles captain and halfback who won the 2011 premiership in his debut season, the 2013 Clive Churchill Medal, became the NRL era\'s all-time record holder for field goals (28), and the club\'s most-capped player',
+    facts: [
+      'His father Troy Evans played as a hooker for the Norths Devils and Redcliffe Dolphins in the Brisbane competition during the 1980s and 90s — meaning DCE grew up in a rugby league household long before Manly came calling.',
+      'England coach Steve McNamara offered him a starting spot for the 2011 Four Nations through his English-born mother — an offer DCE turned down to remain eligible for Australia, in his debut NRL season no less.',
+      'Just one season into his NRL career, his management requested a release from Manly believing he was underpaid at $85,000 — within a week Manly re-signed him for reportedly over $500,000, an extraordinary leap that showed how quickly the club valued him.',
+    ],
+    drama: "In 2015, Cherry-Evans announced he had signed a four-year deal to join the Gold Coast Titans — then sensationally reversed his decision weeks later and recommitted to Manly on a reported eight-year, $10 million contract. The NRL required compensation to be paid to the Titans. It remains one of the most controversial off-season sagas in NRL history.",
+  },
+  {
     game_number: 15,
     date: '2026-04-29',
     answer_player: 'Jason Croker',
@@ -234,25 +251,6 @@ const _INSERTED_REFERENCE = [
 // Run through each game, approve clues/facts, then move into NEW_GAMES above.
 
 const PENDING_GAMES = [
-  {
-    game_number: 16,
-    date: '2026-04-30',
-    answer_player: 'Daly Cherry-Evans',
-    clue_1: 'Won an NRL premiership in his debut season — scoring a try in the grand final — a fairytale introduction to the highest level of the game',
-    clue_2: 'Turned down a lucrative deal with a rival club, triggering one of the biggest controversies in NRL off-season history — before ultimately staying loyal to the only club he has played for',
-    clue_3: 'Holds the NRL era record for most field goals — a precision skill under pressure that became one of his most reliable trademarks as a halfback',
-    clue_4: 'Has captained his state to three State of Origin series victories, leading from the front in the same composed and fearless style he brings to club football every week',
-    clue_5: 'Became the first halfback in NRL history to play 300 games in the same position — and the most-capped player in his club\'s entire history',
-    clue_6: 'Manly-Warringah Sea Eagles captain and halfback who won the 2011 premiership in his debut season, the 2013 Clive Churchill Medal, became the NRL era\'s all-time record holder for field goals (28), and the club\'s most-capped player',
-    facts: [
-      'Cherry-Evans won the 2011 NRL Premiership in his debut NRL season, scoring a try in the grand final victory over the New Zealand Warriors.',
-      'In 2014 he signed a contract with the Gold Coast Titans before controversially withdrawing and recommitting to Manly — one of the most talked-about off-season sagas in NRL history.',
-      'He holds the NRL era record for most field goals with 28 — a precision skill under pressure that became one of his defining traits as a halfback.',
-      'Cherry-Evans captained Queensland to State of Origin series victories in 2020, 2022, and 2023, leading the Maroons in 18 of his 25 Origin appearances.',
-      'He became the first halfback in NRL history to play 300 games in the same position, and is the most-capped player in the Manly Sea Eagles\' history.',
-    ],
-    drama: "In 2014, Cherry-Evans signed a contract with the Gold Coast Titans worth an estimated $10 million over five years — then sensationally withdrew weeks later and recommitted to Manly. The Titans received $900,000 in NRL compensation. It remains one of the most controversial off-season sagas in NRL history.",
-  },
 ];
 
 // ── Preview ────────────────────────────────────────────────────────────────────

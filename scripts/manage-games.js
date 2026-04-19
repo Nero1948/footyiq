@@ -142,6 +142,22 @@ const NEW_GAMES = [
       'Daley scored 87 tries across his career — a remarkable total for a player whose defensive work and playmaking ability were considered equally valuable.',
     ],
   },
+  {
+    game_number: 15,
+    date: '2026-04-29',
+    answer_player: 'Jason Croker',
+    clue_1: 'Despite being named Rookie of the Year in his debut season, he never became a household name in the way flashier players did — instead building a quiet reputation as one of the most durable and versatile forwards of his era',
+    clue_2: 'After his NRL career wound down, he extended his playing life by spending three seasons in France — adding 62 games at the top level of European rugby league',
+    clue_3: 'Won the Dally M Lock of the Year award in 2000, a recognition that had been quietly earned through years of consistent, unspectacular excellence',
+    clue_4: 'Began his career as a winger but over 318 games also appeared at centre, second-row, lock, and five-eighth — a versatility that made him almost impossible to leave out of a side',
+    clue_5: 'Retired holding both the games record and the try-scoring record at his club — the most appearances and the most tries by any player in that club\'s entire history',
+    clue_6: "Canberra Raiders forward nicknamed 'Toots' who won the 1994 premiership, holds the club records for most games (318) and most tries (120), represented Australia at the 2000 World Cup, and later played for the Catalans Dragons in France",
+    facts: [
+      'His nickname "Toots" was given to him by his mum when he was a youngster — and despite being embarrassed by it for years, the name followed him all the way to the highest level of the game.',
+      'When he played his final game for the Raiders, the ACT Chief Minister presented him with the keys to the city in front of more than 21,000 fans — a civic honour rarely given to a sportsperson.',
+      'His nephew Lachlan Croker also played rugby league professionally — Jason actually turned out alongside him at the 2016 Auckland Nines, briefly bringing two generations of the family onto the same field.',
+    ],
+  },
 ];
 
 // ── Already-inserted games (reference only, not re-inserted) ──────────────────
@@ -218,24 +234,6 @@ const _INSERTED_REFERENCE = [
 // Run through each game, approve clues/facts, then move into NEW_GAMES above.
 
 const PENDING_GAMES = [
-  {
-    game_number: 15,
-    date: '2026-04-29',
-    answer_player: 'Jason Croker',
-    clue_1: 'Despite being named Rookie of the Year in his debut season, he never became a household name in the way flashier players did — instead building a quiet reputation as one of the most durable and versatile forwards of his era',
-    clue_2: 'After his NRL career wound down, he extended his playing life by spending three seasons in France — adding 62 games at the top level of European rugby league',
-    clue_3: 'Won the Dally M Lock of the Year award in 2000, a recognition that had been quietly earned through years of consistent, unspectacular excellence',
-    clue_4: 'Began his career as a winger but over 318 games also appeared at centre, second-row, lock, and five-eighth — a versatility that made him almost impossible to leave out of a side',
-    clue_5: 'Retired holding both the games record and the try-scoring record at his club — the most appearances and the most tries by any player in that club\'s entire history',
-    clue_6: "Canberra Raiders forward nicknamed 'Toots' who won the 1994 premiership, holds the club records for most games (318) and most tries (120), represented Australia at the 2000 World Cup, and later played for the Catalans Dragons in France",
-    facts: [
-      'Croker won the Canberra Raiders\' Rookie of the Year award in 1991 — his debut season — having made his first-grade debut at just 18 years of age.',
-      'He holds the Canberra Raiders\' all-time records for most games played (318) and most tries scored (120) — both records that stood for decades.',
-      'Croker won the 2000 Dally M Lock of the Year award after transforming himself from a teenager who debuted on the wing into one of the competition\'s most reliable forwards.',
-      'After his NRL career, he played 62 games for the Catalans Dragons in France across three seasons, extending his playing career until 2009.',
-      'Croker represented Australia at the 2000 Rugby League World Cup, scoring two tries across four appearances for the Kangaroos.',
-    ],
-  },
   {
     game_number: 16,
     date: '2026-04-30',

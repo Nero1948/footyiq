@@ -111,6 +111,22 @@ const NEW_GAMES = [
     ],
   },
   {
+    game_number: 14,
+    date: '2026-04-28',
+    answer_player: 'Anthony Minichiello',
+    clue_1: 'Repeated back and neck injuries threatened his career in the middle years, yet he fought through them to become one of the most durable and decorated one-club players of the NRL era',
+    clue_2: 'Was signed to his NRL club at age 16 by one of rugby league\'s most celebrated former players — a chance encounter at a trial game that changed the course of his career',
+    clue_3: 'Despite representing Australia, he also qualified to represent a European nation in international rugby league through his heritage — and chose to do so',
+    clue_4: 'Won the Golden Boot Award in 2005 as the world\'s best rugby league player — recognition that he had reached the very pinnacle of his position',
+    clue_5: 'Retired as his club\'s all-time leading try-scorer with 139 NRL tries and their most-capped player with 302 games — all played for one club',
+    clue_6: 'Sydney Roosters fullback and captain who played 302 NRL games (all for the Roosters), scored a club-record 139 tries, won the 2002 and 2013 premierships, and the 2005 Golden Boot as world\'s best player',
+    facts: [
+      'When he led the Roosters to the 2013 Grand Final as captain and fullback, he became the first fullback to captain his side to a Grand Final victory since Frank \'Skinny\' McMillan in 1934 — 79 years between the two.',
+      'He featured in six Grand Finals during his career — winning two and losing four — more Grand Final appearances than almost any player of his generation.',
+      'His nickname "The Count" was given to him in 2001 by City Origin coach Brett Kenny — reportedly a reference to his resemblance to the Muppets character of the same name.',
+    ],
+  },
+  {
     game_number: 13,
     date: '2026-04-27',
     answer_player: 'Laurie Daley',
@@ -202,24 +218,6 @@ const _INSERTED_REFERENCE = [
 // Run through each game, approve clues/facts, then move into NEW_GAMES above.
 
 const PENDING_GAMES = [
-  {
-    game_number: 14,
-    date: '2026-04-28',
-    answer_player: 'Anthony Minichiello',
-    clue_1: 'Won two NRL premierships 11 years apart at the same club — once as a young winger early in his career, and once as captain and fullback more than a decade later',
-    clue_2: 'Was signed to his NRL club at age 16 by one of rugby league\'s most celebrated former players — a chance encounter at a trial game that changed the course of his career',
-    clue_3: 'Despite representing Australia, he also qualified to represent a European nation in international rugby league through his heritage — and chose to do so',
-    clue_4: 'Won the Golden Boot Award in 2005 as the world\'s best rugby league player — recognition that he had reached the very pinnacle of his position',
-    clue_5: 'Retired as his club\'s all-time leading try-scorer with 139 NRL tries and their most-capped player with 302 games — all played for one club',
-    clue_6: 'Sydney Roosters fullback and captain who played 302 NRL games (all for the Roosters), scored a club-record 139 tries, won the 2002 and 2013 premierships, and the 2005 Golden Boot as world\'s best player',
-    facts: [
-      'Minichiello was signed to the Roosters at age 16 by legendary forward Arthur Beetson after a trial game — one of rugby league\'s most celebrated talent identification stories.',
-      'He won two NRL premierships 11 years apart — in 2002 as a winger and in 2013 as captain and fullback — showing a rare ability to reinvent himself at the elite level.',
-      'Despite representing Australia, Minichiello also represented Italy in international rugby league, qualifying through his Italian heritage.',
-      'He won the Golden Boot Award in 2005 as the world\'s best rugby league player, and the Dally M Fullback of the Year in 2004.',
-      'Minichiello retired as the Sydney Roosters\' all-time leading try-scorer with 139 NRL tries and most-capped player with 302 appearances — every one of them in the red, white and blue.',
-    ],
-  },
   {
     game_number: 15,
     date: '2026-04-29',

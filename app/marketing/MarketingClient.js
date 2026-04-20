@@ -653,6 +653,422 @@ function ContentQueue() {
   );
 }
 
+// ── Facebook Page Setup Checklist ─────────────────────────────────────────────
+
+const FB_PAGE_STEPS = [
+  { id: 'fb_create',     label: 'Create Facebook Page named "Set For Six"' },
+  { id: 'fb_profile',   label: 'Set profile image (use the Set For Six orange rugby ball logo)' },
+  { id: 'fb_cover',     label: 'Set cover image (branded 1200×630)' },
+  { id: 'fb_desc',      label: 'Add Page description: "The daily NRL guessing game. Six clues. One player. New every day. Play at setforsix.com"' },
+  { id: 'fb_website',   label: 'Add website link: setforsix.com' },
+  { id: 'fb_category',  label: 'Add category: Games/Entertainment' },
+  { id: 'fb_firstpost', label: "Post first status update with today's game link" },
+];
+
+function FBPageChecklist() {
+  const [checked, setChecked] = useState({});
+
+  useEffect(() => {
+    try { setChecked(JSON.parse(localStorage.getItem('fb_page_checklist') ?? '{}')); }
+    catch { setChecked({}); }
+  }, []);
+
+  function toggle(id) {
+    const next = { ...checked, [id]: !checked[id] };
+    setChecked(next);
+    localStorage.setItem('fb_page_checklist', JSON.stringify(next));
+  }
+
+  const done = FB_PAGE_STEPS.filter(s => checked[s.id]).length;
+
+  return (
+    <div className="rounded-xl p-4" style={{ background: '#111', border: '1px solid #222' }}>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-semibold text-white">Part 1 — Page Setup Checklist</p>
+        <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: '#1877F215', color: '#4A9EF5', border: '1px solid #1877F230' }}>
+          {done}/{FB_PAGE_STEPS.length} done
+        </span>
+      </div>
+      <div className="space-y-2">
+        {FB_PAGE_STEPS.map(step => (
+          <button key={step.id} onClick={() => toggle(step.id)} className="w-full flex items-start gap-3 text-left py-1">
+            <span
+              className="mt-0.5 flex-shrink-0 w-4 h-4 rounded border flex items-center justify-center"
+              style={{ background: checked[step.id] ? '#4A9EF5' : 'transparent', borderColor: checked[step.id] ? '#4A9EF5' : '#444' }}
+            >
+              {checked[step.id] && (
+                <svg viewBox="0 0 10 10" className="w-3 h-3" fill="none">
+                  <path d="M2 5l2.5 2.5L8 3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </span>
+            <span className="text-sm leading-snug" style={{ color: checked[step.id] ? '#555' : '#ccc', textDecoration: checked[step.id] ? 'line-through' : 'none' }}>
+              {step.label}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── FB Groups Table ────────────────────────────────────────────────────────────
+
+const CLUB_COLOURS = {
+  broncos:   { primary: '#7B0B21', accent: '#F7B500' },
+  panthers:  { primary: '#003087', accent: '#FF6600' },
+  warriors:  { primary: '#888888', accent: '#C8102E' },
+  roosters:  { primary: '#C8102E', accent: '#002B5C' },
+  eels:      { primary: '#1155BB', accent: '#FFD700' },
+  storm:     { primary: '#7B3FA0', accent: '#FFD700' },
+  rabbitohs: { primary: '#006A4E', accent: '#D50032' },
+  bulldogs:  { primary: '#0033A0', accent: '#999999' },
+  seaeagles: { primary: '#8B2A4A', accent: '#999999' },
+  sharks:    { primary: '#005CA9', accent: '#AAAAAA' },
+  dragons:   { primary: '#DF1B12', accent: '#999999' },
+  knights:   { primary: '#003087', accent: '#C8102E' },
+  tigers:    { primary: '#FF6600', accent: '#111111' },
+  titans:    { primary: '#004B87', accent: '#C5A028' },
+  raiders:   { primary: '#46A944', accent: '#002549' },
+  cowboys:   { primary: '#002649', accent: '#FFD700' },
+};
+
+const STATUS_META = {
+  'Not Joined': { colour: '#666',    bg: '#66666615' },
+  'Pending':    { colour: '#F59E0B', bg: '#F59E0B15' },
+  'Joined':     { colour: '#3B82F6', bg: '#3B82F615' },
+  'Posted':     { colour: '#22c55e', bg: '#22c55e15' },
+};
+const STATUSES = ['Not Joined', 'Pending', 'Joined', 'Posted'];
+
+const FB_GROUPS_DEFAULT = [
+  { id: 'nrl_supporters', name: 'NRL Supporters Australia',        members: '~85k', rules: 'Moderate', bestDay: 'Fri/Sat', club: null },
+  { id: 'nrl_memes',      name: 'NRL Memes',                       members: '~60k', rules: 'Open',     bestDay: 'Any',     club: null },
+  { id: 'origin',         name: 'State of Origin Fans',            members: '~50k', rules: 'Moderate', bestDay: 'Wed',     club: null },
+  { id: 'supercoach',     name: 'NRL SuperCoach Community',        members: '~35k', rules: 'Open',     bestDay: 'Thu/Fri', club: null },
+  { id: 'broncos',        name: 'Brisbane Broncos Supporters',     members: '~45k', rules: 'Strict',   bestDay: 'Mon/Tue', club: 'broncos' },
+  { id: 'bulldogs',       name: 'Canterbury Bulldogs Army',        members: '~28k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'bulldogs' },
+  { id: 'panthers',       name: 'Penrith Panthers Fans',           members: '~30k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'panthers' },
+  { id: 'warriors',       name: 'NZ Warriors Nation',              members: '~25k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'warriors' },
+  { id: 'knights',        name: 'Newcastle Knights Supporters',    members: '~25k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'knights' },
+  { id: 'cowboys',        name: 'North Queensland Cowboys Fans',   members: '~22k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'cowboys' },
+  { id: 'eels',           name: 'Parramatta Eels Fans',            members: '~22k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'eels' },
+  { id: 'dragons',        name: 'St George Illawarra Dragons Fans',members: '~22k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'dragons' },
+  { id: 'roosters',       name: 'Sydney Roosters Faithful',        members: '~20k', rules: 'Strict',   bestDay: 'Mon/Tue', club: 'roosters' },
+  { id: 'rabbitohs',      name: 'South Sydney Rabbitohs Fans',     members: '~20k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'rabbitohs' },
+  { id: 'raiders',        name: 'Canberra Raiders Green Machine',  members: '~20k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'raiders' },
+  { id: 'sharks',         name: 'Cronulla Sharks Faithful',        members: '~20k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'sharks' },
+  { id: 'storm',          name: 'Melbourne Storm Supporters',      members: '~18k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'storm' },
+  { id: 'seaeagles',      name: 'Manly Sea Eagles Supporters',     members: '~18k', rules: 'Strict',   bestDay: 'Mon/Tue', club: 'seaeagles' },
+  { id: 'tigers',         name: 'Wests Tigers Supporters',         members: '~15k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'tigers' },
+  { id: 'titans',         name: 'Gold Coast Titans Fans',          members: '~12k', rules: 'Open',     bestDay: 'Mon/Tue', club: 'titans' },
+];
+
+const RULES_COLOUR = { Strict: '#ef4444', Moderate: '#F59E0B', Open: '#22c55e' };
+
+function FBGroupsTable() {
+  const [groupState, setGroupState] = useState({});
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [expandedNotes, setExpandedNotes] = useState(null);
+
+  useEffect(() => {
+    try { setGroupState(JSON.parse(localStorage.getItem('fb_groups_state') ?? '{}')); }
+    catch { setGroupState({}); }
+  }, []);
+
+  function saveGroupState(next) {
+    setGroupState(next);
+    localStorage.setItem('fb_groups_state', JSON.stringify(next));
+  }
+
+  function cycleStatus(id) {
+    const current = groupState[id]?.status ?? 'Not Joined';
+    const next = STATUSES[(STATUSES.indexOf(current) + 1) % STATUSES.length];
+    saveGroupState({ ...groupState, [id]: { ...groupState[id], status: next } });
+  }
+
+  function setNotes(id, notes) {
+    saveGroupState({ ...groupState, [id]: { ...groupState[id], notes } });
+  }
+
+  const filtered = FB_GROUPS_DEFAULT.filter(g =>
+    filterStatus === 'All' || (groupState[g.id]?.status ?? 'Not Joined') === filterStatus
+  );
+
+  function filterBtnStyle(s) {
+    const active = filterStatus === s;
+    if (!active) return { background: '#1a1a1a', color: '#555', border: '1px solid #2a2a2a' };
+    const meta = STATUS_META[s] ?? { colour: '#22c55e', bg: '#22c55e15' };
+    return { background: meta.bg, color: meta.colour, border: `1px solid ${meta.colour}40` };
+  }
+
+  return (
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #222' }}>
+      <div className="px-4 py-3" style={{ background: '#111' }}>
+        <div className="flex items-start justify-between gap-2 flex-wrap">
+          <div>
+            <p className="text-sm font-semibold text-white">Part 2 — NRL Facebook Groups</p>
+            <p className="text-xs text-gray-500 mt-0.5">Click status to cycle it · Click group name to add notes</p>
+          </div>
+          <div className="flex gap-1 flex-wrap">
+            {['All', ...STATUSES].map(s => (
+              <button key={s} onClick={() => setFilterStatus(s)} className="text-xs px-2 py-1 rounded-lg" style={filterBtnStyle(s)}>
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Table header */}
+      <div
+        className="grid text-xs text-gray-600 px-3 py-2"
+        style={{ gridTemplateColumns: '1fr 52px 68px 60px 88px', background: '#0d0d0d', borderTop: '1px solid #1a1a1a' }}
+      >
+        <span>Group</span>
+        <span>Size</span>
+        <span>Rules</span>
+        <span>Best Day</span>
+        <span>Status</span>
+      </div>
+
+      {filtered.map(group => {
+        const state = groupState[group.id] ?? {};
+        const status = state.status ?? 'Not Joined';
+        const sm = STATUS_META[status];
+        const cc = group.club ? CLUB_COLOURS[group.club] : null;
+        const isExpanded = expandedNotes === group.id;
+
+        return (
+          <div key={group.id} style={{ borderTop: '1px solid #161616' }}>
+            <div
+              className="grid items-center px-3 py-2.5"
+              style={{ gridTemplateColumns: '1fr 52px 68px 60px 88px', background: '#0a0a0a' }}
+            >
+              <button
+                onClick={() => setExpandedNotes(isExpanded ? null : group.id)}
+                className="flex items-center gap-2 text-left min-w-0"
+              >
+                {cc && (
+                  <span
+                    className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                    style={{ background: cc.primary, boxShadow: `0 0 0 1px ${cc.accent}55` }}
+                  />
+                )}
+                <span className="text-xs text-gray-300 leading-snug truncate">{group.name}</span>
+                {state.notes && <span className="text-gray-600 flex-shrink-0 text-xs">✎</span>}
+              </button>
+
+              <span className="text-xs text-gray-600">{group.members}</span>
+
+              <span className="text-xs font-medium" style={{ color: RULES_COLOUR[group.rules] }}>
+                {group.rules}
+              </span>
+
+              <span className="text-xs text-gray-500">{group.bestDay}</span>
+
+              <button
+                onClick={() => cycleStatus(group.id)}
+                className="text-xs px-2 py-0.5 rounded-full text-left truncate"
+                style={{ background: sm.bg, color: sm.colour, border: `1px solid ${sm.colour}35` }}
+              >
+                {status}
+              </button>
+            </div>
+
+            {isExpanded && (
+              <div className="px-3 pb-3 pt-1" style={{ background: '#0d0d0d' }}>
+                <textarea
+                  value={state.notes ?? ''}
+                  onChange={e => setNotes(group.id, e.target.value)}
+                  placeholder="Notes — e.g. 'Posted 21 Apr, 3 likes. Mod OK with game links.'"
+                  rows={2}
+                  className="w-full text-xs text-gray-400 rounded-lg px-3 py-2 resize-none outline-none"
+                  style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}
+                />
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {filtered.length === 0 && (
+        <p className="text-xs text-gray-600 px-4 py-6 text-center" style={{ background: '#0a0a0a' }}>
+          No groups with status "{filterStatus}" yet.
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── FB Post Templates Library ──────────────────────────────────────────────────
+
+const FB_TEMPLATES = {
+  daily: [
+    {
+      id: 'fb_morning',
+      label: 'Morning post — game live',
+      text: `Set For Six #[N] is live 🏉 Can you name today's mystery NRL player in under 6 clues?\n\nsetforsix.com`,
+    },
+    {
+      id: 'fb_champion',
+      label: "Evening — today's champion",
+      text: `Today's Set For Six champion: [Name] — cracked it in [X] clues 🔥\n\nsetforsix.com`,
+    },
+    {
+      id: 'fb_stats',
+      label: 'Stats tease',
+      text: `Only [X]% got today's player in 1 clue. Think you could've?\n\nsetforsix.com`,
+    },
+  ],
+  groups: [
+    {
+      id: 'fb_result',
+      label: 'Result share (attach score card)',
+      text: `Took me [X] clues to get today's Set For Six 😅 anyone else playing?`,
+      tip: "Attach your share card image. Never paste the link in the post body — only drop it in the comments if someone asks.",
+    },
+    {
+      id: 'fb_question',
+      label: 'Question bait — use today\'s real clue',
+      text: `Who nails this in 1 clue? "Grew up in a remote Indigenous community in Far North Queensland" 🤔`,
+      tip: "Replace the clue text with today's actual Clue 1 to make it feel live and timely.",
+    },
+    {
+      id: 'fb_challenge',
+      label: 'Friendly challenge',
+      text: `Bet none of you lot can beat my 2-clue run on today's Set For Six 👀`,
+    },
+    {
+      id: 'fb_club',
+      label: 'Club-specific (match to the group)',
+      text: `Today's Set For Six was a Broncos legend — gettable in 3 clues if you know your history 🟤🟡`,
+      tip: "Change the club name and emoji colours to match the group you're posting in. Only use when the day's player actually played for that club.",
+    },
+  ],
+  reddit: [
+    {
+      id: 'fb_reddit_launch',
+      label: 'Launch post — r/nrl (once only, 200+ karma first)',
+      text: `I built a daily NRL "guess the player" game — would love your feedback\n\n[Write a genuine 3–4 sentence post. Mention you built it yourself, what it does, and why you made it. Do NOT use this template verbatim — make it personal and conversational.]`,
+      tip: "Post this once only, and only when your Reddit karma is 200+. Authenticity is everything on r/nrl — if it reads like a press release it will get removed.",
+    },
+    {
+      id: 'fb_reddit_stats',
+      label: 'Weekly stats recap — r/nrl',
+      text: `Set For Six week in review — hardest player was [X], only [Y]% got it\n\n[Add a short paragraph with the week's most interesting stats. End with a question to invite replies.]`,
+    },
+  ],
+  twitter: [
+    {
+      id: 'fb_tw_daily',
+      label: 'Daily post',
+      text: `Today's Set For Six is live. Six clues. One mystery NRL player. setforsix.com 🏉`,
+    },
+    {
+      id: 'fb_tw_reply',
+      label: 'Reply to NRL journalist tweets',
+      text: `my [X]-clue effort on today's Set For Six 🏉`,
+      tip: "Reply to relevant NRL tweets during match days. Keep it casual — this is a conversation starter, not a pitch. Never reply with the full game URL unprompted.",
+    },
+  ],
+};
+
+const TEMPLATE_TABS = [
+  { key: 'daily',   label: 'Daily (Page)', colour: '#4A9EF5' },
+  { key: 'groups',  label: 'Groups',       colour: '#22c55e' },
+  { key: 'reddit',  label: 'Reddit',       colour: '#fb923c' },
+  { key: 'twitter', label: 'Twitter',      colour: '#38bdf8' },
+];
+
+function FBPostTemplates() {
+  const [activeTab, setActiveTab] = useState('daily');
+  const [copied, setCopied] = useState(null);
+
+  function handleCopy(id, text) {
+    navigator.clipboard.writeText(text);
+    setCopied(id);
+    setTimeout(() => setCopied(null), 2000);
+  }
+
+  const tab = TEMPLATE_TABS.find(t => t.key === activeTab);
+  const templates = FB_TEMPLATES[activeTab];
+
+  return (
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #222' }}>
+      <div className="px-4 py-3" style={{ background: '#111' }}>
+        <p className="text-sm font-semibold text-white">Part 3 — Post Templates Library</p>
+        <p className="text-xs text-gray-500 mt-0.5">Edit the bracketed parts before posting. Never paste links directly in group posts.</p>
+      </div>
+
+      {/* Tab bar */}
+      <div className="flex gap-1 px-4 py-2 flex-wrap" style={{ background: '#0d0d0d', borderTop: '1px solid #1a1a1a' }}>
+        {TEMPLATE_TABS.map(t => (
+          <button
+            key={t.key}
+            onClick={() => setActiveTab(t.key)}
+            className="text-xs px-3 py-1.5 rounded-lg"
+            style={{
+              background: activeTab === t.key ? `${t.colour}20` : '#1a1a1a',
+              color: activeTab === t.key ? t.colour : '#555',
+              border: `1px solid ${activeTab === t.key ? `${t.colour}40` : '#2a2a2a'}`,
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Templates */}
+      {templates.map(tmpl => (
+        <div key={tmpl.id} style={{ borderTop: '1px solid #161616', background: '#0a0a0a' }}>
+          <div className="px-4 pt-3 pb-1 flex items-start justify-between gap-3">
+            <p className="text-xs font-medium" style={{ color: tab.colour }}>{tmpl.label}</p>
+            <button
+              onClick={() => handleCopy(tmpl.id, tmpl.text)}
+              className="text-xs px-3 py-1 rounded-lg flex-shrink-0"
+              style={{
+                background: copied === tmpl.id ? '#22c55e20' : '#1a1a1a',
+                color: copied === tmpl.id ? '#22c55e' : '#888',
+                border: `1px solid ${copied === tmpl.id ? '#22c55e40' : '#2a2a2a'}`,
+              }}
+            >
+              {copied === tmpl.id ? '✓ Copied' : 'Copy'}
+            </button>
+          </div>
+          <pre className="px-4 pb-3 text-xs text-gray-500 whitespace-pre-wrap leading-relaxed font-sans">{tmpl.text}</pre>
+          {tmpl.tip && (
+            <div className="mx-4 mb-3 px-3 py-2 rounded-lg text-xs text-gray-500" style={{ background: '#141414', borderLeft: `2px solid ${tab.colour}60` }}>
+              {tmpl.tip}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Facebook section wrapper ───────────────────────────────────────────────────
+
+function FacebookSection() {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 pt-2">
+        <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" fill="#4A9EF5">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+        <div>
+          <h2 className="text-base font-bold text-white">Facebook Marketing</h2>
+          <p className="text-xs text-gray-500">Page setup · Group outreach · Post templates</p>
+        </div>
+      </div>
+      <FBPageChecklist />
+      <FBGroupsTable />
+      <FBPostTemplates />
+    </div>
+  );
+}
+
 // ── Main dashboard ─────────────────────────────────────────────────────────────
 
 export default function MarketingClient({ stats, authed }) {
@@ -695,6 +1111,9 @@ export default function MarketingClient({ stats, authed }) {
 
         {/* Content schedule */}
         <ContentSchedule />
+
+        {/* Facebook marketing */}
+        <FacebookSection />
 
       </div>
     </div>

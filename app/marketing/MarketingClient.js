@@ -367,7 +367,7 @@ function ContentStrategy() {
 const SCHEDULE = [
   {
     date: '2026-04-20',
-    label: 'Sun 20 Apr',
+    label: 'Mon 20 Apr',
     posts: [
       {
         id: 'apr20_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Robbie Farah',
@@ -381,7 +381,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-21',
-    label: 'Mon 21 Apr',
+    label: 'Tue 21 Apr',
     posts: [
       {
         id: 'apr21_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Manu Vatuvei',
@@ -395,7 +395,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-22',
-    label: 'Tue 22 Apr',
+    label: 'Wed 22 Apr',
     posts: [
       {
         id: 'apr22_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Preston Campbell',
@@ -409,7 +409,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-23',
-    label: 'Wed 23 Apr',
+    label: 'Thu 23 Apr',
     posts: [
       {
         id: 'apr23_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Paul Gallen',
@@ -423,7 +423,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-24',
-    label: 'Thu 24 Apr',
+    label: 'Fri 24 Apr',
     posts: [
       {
         id: 'apr24_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Stacey Jones',
@@ -437,7 +437,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-25',
-    label: 'Fri 25 Apr',
+    label: 'Sat 25 Apr',
     posts: [
       {
         id: 'apr25_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Greg Inglis',
@@ -451,7 +451,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-26',
-    label: 'Sat 26 Apr',
+    label: 'Sun 26 Apr',
     posts: [
       {
         id: 'apr26_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Corey Parker',
@@ -465,7 +465,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-27',
-    label: 'Sun 27 Apr',
+    label: 'Mon 27 Apr',
     posts: [
       {
         id: 'apr27_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Laurie Daley',
@@ -479,7 +479,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-28',
-    label: 'Mon 28 Apr',
+    label: 'Tue 28 Apr',
     posts: [
       {
         id: 'apr28_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Anthony Minichiello',
@@ -493,7 +493,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-29',
-    label: 'Tue 29 Apr',
+    label: 'Wed 29 Apr',
     posts: [
       {
         id: 'apr29_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Jason Croker',
@@ -507,7 +507,7 @@ const SCHEDULE = [
   },
   {
     date: '2026-04-30',
-    label: 'Wed 30 Apr',
+    label: 'Thu 30 Apr',
     posts: [
       {
         id: 'apr30_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Daly Cherry-Evans',

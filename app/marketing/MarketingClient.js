@@ -276,12 +276,27 @@ const STRATEGY = [
     status: 'Phase 1 — Active ✓',
     statusColour: '#22c55e',
     points: [
-      'Account live: @SetforsixNRL — profile is set up and ready',
-      'Post today\'s Clue 1 each morning as a teaser — no answer, just the mystery',
-      'Post the answer reveal each evening with one interesting fact about the player',
-      'Follow and engage with: @NRL, NRL club accounts, journalists (Andrew Webster, Michael Chammas)',
-      'Use hashtags: #NRL #NRLTwitter on every post',
-      'Don\'t pitch the game — let the content speak for itself',
+      'Account live: @SetforsixNRL — post daily using the Content Schedule below',
+      'Morning post: today\'s Clue 1 as a teaser — no answer, just the mystery',
+      'Evening post: yesterday\'s answer reveal with one interesting fact',
+      'Use hashtags: #NRL #NRLTwitter on every single post',
+      'Don\'t pitch the game directly — let the content pull people in naturally',
+      'Engage: like and reply to NRL accounts before expecting anything back',
+    ],
+  },
+  {
+    platform: 'Twitter — Who to Follow',
+    colour: '#38bdf8',
+    status: 'Do this week',
+    statusColour: '#facc15',
+    points: [
+      'Follow 30–50 quality accounts this week — do NOT mass follow (Twitter restricts new accounts that move too fast)',
+      'Official: @NRL, @NRLW, @NRLDoubleHeader',
+      'All 16 clubs: @brisbanebroncos @SydneyRoosters @SeaEagles @PanthersNRL @sharksNRL @RabbitohsNRL @NRLDragons @NRLWarriors @melbournestorm @NQCowboys @ParraEels @TitansNRL @NRLRoosters @WestsTigers @dogsNRL @newcastleknights',
+      'Journalists & media: @foxleague @9NewsNRL — search "NRL journalist" on Twitter to find active reporters',
+      'Stats & fan accounts: search "NRL stats" and "NRL trivia" to find engaged communities',
+      'Engage first — like or reply to 2–3 of their posts before following. They\'re more likely to notice you.',
+      'Never follow-unfollow. It looks spammy and can get your account restricted.',
     ],
   },
   {
@@ -347,46 +362,253 @@ function ContentStrategy() {
   );
 }
 
-// ── Content queue ──────────────────────────────────────────────────────────────
+// ── Content schedule ──────────────────────────────────────────────────────────
 
-const CONTENT_QUEUE = [
+const SCHEDULE = [
   {
-    id: 'tweet_clue',
-    platform: 'Twitter/X',
-    label: 'Daily clue teaser',
-    colour: '#38bdf8',
-    text: `🏉 Today's #SetForSix clue:\n\n"[PASTE CLUE 1 HERE]"\n\nWho is today's mystery NRL player? Six clues, one legend.\n\nsetforsix.com #NRL #NRLTwitter`,
+    date: '2026-04-20',
+    label: 'Sun 20 Apr',
+    posts: [
+      {
+        id: 'apr20_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Robbie Farah',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Won the NRL premiership in his third season of first-grade football."\n\nWho is today's mystery NRL legend? Six clues, one player.\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr20_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Mark Gasnier',
+        text: `Yesterday's #SetForSix answer: Mark Gasnier 🎉\n\nHis uncle Reg Gasnier was named in Australia's Team of the Century — giving Mark enormous expectations from the moment he stepped onto a first-grade field.\n\nNew game is live now → setforsix.com #NRL`,
+      },
+    ],
   },
   {
-    id: 'tweet_reveal',
-    platform: 'Twitter/X',
-    label: 'Answer reveal',
-    colour: '#38bdf8',
-    text: `Yesterday's #SetForSix answer: [PLAYER NAME] 🎉\n\n[PASTE AN INTERESTING FACT ABOUT THEM]\n\nNew game is live now → setforsix.com #NRL`,
+    date: '2026-04-21',
+    label: 'Mon 21 Apr',
+    posts: [
+      {
+        id: 'apr21_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Manu Vatuvei',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Became the first player in NRL history to score at least 10 tries in every one of 10 consecutive seasons."\n\nWho is today's mystery player?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr21_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Robbie Farah',
+        text: `Yesterday's #SetForSix answer: Robbie Farah 🎉\n\nHis record of 63 tackles in State of Origin Game II in 2012 is the most in a single Origin match — a stat most fans don't know.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
   },
   {
-    id: 'tweet_intro',
-    platform: 'Twitter/X',
-    label: 'Site launch intro',
-    colour: '#38bdf8',
-    text: `I built a daily NRL trivia game 🏉\n\nSix clues. One mystery NRL legend. The fewer clues you need, the better your score.\n\nA new player drops every day.\n\nsetforsix.com — free to play, no sign-up needed. Would love to know what you think. #NRL #NRLTwitter`,
+    date: '2026-04-22',
+    label: 'Tue 22 Apr',
+    posts: [
+      {
+        id: 'apr22_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Preston Campbell',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Won the Dally M Player of the Year award by a single point — edging out the player widely considered the best in the world at the time."\n\nWho could beat Andrew Johns to that award?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr22_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Manu Vatuvei',
+        text: `Yesterday's #SetForSix answer: Manu Vatuvei 🎉\n\nThe Beast broke New Zealand's all-time try-scoring record, finishing with 22 tries in 28 Tests. All 226 of his NRL games were for the Warriors.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
   },
   {
-    id: 'reddit_discussion',
-    platform: 'Reddit',
-    label: 'Karma-building post',
-    colour: '#fb923c',
-    text: `Who is the most underrated player of the NRL era?\n\nEvery year the same names come up — Johns, Lockyer, Cronk, Slater. But who flew under the radar and deserved more recognition?\n\nFor me it's [YOUR PICK] — [ONE SENTENCE WHY]. Would love to hear who you'd pick.`,
+    date: '2026-04-23',
+    label: 'Wed 23 Apr',
+    posts: [
+      {
+        id: 'apr23_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Paul Gallen',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Led his club to their first-ever NRL premiership after 49 years of trying — an achievement that reduced grown men to tears across an entire city."\n\nWho captained that fairytale season?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr23_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Preston Campbell',
+        text: `Yesterday's #SetForSix answer: Preston Campbell 🎉\n\nHe played every single minute of every match in Penrith's 2003 premiership-winning season — then went on to become the first-ever signing for the Gold Coast Titans.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
   },
   {
-    id: 'reddit_promote',
-    platform: 'Reddit',
-    label: 'Site mention (use after 200 karma)',
-    colour: '#fb923c',
-    text: `I made a free daily NRL trivia game — similar to Wordle but for footy fans\n\nIt gives you six progressive clues about a mystery NRL legend. The fewer clues you need, the better your score. Ties go to fastest time.\n\nA new player every day. setforsix.com\n\nWould love feedback from people who actually know their NRL history.`,
+    date: '2026-04-24',
+    label: 'Thu 24 Apr',
+    posts: [
+      {
+        id: 'apr24_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Stacey Jones',
+        text: `🏉 Today's clue on #SetForSix:\n\n"His grandfather was a celebrated New Zealand rugby league player — meaning the game ran in his blood long before he ever stepped onto a first-grade field."\n\nWho is the mystery player?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr24_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Paul Gallen',
+        text: `Yesterday's #SetForSix answer: Paul Gallen 🎉\n\nDespite being a lock forward, Gallen scored 63 NRL tries. He also holds the record as the longest-serving NSW State of Origin captain.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
+  },
+  {
+    date: '2026-04-25',
+    label: 'Fri 25 Apr',
+    posts: [
+      {
+        id: 'apr25_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Greg Inglis',
+        text: `🏉 Today's clue on #SetForSix:\n\n"As a teenager from regional NSW, he was already being talked about as an exceptional all-round back with the frame, speed and instincts to become a future superstar."\n\nOne of the greatest. Can you name him from clue 1?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr25_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Stacey Jones',
+        text: `Yesterday's #SetForSix answer: Stacey Jones 🎉\n\nThe Little General won the 2002 Golden Boot as the world's best international player — only the second New Zealander ever to receive that honour. 261 games, one club.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
+  },
+  {
+    date: '2026-04-26',
+    label: 'Sat 26 Apr',
+    posts: [
+      {
+        id: 'apr26_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Corey Parker',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Scored a try in his very first NRL match — a debut that hinted at the longevity and loyalty that would define an entire career at a single club."\n\n347 games. One club. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr26_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Greg Inglis',
+        text: `Yesterday's #SetForSix answer: Greg Inglis 🎉\n\nGI retired as Queensland's all-time leading try scorer in Origin history — 18 tries in 32 matches. His Goanna crawl in the 2014 Grand Final remains one of the most iconic images the game has ever produced.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
+  },
+  {
+    date: '2026-04-27',
+    label: 'Sun 27 Apr',
+    posts: [
+      {
+        id: 'apr27_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Laurie Daley',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Was spotted by a club talent scout at just 15 — and debuted in the top grade at 17 without ever playing a reserve grade match."\n\nCanberra legend. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr27_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Corey Parker',
+        text: `Yesterday's #SetForSix answer: Corey Parker 🎉\n\n1,328 career points — 586 goals and 39 tries, all for Brisbane across 347 games. Wayne Bennett described him as the ultimate professional.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
+  },
+  {
+    date: '2026-04-28',
+    label: 'Mon 28 Apr',
+    posts: [
+      {
+        id: 'apr28_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Anthony Minichiello',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Repeated back and neck injuries threatened his career in the middle years, yet he fought through them to become one of the most durable and decorated one-club players of the NRL era."\n\n302 games. One club. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr28_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Laurie Daley',
+        text: `Yesterday's #SetForSix answer: Laurie Daley 🎉\n\nGrowing up in Junee, Daley was the only boy among seven sisters — a detail that surprises everyone who watched him play. He went on to captain both NSW and Australia.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
+  },
+  {
+    date: '2026-04-29',
+    label: 'Tue 29 Apr',
+    posts: [
+      {
+        id: 'apr29_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Jason Croker',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Despite being named Rookie of the Year in his debut season, he never became a household name — instead building a quiet reputation as one of the most durable forwards of his era."\n\n318 games. Canberra legend. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr29_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Anthony Minichiello',
+        text: `Yesterday's #SetForSix answer: Anthony Minichiello 🎉\n\nThe Count was the first fullback to captain his side to a Grand Final victory since 1934 — a 79-year gap. He appeared in six Grand Finals across his career.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
+  },
+  {
+    date: '2026-04-30',
+    label: 'Wed 30 Apr',
+    posts: [
+      {
+        id: 'apr30_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Daly Cherry-Evans',
+        text: `🏉 Today's clue on #SetForSix:\n\n"Won an NRL premiership in his debut season — scoring a try in the grand final — a fairytale introduction to the highest level of the game."\n\nStill playing. One of the great halfbacks. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'apr30_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Jason Croker',
+        text: `Yesterday's #SetForSix answer: Jason Croker 🎉\n\nWhen Croker played his final game for the Raiders, the ACT Chief Minister presented him with the keys to the city in front of 21,000 fans — a civic honour rarely given to a sportsperson.\n\nNew game is live → setforsix.com #NRL`,
+      },
+    ],
+  },
+  {
+    date: 'evergreen',
+    label: 'Evergreen',
+    posts: [
+      {
+        id: 'ev_intro', time: 'Anytime', platform: 'Twitter/X', label: 'Site launch intro (post once)',
+        text: `I built a free daily NRL trivia game 🏉\n\nSix clues. One mystery NRL legend. The fewer clues you need, the better your score. Ties go to fastest time.\n\nA new player drops every day — free to play, no sign-up needed.\n\nsetforsix.com #NRL #NRLTwitter`,
+      },
+      {
+        id: 'ev_reddit_karma', time: 'Anytime', platform: 'Reddit',
+        label: 'Karma builder — post in r/nrl',
+        text: `Who is the most underrated player of the NRL era?\n\nEvery year the same names come up — Johns, Lockyer, Cronk, Slater. But who flew under the radar and deserved more recognition?\n\nFor me it's [YOUR PICK] — [ONE SENTENCE WHY]. Would love to hear who you'd pick.`,
+      },
+      {
+        id: 'ev_reddit_promote', time: 'After 200 karma', platform: 'Reddit',
+        label: 'Site mention — r/nrl (wait for karma first)',
+        text: `I made a free daily NRL trivia game — similar to Wordle but for footy fans\n\nSix clues. One mystery NRL legend. The fewer clues you use, the better your score. Ties go to fastest time.\n\nA new player every day. Free, no sign-up. setforsix.com\n\nWould love feedback from people who actually know their NRL history.`,
+      },
+    ],
   },
 ];
 
+function ContentSchedule() {
+  const [copied, setCopied] = useState(null);
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+
+  function handleCopy(id, text) {
+    navigator.clipboard.writeText(text);
+    setCopied(id);
+    setTimeout(() => setCopied(null), 2000);
+  }
+
+  const platformColour = p => p === 'Twitter/X' ? '#38bdf8' : '#fb923c';
+
+  return (
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #222' }}>
+      <div className="px-4 py-3" style={{ background: '#111' }}>
+        <p className="text-sm font-semibold text-white">Content Schedule</p>
+        <p className="text-xs text-gray-500 mt-0.5">Ready-to-post — copy and paste directly. Today is highlighted.</p>
+      </div>
+      {SCHEDULE.map(day => {
+        const isToday = day.date === today;
+        return (
+          <div key={day.date} style={{ borderTop: '1px solid #1a1a1a' }}>
+            <div
+              className="px-4 py-2 flex items-center gap-2"
+              style={{ background: isToday ? 'rgba(34,197,94,0.08)' : '#0e0e0e' }}
+            >
+              <span className="text-xs font-semibold" style={{ color: isToday ? '#22c55e' : '#555' }}>
+                {day.label}
+              </span>
+              {isToday && (
+                <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: '#22c55e20', color: '#22c55e', border: '1px solid #22c55e30' }}>
+                  Today
+                </span>
+              )}
+            </div>
+            {day.posts.map(post => (
+              <div key={post.id} className="px-4 pb-4 pt-2" style={{ background: isToday ? 'rgba(34,197,94,0.03)' : '#0a0a0a' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium" style={{ color: platformColour(post.platform) }}>{post.platform}</span>
+                    <span className="text-xs text-gray-600">·</span>
+                    <span className="text-xs text-gray-600">{post.time}</span>
+                    <span className="text-xs text-gray-600">·</span>
+                    <span className="text-xs text-gray-500">{post.label}</span>
+                  </div>
+                  <button
+                    onClick={() => handleCopy(post.id, post.text)}
+                    className="text-xs px-3 py-1 rounded-lg transition-colors flex-shrink-0"
+                    style={{
+                      background: copied === post.id ? '#22c55e20' : '#1a1a1a',
+                      color: copied === post.id ? '#22c55e' : '#888',
+                      border: `1px solid ${copied === post.id ? '#22c55e40' : '#2a2a2a'}`,
+                    }}
+                  >
+                    {copied === post.id ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
+                <pre className="text-xs text-gray-500 whitespace-pre-wrap leading-relaxed font-sans">{post.text}</pre>
+              </div>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// keep for rendering below — replaces old ContentQueue
 function ContentQueue() {
   const [copied, setCopied] = useState(null);
 
@@ -403,7 +625,7 @@ function ContentQueue() {
         <p className="text-xs text-gray-500 mt-0.5">Ready-to-post templates — edit the bracketed parts before posting</p>
       </div>
       <div className="divide-y" style={{ borderTop: '1px solid #1a1a1a', borderColor: '#1a1a1a' }}>
-        {CONTENT_QUEUE.map(item => (
+        {[].map(item => (
           <div key={item.id} className="p-4" style={{ background: '#0e0e0e' }}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
@@ -471,8 +693,8 @@ export default function MarketingClient({ stats, authed }) {
         {/* Strategy */}
         <ContentStrategy />
 
-        {/* Content queue */}
-        <ContentQueue />
+        {/* Content schedule */}
+        <ContentSchedule />
 
       </div>
     </div>

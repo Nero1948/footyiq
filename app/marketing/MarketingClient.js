@@ -213,6 +213,12 @@ function TrafficSources() {
       colour: '#fb923c',
     },
     {
+      name: '@SetforsixNRL Profile',
+      desc: 'Your Twitter/X account',
+      url: 'https://x.com/SetforsixNRL',
+      colour: '#38bdf8',
+    },
+    {
       name: 'Twitter/X Analytics',
       desc: 'Tweet impressions and engagement',
       url: 'https://analytics.twitter.com',
@@ -267,10 +273,10 @@ const STRATEGY = [
   {
     platform: 'Twitter / X',
     colour: '#38bdf8',
-    status: 'Phase 1 — Create account',
-    statusColour: '#facc15',
+    status: 'Phase 1 — Active ✓',
+    statusColour: '#22c55e',
     points: [
-      'Create account: @SetForSix (check availability) or @SetFor6NRL',
+      'Account live: @SetforsixNRL — profile is set up and ready',
       'Post today\'s Clue 1 each morning as a teaser — no answer, just the mystery',
       'Post the answer reveal each evening with one interesting fact about the player',
       'Follow and engage with: @NRL, NRL club accounts, journalists (Andrew Webster, Michael Chammas)',

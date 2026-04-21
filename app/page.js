@@ -365,57 +365,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <div style={{ height: '1px', background: `linear-gradient(90deg, transparent, ${GREEN}, transparent)`, opacity: 0.3 }} />
-
-      {/* ════════════ FAQ ════════════ */}
-      <section className="px-4 py-16 md:py-20" style={{ background: 'rgba(7,11,16,0.95)' }}>
-        <div className="max-w-2xl mx-auto">
-          <ScrollReveal>
-            <p className="text-center text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-3">
-              Frequently asked
-            </p>
-            <h2 className="text-center text-3xl sm:text-4xl font-black text-white mb-10">
-              Questions, answered
-            </h2>
-          </ScrollReveal>
-
-          <div className="space-y-3">
-            {FAQS.map(({ q, a }, idx) => (
-              <ScrollReveal key={q} delay={idx * 60}>
-                <details
-                  className="group rounded-xl overflow-hidden"
-                  style={{
-                    background: '#0d1117',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                  }}
-                >
-                  <summary
-                    className="cursor-pointer list-none px-5 py-4 flex items-center justify-between font-semibold text-white hover:text-[#00e676] transition-colors"
-                  >
-                    <span className="pr-4">{q}</span>
-                    <span
-                      className="text-2xl leading-none transition-transform group-open:rotate-45 flex-shrink-0"
-                      style={{ color: GREEN }}
-                      aria-hidden
-                    >
-                      +
-                    </span>
-                  </summary>
-                  <p className="px-5 pb-5 text-gray-400 text-sm leading-relaxed">
-                    {a}
-                  </p>
-                </details>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-
       {/* ════════════ YESTERDAY ════════════ */}
       {yesterday && (
         <ScrollReveal>
@@ -468,6 +417,52 @@ export default async function Home() {
           </div>
         </section>
       </ScrollReveal>
+
+      {/* ════════════ FAQ ════════════ */}
+      <section className="px-4 py-14 md:py-16" style={{ background: 'rgba(7,11,16,0.95)' }}>
+        <div className="max-w-2xl mx-auto">
+          <ScrollReveal>
+            <p className="text-center text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-8">
+              Frequently asked
+            </p>
+          </ScrollReveal>
+
+          <div className="space-y-3">
+            {FAQS.map(({ q, a }, idx) => (
+              <ScrollReveal key={q} delay={idx * 60}>
+                <details
+                  className="group rounded-xl overflow-hidden"
+                  style={{
+                    background: '#0d1117',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                  }}
+                >
+                  <summary
+                    className="cursor-pointer list-none px-5 py-4 flex items-center justify-between font-semibold text-white hover:text-[#00e676] transition-colors"
+                  >
+                    <span className="pr-4">{q}</span>
+                    <span
+                      className="text-2xl leading-none transition-transform group-open:rotate-45 flex-shrink-0"
+                      style={{ color: GREEN }}
+                      aria-hidden
+                    >
+                      +
+                    </span>
+                  </summary>
+                  <p className="px-5 pb-5 text-gray-400 text-sm leading-relaxed">
+                    {a}
+                  </p>
+                </details>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       {/* ════════════ FOOTER ════════════ */}
       <footer className="bg-texture px-4 py-12 text-center" style={{ borderTop: `1px solid ${GREEN}` }}>

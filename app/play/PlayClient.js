@@ -59,7 +59,8 @@ function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalP
     if (totalPlayers) lines.push(`${totalPlayers} players tried today`);
   }
   lines.push('');
-  lines.push('Think you know league? setforsix.com');
+  lines.push('Think you know league?');
+  lines.push('https://www.setforsix.com');
   return lines.join('\n');
 }
 

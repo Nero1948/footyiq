@@ -4,6 +4,11 @@ import MarketingClient from './MarketingClient';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Marketing Dashboard',
+  robots: { index: false, follow: false },
+};
+
 async function getStats() {
   const tz = { timeZone: 'Australia/Sydney' };
   const today = new Date().toLocaleDateString('en-CA', tz);

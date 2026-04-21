@@ -32,6 +32,7 @@ export async function generateMetadata() {
     return {
       title: `Set For Six — Game #${game.game_number}`,
       description: 'Six clues. One mystery NRL player. Can you crack it before your mates?',
+      alternates: { canonical: '/play' },
       openGraph: PLAY_OG,
       twitter: { card: 'summary_large_image', ...PLAY_OG },
     };
@@ -39,12 +40,40 @@ export async function generateMetadata() {
   return {
     title: 'Set For Six — Play',
     description: 'Six clues. One mystery NRL player. Can you crack it before your mates?',
+    alternates: { canonical: '/play' },
     openGraph: PLAY_OG,
     twitter: { card: 'summary_large_image', ...PLAY_OG },
   };
 }
 
+const gameSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Game',
+  name: 'Set For Six',
+  description: 'Six progressive clues reveal a mystery NRL player. Guess correctly in as few clues as possible. New game every day.',
+  url: 'https://www.setforsix.com/play',
+  genre: ['Sports Trivia', 'Guessing Game', 'Daily Puzzle'],
+  gamePlatform: 'Web Browser',
+  applicationCategory: 'Game',
+  operatingSystem: 'Any',
+  inLanguage: 'en-AU',
+  isAccessibleForFree: true,
+  about: {
+    '@type': 'SportsOrganization',
+    name: 'National Rugby League',
+    alternateName: 'NRL',
+  },
+};
+
 export default async function PlayPage() {
   const initialGame = await getTodayGame();
-  return <PlayClient initialGame={initialGame} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(gameSchema) }}
+      />
+      <PlayClient initialGame={initialGame} />
+    </>
+  );
 }

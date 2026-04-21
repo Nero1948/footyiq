@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { track } from '@vercel/analytics';
 
 const GREEN = '#00e676';
 
@@ -18,6 +19,9 @@ export default function EmailSignup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
       });
+      if (res.ok) {
+        track('email_signup', { location: 'homepage' });
+      }
       setEmailState(res.ok ? 'done' : 'error');
     } catch {
       setEmailState('error');

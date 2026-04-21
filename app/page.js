@@ -62,6 +62,43 @@ const HOW_IT_WORKS = [
   },
 ];
 
+const FAQS = [
+  {
+    q: 'What is Set For Six?',
+    a: 'Set For Six is a free daily NRL guessing game. Each day a new mystery rugby league player is revealed through six progressive clues — the fewer clues you need to guess correctly, the better your score.',
+  },
+  {
+    q: 'How do you play?',
+    a: "Read the first clue and type the player's name. Not sure? Unlock the next clue — each one narrows things down. Lock in your guess as soon as you're confident. A new game drops every day.",
+  },
+  {
+    q: 'Is Set For Six free to play?',
+    a: 'Yes — 100% free. No account needed to play. You can optionally subscribe to get an email reminder each morning when the new game goes live.',
+  },
+  {
+    q: 'When does a new game come out?',
+    a: 'A fresh game launches every morning at midnight New Zealand time (10pm AEDT / 11pm AEST). Both Aussie and Kiwi rugby league fans can start their day with a new puzzle.',
+  },
+  {
+    q: 'Do I need to be an NRL expert?',
+    a: 'Not at all. The first clue rewards deep NRL knowledge, but later clues make the player obvious even to casual fans. If you follow footy occasionally, you should still crack most games by clue four or five.',
+  },
+  {
+    q: 'How does scoring work?',
+    a: 'Your score is based on how few clues you needed to guess correctly. Ties are broken by speed — the fastest correct guess wins the day and becomes the daily Champion on the leaderboard.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
+
 async function getDemoPlayers() {
   const todayAEST = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
   try {
@@ -327,6 +364,57 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <div style={{ height: '1px', background: `linear-gradient(90deg, transparent, ${GREEN}, transparent)`, opacity: 0.3 }} />
+
+      {/* ════════════ FAQ ════════════ */}
+      <section className="px-4 py-16 md:py-20" style={{ background: 'rgba(7,11,16,0.95)' }}>
+        <div className="max-w-2xl mx-auto">
+          <ScrollReveal>
+            <p className="text-center text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-3">
+              Frequently asked
+            </p>
+            <h2 className="text-center text-3xl sm:text-4xl font-black text-white mb-10">
+              Questions, answered
+            </h2>
+          </ScrollReveal>
+
+          <div className="space-y-3">
+            {FAQS.map(({ q, a }, idx) => (
+              <ScrollReveal key={q} delay={idx * 60}>
+                <details
+                  className="group rounded-xl overflow-hidden"
+                  style={{
+                    background: '#0d1117',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                  }}
+                >
+                  <summary
+                    className="cursor-pointer list-none px-5 py-4 flex items-center justify-between font-semibold text-white hover:text-[#00e676] transition-colors"
+                  >
+                    <span className="pr-4">{q}</span>
+                    <span
+                      className="text-2xl leading-none transition-transform group-open:rotate-45 flex-shrink-0"
+                      style={{ color: GREEN }}
+                      aria-hidden
+                    >
+                      +
+                    </span>
+                  </summary>
+                  <p className="px-5 pb-5 text-gray-400 text-sm leading-relaxed">
+                    {a}
+                  </p>
+                </details>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       {/* ════════════ YESTERDAY ════════════ */}
       {yesterday && (

@@ -44,17 +44,19 @@ function getSecondsUntilMidnightAEST() {
 
 function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalPlayers, streak) {
   const squares = solved
-    ? [...Array(cluesUsed - 1).fill('🟥'), '🟩', ...Array(6 - cluesUsed).fill('⬜')]
-    : Array(6).fill('🟥');
+    ? [...Array(cluesUsed - 1).fill('⬛'), '🏉', ...Array(6 - cluesUsed).fill('⬜')]
+    : Array(6).fill('⬛');
   const clueWord = cluesUsed === 1 ? 'clue' : 'clues';
   const lines = [`Set For Six #${gameNumber} 🏉`, squares.join(''), ''];
   if (solved) {
-    lines.push(`🎯 Cracked it in ${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}`);
-    if (rank !== null && rank !== undefined && totalPlayers) lines.push(`📊 Ranked #${rank} of ${totalPlayers} players`);
-    lines.push(`🔥 ${streak} day streak`);
+    lines.push(`TRY! Scored in ${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}`);
+    const extras = [];
+    if (rank !== null && rank !== undefined && totalPlayers) extras.push(`🏅 #${rank} of ${totalPlayers}`);
+    extras.push(`🔥 ${streak} day streak`);
+    lines.push(extras.join(' · '));
   } else {
-    lines.push(`🎯 Didn't crack it · ${formatTime(totalTimeMs)}`);
-    if (totalPlayers) lines.push(`📊 ${totalPlayers} players attempted`);
+    lines.push(`Held up over the line · ${formatTime(totalTimeMs)}`);
+    if (totalPlayers) lines.push(`${totalPlayers} players tried today`);
   }
   lines.push('');
   lines.push('Think you know league? setforsix.com');

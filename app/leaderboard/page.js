@@ -36,7 +36,7 @@ async function getLeaderboardData() {
       .eq('solved', true)
       .order('clues_used', { ascending: true })
       .order('total_time_ms', { ascending: true })
-      .limit(10);
+      .limit(50);
 
     const FALLBACK_NAMES = ['Mystery Fan', 'Secret Selector', 'Phantom Tipper', 'Ghost Player', 'Undercover Footy Brain', 'Anonymous Legend'];
     const getFallback = (id) => {

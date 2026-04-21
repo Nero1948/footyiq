@@ -37,31 +37,6 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   delay:    `${-((i * 3.7) % 14)}s`,
 }));
 
-const HOW_IT_WORKS = [
-  {
-    step: '01',
-    emoji: '🔍',
-    title: 'Get a clue',
-    body: 'A mystery NRL player drops one clue at a time. Guess early for big bragging rights.',
-    bg: '#0d1117',
-  },
-  {
-    step: '02',
-    emoji: '✏️',
-    title: 'Make your guess',
-    body: "Type the player's name. Wait too long and everyone beats you to it.",
-    bg: '#111a22',
-    accent: true,
-  },
-  {
-    step: '03',
-    emoji: '📲',
-    title: 'Share the flex',
-    body: "Share your spoiler-free result card in the group chat. Stir things up without giving the answer away.",
-    bg: '#0d1117',
-  },
-];
-
 const FAQS = [
   {
     q: 'What is Set For Six?',
@@ -325,43 +300,6 @@ export default async function Home() {
             </h2>
           </ScrollReveal>
           <GamePreview players={demoPlayers} />
-        </div>
-      </section>
-
-      <div style={{ height: '1px', background: `linear-gradient(90deg, transparent, ${GREEN}, transparent)`, opacity: 0.3 }} />
-
-      {/* ════════════ HOW IT WORKS ════════════ */}
-      <section className="px-4 py-16 md:py-20" style={{ background: 'rgba(7,11,16,0.95)' }}>
-        <div className="max-w-5xl mx-auto">
-          <ScrollReveal>
-            <p className="text-center text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-12">
-              How it works
-            </p>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            {HOW_IT_WORKS.map(({ step, emoji, title, body, bg }, idx) => (
-              <ScrollReveal key={step} delay={idx * 120}>
-                <div
-                  className="relative rounded-2xl p-7 h-full transition-transform hover:-translate-y-1"
-                  style={{
-                    background: bg,
-                    borderLeft: `3px solid ${GREEN}`,
-                    borderTop: '1px solid rgba(255,255,255,0.06)',
-                    borderRight: '1px solid rgba(255,255,255,0.06)',
-                    borderBottom: '1px solid rgba(255,255,255,0.06)',
-                  }}
-                >
-                  <span className="block font-black mb-4 leading-none" style={{ color: GREEN, fontSize: '2.2rem', opacity: 0.9 }}>
-                    {step}
-                  </span>
-                  <div className="text-3xl mb-4">{emoji}</div>
-                  <h3 className="font-bold text-lg text-white mb-3">{title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{body}</p>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
         </div>
       </section>
 

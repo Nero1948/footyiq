@@ -192,7 +192,7 @@ export default function PlayClient({ initialGame }) {
   // ── Finish game ────────────────────────────────────────────────────────────
 
   const finishGame = useCallback(
-    async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses, facts = [], drama = null }) => {
+    async ({ solved, answer, cluesUsed, totalTimeMs, allGuesses, facts = [], drama = null, allClues = [] }) => {
       try {
         const currentUsername = ls.get('setforsix_username') || 'Anonymous';
         const res = await fetch('/api/submit', {
@@ -204,13 +204,13 @@ export default function PlayClient({ initialGame }) {
         const rank = res.ok && submitData.success ? submitData.rank : null;
         const totalPlayers = res.ok && submitData.success ? submitData.totalPlayers : null;
         const percentile = res.ok && submitData.success ? submitData.percentile : null;
-        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile, facts, drama };
+        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank, totalPlayers, percentile, facts, drama, allClues };
         setGameOverData(resultData);
         setGameState('done');
         ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
         track('game_completed', { solved, clues_used: cluesUsed });
       } catch {
-        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts, drama };
+        const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts, drama, allClues };
         setGameOverData(resultData);
         setGameState('done');
         ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
@@ -240,12 +240,12 @@ export default function PlayClient({ initialGame }) {
       if (!res.ok) { setCurrentGuess(guessText); setIsGuessing(false); return; }
       if (data.correct) {
         clearInterval(timerRef.current);
-        await finishGame({ solved: true, answer: data.answer, cluesUsed: clueNumber, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses: [...wrongGuesses, guessText], facts: data.facts || [], drama: data.drama || null });
+        await finishGame({ solved: true, answer: data.answer, cluesUsed: clueNumber, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses: [...wrongGuesses, guessText], facts: data.facts || [], drama: data.drama || null, allClues: data.allClues || [] });
       } else if (data.failed) {
         clearInterval(timerRef.current);
         const allGuesses = [...wrongGuesses, guessText];
         setWrongGuesses(allGuesses);
-        await finishGame({ solved: false, answer: data.answer, cluesUsed: 6, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses, facts: data.facts || [], drama: data.drama || null });
+        await finishGame({ solved: false, answer: data.answer, cluesUsed: 6, totalTimeMs: Math.round(performance.now() - startTimeRef.current), allGuesses, facts: data.facts || [], drama: data.drama || null, allClues: data.allClues || [] });
       } else {
         setWrongGuesses((prev) => [...prev, guessText]);
         setClues((prev) => [...prev, data.nextClue]);
@@ -511,6 +511,34 @@ export default function PlayClient({ initialGame }) {
                 </div>
               </div>
             </div>
+
+            {/* All the clues */}
+            {gameOverData.allClues?.length === 6 && (
+              <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">All the clues</p>
+                <ul className="space-y-2.5">
+                  {gameOverData.allClues.map((clueText, i) => {
+                    const clueNum = i + 1;
+                    const wasRevealed = clueNum <= gameOverData.cluesUsed;
+                    const isSolvedOn = gameOverData.solved && clueNum === gameOverData.cluesUsed;
+                    return (
+                      <li key={clueNum} className="flex items-start gap-3">
+                        <div
+                          className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5"
+                          style={{
+                            background: isSolvedOn ? '#00e676' : wasRevealed ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)',
+                            color: isSolvedOn ? '#0a0e13' : wasRevealed ? 'white' : '#6b7280',
+                          }}
+                        >
+                          {clueNum}
+                        </div>
+                        <p className={`text-sm leading-relaxed ${wasRevealed ? 'text-white' : 'text-gray-400'}`}>{clueText}</p>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
 
             {/* Horizontal stats strip */}
             <div className="grid grid-cols-3 gap-2">

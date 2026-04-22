@@ -72,6 +72,7 @@ export async function POST(request) {
       answer: game.answer_player,
       facts: game.facts ?? [],
       drama: game.drama ?? null,
+      allClues: [game.clue_1, game.clue_2, game.clue_3, game.clue_4, game.clue_5, game.clue_6],
     });
   }
 
@@ -91,5 +92,6 @@ export async function POST(request) {
     answer: game.answer_player,
     facts: game.facts ?? [],
     drama: game.drama ?? null,
+    allClues: [game.clue_1, game.clue_2, game.clue_3, game.clue_4, game.clue_5, game.clue_6],
   });
 }

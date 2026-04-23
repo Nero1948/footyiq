@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
 export const runtime = 'nodejs';
 

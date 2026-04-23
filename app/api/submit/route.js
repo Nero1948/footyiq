@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 import { Filter } from 'bad-words';
 import { rateLimit, getIp } from '@/lib/rateLimit';
 import { matchAnswer } from '@/lib/matchAnswer';

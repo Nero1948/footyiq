@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 import { sendDailyEmail } from '@/lib/sendDailyEmail';
 
 export async function GET(request) {

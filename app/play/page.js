@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 import PlayClient from './PlayClient';
 
 export const dynamic = 'force-dynamic';

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Nav from '../components/Nav';
 import WallOfFame from './WallOfFame';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 import MarketingClient from './MarketingClient';
 
 export const dynamic = 'force-dynamic';

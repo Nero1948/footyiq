@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
 // Returns champion data for the last N days (default 7), most recent first.
 export async function GET(request) {

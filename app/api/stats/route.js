@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
 export async function GET() {
   const todayAEST = new Date().toLocaleDateString('en-CA', {

@@ -3,7 +3,7 @@ import Nav from './components/Nav';
 import ScrollReveal from './components/ScrollReveal';
 import EmailSignup from './components/EmailSignup';
 import GamePreview from './components/GamePreview';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 
 export const revalidate = 60;
 

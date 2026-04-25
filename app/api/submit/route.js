@@ -161,7 +161,7 @@ export async function POST(request) {
 
     return Response.json({ success: true, rank, totalPlayers, percentile });
 
-  } catch (err) {
+  } catch {
     return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

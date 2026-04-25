@@ -15,7 +15,7 @@ export async function GET() {
       .select('id, game_number, date, clue_1')
       .eq('date', todayAEST)
       .single());
-  } catch (err) {
+  } catch {
     return Response.json(
       { error: 'Failed to query database' },
       { status: 500 }

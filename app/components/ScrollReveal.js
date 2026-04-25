@@ -5,11 +5,10 @@ import { useState, useEffect, useRef } from 'react';
 export default function ScrollReveal({ children, delay = 0 }) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setReducedMotion(true);
+      requestAnimationFrame(() => setVisible(true));
       return;
     }
     const el = ref.current;
@@ -21,10 +20,6 @@ export default function ScrollReveal({ children, delay = 0 }) {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-
-  if (reducedMotion) {
-    return <div>{children}</div>;
-  }
 
   return (
     <div

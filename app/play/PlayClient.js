@@ -69,7 +69,7 @@ export default function PlayClient({ initialGame }) {
   // Derive initial UI state from server-provided initialGame so SSR HTML never
   // shows a loading spinner — the game structure is visible immediately.
   const [gameState, setGameState] = useState(initialGame ? 'playing' : 'error');
-  const [game, setGame] = useState(initialGame ?? null);
+  const [game] = useState(initialGame ?? null);
   const [clues, setClues] = useState(initialGame ? [initialGame.clue_1] : []);
   const [wrongGuesses, setWrongGuesses] = useState([]);
   const [currentGuess, setCurrentGuess] = useState('');

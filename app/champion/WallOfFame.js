@@ -20,7 +20,7 @@ export default function WallOfFame({ entries, todayAEST, winnerCounts }) {
 
   return (
     <div className="space-y-2 mt-4">
-      {entries.map(({ date, gameNumber: gNum, champion: c }, i) => {
+      {entries.map(({ date, champion: c }, i) => {
         const isToday = date === todayAEST;
         const isMultiWinner = c && winnerCounts[c.name] > 1;
         const isTopEntry = i === 0 && !!c;

@@ -10,14 +10,16 @@
  *   node scripts/seed-games.js > insert-games.sql   # save to file
  */
 
-const fs   = require('fs');
-const path = require('path');
+import { readFileSync } from 'fs';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
-const dataFile = path.resolve(__dirname, '../data/games-batch-1.json');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const dataFile = resolve(__dirname, '../data/games-batch-1.json');
 
 let games;
 try {
-  games = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
+  games = JSON.parse(readFileSync(dataFile, 'utf8'));
 } catch (err) {
   console.error('Failed to read data file:', err.message);
   process.exit(1);

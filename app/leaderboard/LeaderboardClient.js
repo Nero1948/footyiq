@@ -19,14 +19,13 @@ export default function LeaderboardClient({ initialData }) {
   const [entries, setEntries] = useState(initialData.entries);
   const [gameNumber, setGameNumber] = useState(initialData.gameNumber);
   const [gameId, setGameId] = useState(initialData.gameId);
-  const [deviceId, setDeviceId] = useState(null);
+  const [deviceId] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('setforsix_device_id') || localStorage.getItem('footyiq_device_id');
+  });
   const [error, setError] = useState(null);
 
   const channelRef = useRef(null);
-
-  useEffect(() => {
-    setDeviceId(localStorage.getItem('setforsix_device_id') || localStorage.getItem('footyiq_device_id'));
-  }, []);
 
   const fetchLeaderboard = useCallback(async () => {
     try {

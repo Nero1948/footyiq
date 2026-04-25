@@ -53,14 +53,6 @@ export async function GET(request) {
   const champion = attempts[0];
   const secondPlace = attempts[1] ?? null;
 
-  // ── Fetch total solved count ───────────────────────────────────────────────
-
-  const { count: totalSolved } = await supabase
-    .from('attempts')
-    .select('id', { count: 'exact', head: true })
-    .eq('game_id', game.id)
-    .eq('solved', true);
-
   // ── Compute champion streak ────────────────────────────────────────────────
 
   let streak = 1;
@@ -351,7 +343,7 @@ function renderNoChampion(dateParam) {
 
         {/* Main */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ color: '#1a2e42', fontSize: 15, fontWeight: 700, letterSpacing: 12, marginBottom: 28 }}>TODAY'S WINNER</div>
+          <div style={{ color: '#1a2e42', fontSize: 15, fontWeight: 700, letterSpacing: 12, marginBottom: 28 }}>TODAY&apos;S WINNER</div>
           <div style={{ color: '#1a2e42', fontSize: 96, fontWeight: 900, lineHeight: 1, marginBottom: 24 }}>???</div>
           <div style={{ color: '#f6b91f', fontSize: 17, fontWeight: 700, letterSpacing: 8 }}>NO CHAMPION YET</div>
           <div style={{ color: '#1a2e42', fontSize: 15, letterSpacing: 3, marginTop: 16 }}>{displayDate}</div>

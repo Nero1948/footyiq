@@ -1,5 +1,6 @@
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 import { rateLimit, getIp } from '@/lib/rateLimit';
+import { randomUUID } from 'crypto';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -24,9 +25,16 @@ export async function POST(request) {
   }
 
   try {
-    const { error } = await supabase
+    const cleanEmail = email.trim().toLowerCase();
+    let { error } = await supabase
       .from('email_subscribers')
-      .insert({ email: email.trim().toLowerCase() });
+      .insert({ email: cleanEmail, unsubscribe_token: randomUUID() });
+
+    if (error?.code === 'PGRST204') {
+      ({ error } = await supabase
+        .from('email_subscribers')
+        .insert({ email: cleanEmail }));
+    }
 
     if (error) {
       // Postgres unique constraint violation — email already subscribed.

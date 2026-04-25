@@ -51,7 +51,7 @@ export async function POST(request) {
       .select('id, answer_player, clue_1, clue_2, clue_3, clue_4, clue_5, clue_6, facts, drama')
       .eq('id', gameId)
       .single());
-  } catch (err) {
+  } catch {
     return Response.json({ error: 'Failed to query database' }, { status: 500 });
   }
 

@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { rateLimit, getIp } from '@/lib/rateLimit';
 
 export async function POST(request) {
   let body;
@@ -9,9 +10,18 @@ export async function POST(request) {
   }
 
   const { password } = body;
-  const correct = (process.env.MARKETING_PASSWORD ?? 'setforsix2026').trim();
+  const ip = getIp(request);
+  if (!rateLimit(`marketing-auth:${ip}`, 5, 15 * 60_000)) {
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
+  }
 
-  if (password.trim() !== correct) {
+  const correct = process.env.MARKETING_PASSWORD?.trim();
+
+  if (!correct) {
+    return Response.json({ error: 'Marketing password is not configured' }, { status: 503 });
+  }
+
+  if (typeof password !== 'string' || password.trim() !== correct) {
     return Response.json({ error: 'Incorrect password' }, { status: 401 });
   }
 
@@ -20,6 +30,7 @@ export async function POST(request) {
     path: '/marketing',
     httpOnly: true,
     sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 60 * 24 * 30,
   });
 

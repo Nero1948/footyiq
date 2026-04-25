@@ -28,12 +28,6 @@ export async function generateMetadata() {
 }
 
 function formatSeconds(ms) { return (ms / 1000).toFixed(1) + 's'; }
-function formatClues(n) { return n === 1 ? '1 clue' : `${n} clues`; }
-function formatDisplayDate(dateStr) {
-  return new Date(dateStr + 'T12:00:00Z').toLocaleDateString('en-AU', {
-    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
-  });
-}
 
 const FALLBACK_NAMES = ['Mystery Fan', 'Secret Selector', 'Phantom Tipper', 'Ghost Player', 'Undercover Footy Brain', 'Anonymous Legend'];
 

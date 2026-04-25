@@ -180,7 +180,7 @@ const NEW_GAMES = [
 // ── Already-inserted games (reference only, not re-inserted) ──────────────────
 // Games 7, 8, 9, 10 are confirmed in the DB from a previous session.
 // Keeping here for reference:
-const _INSERTED_REFERENCE = [
+void [
   {
     game_number: 10,
     date: '2026-04-21',
@@ -245,7 +245,7 @@ const _INSERTED_REFERENCE = [
       'Jones won the 2002 Golden Boot Award as the world\'s best international rugby league player — only the second New Zealander to receive the honour after Gary Freeman.',
     ],
   },
-]; // end _INSERTED_REFERENCE
+]; // end inserted reference
 
 // ── PENDING REVIEW — not yet inserted ─────────────────────────────────────────
 // Run through each game, approve clues/facts, then move into NEW_GAMES above.

@@ -1,6 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
+function readLocalJson(key, fallback = {}) {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    return JSON.parse(localStorage.getItem(key) ?? JSON.stringify(fallback));
+  } catch {
+    return fallback;
+  }
+}
 
 // ── Password gate ──────────────────────────────────────────────────────────────
 
@@ -127,15 +136,7 @@ const CHECKLIST = [
 
 function Checklist() {
   const todayKey = `mkt_checklist_${new Date().toLocaleDateString('en-CA')}`;
-  const [checked, setChecked] = useState({});
-
-  useEffect(() => {
-    try {
-      setChecked(JSON.parse(localStorage.getItem(todayKey) ?? '{}'));
-    } catch {
-      setChecked({});
-    }
-  }, [todayKey]);
+  const [checked, setChecked] = useState(() => readLocalJson(todayKey));
 
   function toggle(id) {
     const next = { ...checked, [id]: !checked[id] };
@@ -148,7 +149,7 @@ function Checklist() {
   return (
     <div className="rounded-xl p-4" style={{ background: '#111', border: '1px solid #222' }}>
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-semibold text-white">Today's Checklist</p>
+        <p className="text-sm font-semibold text-white">Today&apos;s Checklist</p>
         <span className="text-xs text-gray-500">{done}/{CHECKLIST.length} done</span>
       </div>
       <div className="space-y-2">
@@ -608,51 +609,6 @@ function ContentSchedule() {
   );
 }
 
-// keep for rendering below — replaces old ContentQueue
-function ContentQueue() {
-  const [copied, setCopied] = useState(null);
-
-  function handleCopy(id, text) {
-    navigator.clipboard.writeText(text);
-    setCopied(id);
-    setTimeout(() => setCopied(null), 2000);
-  }
-
-  return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #222' }}>
-      <div className="px-4 py-3" style={{ background: '#111' }}>
-        <p className="text-sm font-semibold text-white">Content Queue</p>
-        <p className="text-xs text-gray-500 mt-0.5">Ready-to-post templates — edit the bracketed parts before posting</p>
-      </div>
-      <div className="divide-y" style={{ borderTop: '1px solid #1a1a1a', borderColor: '#1a1a1a' }}>
-        {[].map(item => (
-          <div key={item.id} className="p-4" style={{ background: '#0e0e0e' }}>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium" style={{ color: item.colour }}>{item.platform}</span>
-                <span className="text-xs text-gray-600">—</span>
-                <span className="text-xs text-gray-400">{item.label}</span>
-              </div>
-              <button
-                onClick={() => handleCopy(item.id, item.text)}
-                className="text-xs px-3 py-1 rounded-lg transition-colors"
-                style={{
-                  background: copied === item.id ? '#22c55e20' : '#1a1a1a',
-                  color: copied === item.id ? '#22c55e' : '#888',
-                  border: `1px solid ${copied === item.id ? '#22c55e40' : '#2a2a2a'}`,
-                }}
-              >
-                {copied === item.id ? '✓ Copied' : 'Copy'}
-              </button>
-            </div>
-            <pre className="text-xs text-gray-500 whitespace-pre-wrap leading-relaxed font-sans">{item.text}</pre>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ── Facebook Page Setup Checklist ─────────────────────────────────────────────
 
 const FB_PAGE_STEPS = [
@@ -666,12 +622,7 @@ const FB_PAGE_STEPS = [
 ];
 
 function FBPageChecklist() {
-  const [checked, setChecked] = useState({});
-
-  useEffect(() => {
-    try { setChecked(JSON.parse(localStorage.getItem('fb_page_checklist') ?? '{}')); }
-    catch { setChecked({}); }
-  }, []);
+  const [checked, setChecked] = useState(() => readLocalJson('fb_page_checklist'));
 
   function toggle(id) {
     const next = { ...checked, [id]: !checked[id] };
@@ -767,14 +718,9 @@ const FB_GROUPS_DEFAULT = [
 const RULES_COLOUR = { Strict: '#ef4444', Moderate: '#F59E0B', Open: '#22c55e' };
 
 function FBGroupsTable() {
-  const [groupState, setGroupState] = useState({});
+  const [groupState, setGroupState] = useState(() => readLocalJson('fb_groups_state'));
   const [filterStatus, setFilterStatus] = useState('All');
   const [expandedNotes, setExpandedNotes] = useState(null);
-
-  useEffect(() => {
-    try { setGroupState(JSON.parse(localStorage.getItem('fb_groups_state') ?? '{}')); }
-    catch { setGroupState({}); }
-  }, []);
 
   function saveGroupState(next) {
     setGroupState(next);
@@ -894,7 +840,7 @@ function FBGroupsTable() {
 
       {filtered.length === 0 && (
         <p className="text-xs text-gray-600 px-4 py-6 text-center" style={{ background: '#0a0a0a' }}>
-          No groups with status "{filterStatus}" yet.
+          No groups with status &quot;{filterStatus}&quot; yet.
         </p>
       )}
     </div>

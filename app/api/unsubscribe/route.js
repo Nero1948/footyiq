@@ -5,8 +5,9 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const email = searchParams.get('email');
+  const token = searchParams.get('token');
 
-  if (!email || !EMAIL_REGEX.test(email)) {
+  if (!token && (!email || !EMAIL_REGEX.test(email))) {
     return new Response(errorPage('Invalid unsubscribe link.'), {
       status: 400,
       headers: { 'Content-Type': 'text/html' },
@@ -14,10 +15,26 @@ export async function GET(request) {
   }
 
   try {
-    await supabase
+    let query = supabase
       .from('email_subscribers')
-      .delete()
-      .eq('email', email.toLowerCase());
+      .delete();
+
+    query = token
+      ? query.eq('unsubscribe_token', token)
+      : query.eq('email', email.toLowerCase());
+
+    const { error } = await query;
+
+    if (error?.code === '42703' && email) {
+      const { error: fallbackError } = await supabase
+        .from('email_subscribers')
+        .delete()
+        .eq('email', email.toLowerCase());
+
+      if (fallbackError) throw fallbackError;
+    } else if (error) {
+      throw error;
+    }
   } catch (err) {
     console.error('[unsubscribe] Error removing subscriber:', err);
     return new Response(errorPage('Something went wrong. Please try again.'), {

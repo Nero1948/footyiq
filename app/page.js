@@ -280,6 +280,18 @@ export default async function Home() {
             >
               Play today&apos;s game →
             </Link>
+            <p className="mt-4 text-sm font-medium text-gray-500">
+              Free to play. No sign-up. Takes about two minutes.
+            </p>
+            <div className="mt-3 flex items-center justify-center gap-4 text-sm">
+              <Link href="/leaderboard" className="text-gray-500 hover:text-[#00e676] transition-colors">
+                View today&apos;s leaderboard
+              </Link>
+              <span style={{ color: 'rgba(0,230,118,0.22)' }}>|</span>
+              <Link href="/champion" className="text-gray-500 hover:text-[#00e676] transition-colors">
+                See champions
+              </Link>
+            </div>
           </div>
 
         </div>

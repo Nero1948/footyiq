@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import Nav from '../components/Nav';
 
@@ -74,6 +75,13 @@ export default function LeaderboardClient({ initialData }) {
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg mb-2">No one&apos;s on the board yet</p>
             <p className="text-gray-700 text-sm">Be first to crack today&apos;s player.</p>
+            <Link
+              href="/play"
+              className="mt-6 inline-block rounded-xl px-6 py-3 text-sm font-bold text-black active:scale-95 transition-transform"
+              style={{ background: '#00e676' }}
+            >
+              Play today&apos;s game
+            </Link>
           </div>
         )}
 

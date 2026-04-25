@@ -34,6 +34,60 @@ function formatTime(ms) {
   return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 }
 
+function TimerBall({ children, active = false }) {
+  return (
+    <div
+      className={active ? 'animate-timer-glow' : ''}
+      style={{
+        position: 'relative',
+        minWidth: 94,
+        height: 42,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '50% / 42%',
+        background: active
+          ? 'linear-gradient(135deg, rgba(0,230,118,0.22), rgba(0,230,118,0.08))'
+          : 'rgba(255,255,255,0.05)',
+        border: `1px solid ${active ? 'rgba(0,230,118,0.45)' : 'rgba(255,255,255,0.12)'}`,
+        boxShadow: active ? '0 0 22px rgba(0,230,118,0.12)' : 'none',
+        overflow: 'hidden',
+      }}
+      aria-label="Elapsed time"
+    >
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: '8px auto 8px 50%',
+          width: 1,
+          transform: 'translateX(-50%)',
+          background: active ? 'rgba(0,230,118,0.55)' : 'rgba(255,255,255,0.16)',
+        }}
+      />
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: 13 + i * 6,
+            width: 16,
+            height: 2,
+            borderRadius: 999,
+            transform: 'translateX(-50%)',
+            background: active ? '#00e676' : 'rgba(255,255,255,0.22)',
+          }}
+        />
+      ))}
+      <span className="relative font-mono text-lg font-black tabular-nums text-white">
+        {children}
+      </span>
+    </div>
+  );
+}
+
 function getSecondsUntilMidnightAEST() {
   const now = new Date();
   const aestNow = new Date(now.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
@@ -371,12 +425,12 @@ export default function PlayClient({ initialGame }) {
       )}
 
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3.5 border-b" style={{ background: 'rgba(10,14,19,0.96)', backdropFilter: 'blur(10px)', borderColor: 'rgba(255,255,255,0.06)' }}>
+      <header className="sticky top-0 z-40 flex items-center justify-between px-4 py-3.5 border-b" style={{ background: 'rgba(10,14,19,0.96)', backdropFilter: 'blur(10px)', borderColor: 'rgba(255,255,255,0.06)' }}>
         <div>
           <Link href="/" className="text-xl font-black tracking-tight text-white hover:text-[#00e676] transition-colors">Set For Six</Link>
         </div>
-        {gameState === 'playing' && deviceId && <div className="text-2xl font-mono font-bold tabular-nums animate-timer-glow">{formatTime(elapsedMs)}</div>}
-        {gameState === 'done' && gameOverData && <div className="text-sm text-gray-400 font-mono tabular-nums">{formatTime(gameOverData.totalTimeMs)}</div>}
+        {gameState === 'playing' && deviceId && <TimerBall active>{formatTime(elapsedMs)}</TimerBall>}
+        {gameState === 'done' && gameOverData && <TimerBall>{formatTime(gameOverData.totalTimeMs)}</TimerBall>}
       </header>
 
       <main className="flex-1 px-4 py-6 w-full max-w-lg mx-auto">
@@ -476,7 +530,7 @@ export default function PlayClient({ initialGame }) {
             {/* Guess input */}
             <div>
               <p className="text-xs text-gray-500 mb-2">Type a player&apos;s name</p>
-              <div className="flex gap-2">
+              <div className="flex flex-col min-[420px]:flex-row gap-2">
                 <input
                   ref={inputRef}
                   type="text"
@@ -490,7 +544,7 @@ export default function PlayClient({ initialGame }) {
                   className="flex-1 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-base focus:outline-none disabled:opacity-50 transition-colors"
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                 />
-                <button onClick={handleGuess} disabled={isGuessing || !currentGuess.trim() || !deviceId} className="font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform text-white" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                <button onClick={handleGuess} disabled={isGuessing || !currentGuess.trim() || !deviceId} className="font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform text-white min-[420px]:whitespace-nowrap" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}>
                   {isGuessing ? '…' : 'Lock it in'}
                 </button>
               </div>

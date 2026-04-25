@@ -23,15 +23,18 @@ async function getStats() {
       supabase.from('attempts').select('*', { count: 'exact', head: true }).gte('created_at', today),
       supabase.from('email_subscribers').select('*', { count: 'exact', head: true }),
       supabase.from('attempts').select('*', { count: 'exact', head: true }).eq('solved', true),
-      supabase.from('attempts').select('created_at').gte('created_at', fromDate).order('created_at'),
+      supabase.from('attempts').select('created_at, device_id').gte('created_at', fromDate).order('created_at'),
       supabase.from('games').select('*', { count: 'exact', head: true }),
     ]);
 
   // Group recent attempts by date
   const dailyCounts = {};
-  for (const row of recentResult.data ?? []) {
+  const dailyPeople = {};
+  for (const [index, row] of (recentResult.data ?? []).entries()) {
     const date = row.created_at.slice(0, 10);
     dailyCounts[date] = (dailyCounts[date] ?? 0) + 1;
+    dailyPeople[date] ??= new Set();
+    dailyPeople[date].add(row.device_id ?? `attempt-${date}-${index}`);
   }
 
   // Fill in zeros for missing days
@@ -40,7 +43,11 @@ async function getStats() {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dateStr = d.toLocaleDateString('en-CA', tz);
-    chartData.push({ date: dateStr, count: dailyCounts[dateStr] ?? 0 });
+    chartData.push({
+      date: dateStr,
+      count: dailyPeople[dateStr]?.size ?? 0,
+      plays: dailyCounts[dateStr] ?? 0,
+    });
   }
 
   const totalPlays = totalResult.count ?? 0;

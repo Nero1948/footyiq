@@ -1,6 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+
+const GREEN = '#00e676';
+const PANEL = '#101820';
+const PANEL_2 = '#0d141b';
+const LINE = 'rgba(255,255,255,0.09)';
+const MUTED = '#8b98a8';
 
 function readLocalJson(key, fallback = {}) {
   if (typeof window === 'undefined') return fallback;
@@ -11,7 +17,9 @@ function readLocalJson(key, fallback = {}) {
   }
 }
 
-// ── Password gate ──────────────────────────────────────────────────────────────
+function cx(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
 
 function PasswordForm() {
   const [password, setPassword] = useState('');
@@ -22,42 +30,40 @@ function PasswordForm() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
     const res = await fetch('/api/marketing/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password }),
     });
+
     if (res.ok) {
       window.location.reload();
-    } else {
-      setError('Incorrect password');
-      setLoading(false);
+      return;
     }
+
+    setError('Incorrect password');
+    setLoading(false);
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a0a0a' }}>
-      <div className="w-full max-w-sm p-8 rounded-2xl" style={{ background: '#111', border: '1px solid #222' }}>
-        <p className="text-2xl font-bold text-white mb-2">Marketing Hub</p>
-        <p className="text-sm text-gray-500 mb-6">Set For Six — internal only</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#071016' }}>
+      <div className="w-full max-w-sm rounded-lg p-6" style={{ background: PANEL, border: `1px solid ${LINE}` }}>
+        <p className="text-2xl font-black text-white">Marketing Command</p>
+        <p className="mt-1 text-sm" style={{ color: MUTED }}>Set For Six internal dashboard</p>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-3">
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl text-white text-sm outline-none"
-            style={{ background: '#1a1a1a', border: '1px solid #333' }}
+            className="w-full rounded-lg px-4 py-3 text-sm text-white outline-none"
+            style={{ background: '#071016', border: `1px solid ${LINE}` }}
             autoFocus
           />
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-xl font-semibold text-sm"
-            style={{ background: '#22c55e', color: '#000' }}
-          >
-            {loading ? 'Checking…' : 'Enter'}
+          {error && <p className="text-sm text-red-300">{error}</p>}
+          <button type="submit" disabled={loading} className="w-full rounded-lg py-3 text-sm font-bold text-black" style={{ background: GREEN }}>
+            {loading ? 'Checking...' : 'Enter dashboard'}
           </button>
         </form>
       </div>
@@ -65,78 +71,181 @@ function PasswordForm() {
   );
 }
 
-// ── Stat card ──────────────────────────────────────────────────────────────────
-
-function StatCard({ label, value, sub, colour = '#22c55e' }) {
+function Panel({ children, className = '', style = {} }) {
   return (
-    <div className="rounded-xl p-4" style={{ background: '#111', border: '1px solid #222' }}>
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-3xl font-bold" style={{ color: colour }}>{value}</p>
-      {sub && <p className="text-xs text-gray-600 mt-1">{sub}</p>}
+    <section className={cx('rounded-lg', className)} style={{ background: PANEL, border: `1px solid ${LINE}`, ...style }}>
+      {children}
+    </section>
+  );
+}
+
+function SectionHeader({ eyebrow, title, action }) {
+  return (
+    <div className="flex items-start justify-between gap-4 border-b px-4 py-4" style={{ borderColor: LINE }}>
+      <div>
+        {eyebrow && <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN }}>{eyebrow}</p>}
+        <h2 className="mt-1 text-base font-bold text-white">{title}</h2>
+      </div>
+      {action}
     </div>
   );
 }
 
-// ── Growth chart ───────────────────────────────────────────────────────────────
+function StatCard({ label, value, note, tone = GREEN }) {
+  return (
+    <div className="rounded-lg p-4" style={{ background: PANEL_2, border: `1px solid ${LINE}` }}>
+      <p className="text-xs font-medium" style={{ color: MUTED }}>{label}</p>
+      <p className="mt-2 text-3xl font-black leading-none" style={{ color: tone }}>{value}</p>
+      {note && <p className="mt-2 text-xs" style={{ color: MUTED }}>{note}</p>}
+    </div>
+  );
+}
 
 function GrowthChart({ data }) {
+  const [hovered, setHovered] = useState(null);
   const max = Math.max(...data.map(d => d.count), 1);
-  const W = 560;
-  const H = 80;
-  const PAD = 10;
-
+  const W = 680;
+  const H = 130;
+  const PAD = 16;
   const coords = data.map((d, i) => {
-    const x = PAD + (i / (data.length - 1)) * (W - PAD * 2);
+    const x = PAD + (i / Math.max(data.length - 1, 1)) * (W - PAD * 2);
     const y = H - PAD - (d.count / max) * (H - PAD * 2);
     return [x, y];
   });
-
   const linePath = coords.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x},${y}`).join(' ');
-  const areaPath = `M${coords[0][0]},${H - PAD} ` +
-    coords.map(([x, y]) => `L${x},${y}`).join(' ') +
-    ` L${coords[coords.length - 1][0]},${H - PAD} Z`;
-
-  const firstDate = data[0]?.date?.slice(5).replace('-', '/');
-  const lastDate = data[data.length - 1]?.date?.slice(5).replace('-', '/');
+  const areaPath = `M${coords[0][0]},${H - PAD} ${coords.map(([x, y]) => `L${x},${y}`).join(' ')} L${coords[coords.length - 1][0]},${H - PAD} Z`;
+  const hoverZones = coords.map(([x], i) => {
+    const left = i === 0 ? 0 : (coords[i - 1][0] + x) / 2;
+    const right = i === coords.length - 1 ? W : (x + coords[i + 1][0]) / 2;
+    return { left, width: right - left };
+  });
+  const hoveredPoint = hovered === null ? null : {
+    ...data[hovered],
+    x: coords[hovered][0],
+    y: coords[hovered][1],
+  };
 
   return (
-    <div className="rounded-xl p-4" style={{ background: '#111', border: '1px solid #222' }}>
-      <p className="text-xs text-gray-500 mb-3">Daily plays — last 14 days</p>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 80 }}>
-        <defs>
-          <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path d={areaPath} fill="url(#chartGrad)" />
-        <path d={linePath} fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        {coords.map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r="3" fill="#22c55e" />
-        ))}
-      </svg>
-      <div className="flex justify-between mt-1">
-        <span className="text-xs text-gray-600">{firstDate}</span>
-        <span className="text-xs text-gray-600">{lastDate}</span>
+    <Panel>
+      <SectionHeader eyebrow="Signal" title="Daily players: last 14 days" />
+      <div className="relative px-4 py-4">
+        {hoveredPoint && (
+          <div
+            className="pointer-events-none absolute z-10 rounded-lg px-3 py-2 text-xs shadow-xl"
+            style={{
+              left: `clamp(12px, ${((hoveredPoint.x / W) * 100).toFixed(2)}%, calc(100% - 150px))`,
+              top: 12,
+              background: '#061016',
+              border: `1px solid ${LINE}`,
+            }}
+          >
+            <p className="font-bold text-white">{hoveredPoint.date}</p>
+            <p className="mt-1" style={{ color: GREEN }}>{hoveredPoint.count} unique players</p>
+            <p style={{ color: MUTED }}>{hoveredPoint.plays ?? hoveredPoint.count} total plays</p>
+          </div>
+        )}
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 150 }} onMouseLeave={() => setHovered(null)}>
+          <defs>
+            <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={GREEN} stopOpacity="0.28" />
+              <stop offset="100%" stopColor={GREEN} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {[0, 1, 2].map(i => (
+            <line key={i} x1="16" x2={W - 16} y1={22 + i * 42} y2={22 + i * 42} stroke="rgba(255,255,255,0.06)" />
+          ))}
+          <path d={areaPath} fill="url(#growthFill)" />
+          <path d={linePath} fill="none" stroke={GREEN} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          {coords.map(([x, y], i) => (
+            <g key={data[i].date}>
+              <rect
+                x={hoverZones[i].left}
+                y="0"
+                width={hoverZones[i].width}
+                height={H}
+                fill="transparent"
+                onMouseEnter={() => setHovered(i)}
+                onMouseMove={() => setHovered(i)}
+              />
+              {hovered === i && <line x1={x} x2={x} y1="12" y2={H - 12} stroke="rgba(255,255,255,0.18)" strokeDasharray="4 4" />}
+              <circle cx={x} cy={y} r={hovered === i ? '5.5' : '3.5'} fill={GREEN} />
+            </g>
+          ))}
+        </svg>
+        <div className="mt-2 flex justify-between text-xs" style={{ color: MUTED }}>
+          <span>{data[0]?.date?.slice(5).replace('-', '/')}</span>
+          <span>Peak day: {max} unique players</span>
+          <span>{data[data.length - 1]?.date?.slice(5).replace('-', '/')}</span>
+        </div>
       </div>
-    </div>
+    </Panel>
   );
 }
 
-// ── Daily checklist ────────────────────────────────────────────────────────────
-
-const CHECKLIST = [
-  { id: 'clue_twitter', label: 'Post today\'s clue teaser on Twitter/X' },
-  { id: 'engage_twitter', label: 'Reply to or like 3 NRL accounts on Twitter/X' },
-  { id: 'reddit_comment', label: 'Comment genuinely on 2 posts in r/nrl' },
-  { id: 'reddit_post', label: 'Post a discussion question in r/nrl (if you have content ready)' },
-  { id: 'check_stats', label: 'Review today\'s player count on this dashboard' },
-  { id: 'answer_reveal', label: 'Post yesterday\'s answer reveal on Twitter/X (evening)' },
+const PLAN_STEPS = [
+  {
+    phase: 'Week 1',
+    title: 'Make the game easy to discover',
+    goal: 'Set up owned channels and soft daily publishing.',
+    tasks: [
+      'Pin a launch post on X with the value proposition and link.',
+      'Create or refresh the Facebook Page with website, description, and first post.',
+      'Add UTM links to every social bio and template so referrers are obvious.',
+      'Post once daily from the official account: clue teaser in the morning, answer reveal at night.',
+      'Comment in r/nrl without links 10 times before trying any promotion again.',
+    ],
+  },
+  {
+    phase: 'Week 2',
+    title: 'Borrow matchday attention',
+    goal: 'Attach Set For Six to live rugby league conversation.',
+    tasks: [
+      'Reply to 8-12 high-signal NRL posts during team list, game day, and post-match windows.',
+      'Run one club-specific clue post when the daily answer connects to that club.',
+      'Join 8 targeted Facebook groups, read rules, and make 2 non-link comments in each.',
+      'Ask friends to post their scores from their own accounts instead of only sharing the site link.',
+      'Start a tiny creator list: fan podcasts, NRL meme pages, stats pages, and Warriors pages.',
+    ],
+  },
+  {
+    phase: 'Week 3',
+    title: 'Convert communities without looking spammy',
+    goal: 'Use participation and feedback asks, not ads disguised as posts.',
+    tasks: [
+      'Make the first Reddit post a genuine discussion or feedback request, not a launch announcement.',
+      'Post in 2-3 Facebook groups as a player sharing a score, then answer comments manually.',
+      'DM 10 small creators with a short personal note and no pressure.',
+      'Publish one weekly recap: hardest player, fastest champion, one-clue rate, and best comment.',
+      'Track which channel creates returning players the next day, not just clicks.',
+    ],
+  },
+  {
+    phase: 'Week 4',
+    title: 'Repeat what worked',
+    goal: 'Pick the top channel and double the cadence for seven days.',
+    tasks: [
+      'Compare X, Reddit, Facebook, direct, and email growth.',
+      'Keep only the two best post formats from the month.',
+      'Ask active players to tag one mate after a hard puzzle.',
+      'Offer one creator a custom challenge page or shout-out if they share it.',
+      'Write the next month plan around the best source of repeat players.',
+    ],
+  },
 ];
 
-function Checklist() {
-  const todayKey = `mkt_checklist_${new Date().toLocaleDateString('en-CA')}`;
+const DAILY_ACTIONS = [
+  { id: 'morning', label: 'Post today\'s clue teaser on X and Facebook Page', time: '8-10am AEST' },
+  { id: 'reply', label: 'Leave 5 useful replies on current NRL conversations', time: 'Lunch' },
+  { id: 'reddit', label: 'Make 2 genuine Reddit comments with no site link', time: 'Anytime' },
+  { id: 'group', label: 'Interact in 1 Facebook group before posting anything', time: 'Afternoon' },
+  { id: 'reveal', label: 'Post yesterday\'s answer reveal with one fact', time: '7-9pm AEST' },
+  { id: 'measure', label: 'Record best channel and one learning from today', time: 'Night' },
+];
+
+function DailyChecklist() {
+  const todayKey = `mkt_daily_${new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' })}`;
   const [checked, setChecked] = useState(() => readLocalJson(todayKey));
+  const done = DAILY_ACTIONS.filter(a => checked[a.id]).length;
 
   function toggle(id) {
     const next = { ...checked, [id]: !checked[id] };
@@ -144,924 +253,676 @@ function Checklist() {
     localStorage.setItem(todayKey, JSON.stringify(next));
   }
 
-  const done = CHECKLIST.filter(c => checked[c.id]).length;
-
   return (
-    <div className="rounded-xl p-4" style={{ background: '#111', border: '1px solid #222' }}>
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-semibold text-white">Today&apos;s Checklist</p>
-        <span className="text-xs text-gray-500">{done}/{CHECKLIST.length} done</span>
-      </div>
-      <div className="space-y-2">
-        {CHECKLIST.map(item => (
-          <button
-            key={item.id}
-            onClick={() => toggle(item.id)}
-            className="w-full flex items-start gap-3 text-left py-1"
-          >
+    <Panel>
+      <SectionHeader
+        eyebrow="Today"
+        title="Daily execution loop"
+        action={<span className="rounded-full px-3 py-1 text-xs font-bold" style={{ color: GREEN, background: 'rgba(0,230,118,0.12)' }}>{done}/{DAILY_ACTIONS.length}</span>}
+      />
+      <div className="divide-y" style={{ borderColor: LINE }}>
+        {DAILY_ACTIONS.map(action => (
+          <button key={action.id} onClick={() => toggle(action.id)} className="flex w-full items-start gap-3 px-4 py-3 text-left" style={{ borderColor: LINE }}>
             <span
-              className="mt-0.5 flex-shrink-0 w-4 h-4 rounded border flex items-center justify-center"
-              style={{
-                background: checked[item.id] ? '#22c55e' : 'transparent',
-                borderColor: checked[item.id] ? '#22c55e' : '#444',
-              }}
+              className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded"
+              style={{ background: checked[action.id] ? GREEN : '#071016', border: `1px solid ${checked[action.id] ? GREEN : LINE}` }}
             >
-              {checked[item.id] && (
-                <svg viewBox="0 0 10 10" className="w-3 h-3" fill="none">
-                  <path d="M2 5l2.5 2.5L8 3" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              )}
+              {checked[action.id] && <span className="text-xs font-black text-black">✓</span>}
             </span>
-            <span
-              className="text-sm leading-snug"
-              style={{ color: checked[item.id] ? '#555' : '#ccc', textDecoration: checked[item.id] ? 'line-through' : 'none' }}
-            >
-              {item.label}
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold text-white">{action.label}</span>
+              <span className="mt-0.5 block text-xs" style={{ color: MUTED }}>{action.time}</span>
             </span>
           </button>
         ))}
       </div>
-    </div>
+    </Panel>
   );
 }
 
-// ── Traffic links ──────────────────────────────────────────────────────────────
-
-function TrafficSources() {
-  const links = [
-    {
-      name: 'Vercel Analytics',
-      desc: 'Page views, visitors, referrers',
-      url: 'https://vercel.com/nero1948s-projects/footyiq/analytics',
-      colour: '#a78bfa',
-    },
-    {
-      name: 'Vercel Speed Insights',
-      desc: 'Core Web Vitals, LCP, CLS',
-      url: 'https://vercel.com/nero1948s-projects/footyiq/speed-insights',
-      colour: '#60a5fa',
-    },
-    {
-      name: 'Supabase Dashboard',
-      desc: 'Database tables, logs, queries',
-      url: 'https://supabase.com/dashboard',
-      colour: '#34d399',
-    },
-    {
-      name: 'Reddit (r/nrl)',
-      desc: 'Build karma here before promoting',
-      url: 'https://reddit.com/r/nrl',
-      colour: '#fb923c',
-    },
-    {
-      name: '@SetforsixNRL Profile',
-      desc: 'Your Twitter/X account',
-      url: 'https://x.com/SetforsixNRL',
-      colour: '#38bdf8',
-    },
-    {
-      name: 'Twitter/X Analytics',
-      desc: 'Tweet impressions and engagement',
-      url: 'https://analytics.twitter.com',
-      colour: '#38bdf8',
-    },
-  ];
+function StepPlan() {
+  const [open, setOpen] = useState(0);
 
   return (
-    <div className="rounded-xl p-4" style={{ background: '#111', border: '1px solid #222' }}>
-      <p className="text-sm font-semibold text-white mb-3">Analytics & Platforms</p>
-      <div className="space-y-2">
-        {links.map(link => (
-          <a
-            key={link.name}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between py-2 px-3 rounded-lg group"
-            style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}
-          >
-            <div>
-              <p className="text-sm font-medium" style={{ color: link.colour }}>{link.name}</p>
-              <p className="text-xs text-gray-600">{link.desc}</p>
-            </div>
-            <svg viewBox="0 0 16 16" className="w-4 h-4 text-gray-600 group-hover:text-gray-400" fill="none">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </a>
+    <Panel>
+      <SectionHeader eyebrow="30-day plan" title="Step-by-step growth plan" />
+      <div className="divide-y" style={{ borderColor: LINE }}>
+        {PLAN_STEPS.map((step, index) => (
+          <div key={step.phase}>
+            <button onClick={() => setOpen(open === index ? -1 : index)} className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: GREEN }}>{step.phase}</p>
+                <p className="mt-1 text-sm font-bold text-white">{step.title}</p>
+                <p className="mt-1 text-xs" style={{ color: MUTED }}>{step.goal}</p>
+              </div>
+              <span className="text-xl" style={{ color: MUTED }}>{open === index ? '-' : '+'}</span>
+            </button>
+            {open === index && (
+              <ol className="space-y-2 px-4 pb-4">
+                {step.tasks.map((task, i) => (
+                  <li key={task} className="grid grid-cols-[28px_1fr] gap-2 text-sm leading-snug text-gray-300">
+                    <span className="flex h-6 w-6 items-center justify-center rounded text-xs font-bold text-black" style={{ background: GREEN }}>{i + 1}</span>
+                    <span>{task}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
         ))}
       </div>
-    </div>
+    </Panel>
   );
 }
 
-// ── Content strategy ───────────────────────────────────────────────────────────
+const FUNNEL = [
+  { stage: 'Awareness', metric: 'Impressions and comments', action: 'Clue posts, replies, group discussion, creator mentions' },
+  { stage: 'Visit', metric: 'Clicks and landing plays', action: 'Clear bio link, UTM links, one simple call to play' },
+  { stage: 'Replay', metric: 'Next-day returns', action: 'Daily reminder posts, email list, evening answer reveal' },
+  { stage: 'Share', metric: 'Score posts and tags', action: 'Ask players to challenge one mate after hard games' },
+];
 
-const STRATEGY = [
+function Funnel() {
+  return (
+    <Panel>
+      <SectionHeader eyebrow="Operating model" title="Marketing funnel to watch" />
+      <div className="grid gap-3 p-4 md:grid-cols-4">
+        {FUNNEL.map((item, index) => (
+          <div key={item.stage} className="rounded-lg p-3" style={{ background: PANEL_2, border: `1px solid ${LINE}` }}>
+            <p className="text-xs font-bold" style={{ color: GREEN }}>0{index + 1}</p>
+            <p className="mt-2 text-sm font-bold text-white">{item.stage}</p>
+            <p className="mt-2 text-xs font-semibold" style={{ color: MUTED }}>{item.metric}</p>
+            <p className="mt-2 text-xs leading-relaxed text-gray-300">{item.action}</p>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+const CHANNELS = [
   {
-    platform: 'Reddit',
-    colour: '#fb923c',
-    status: 'Phase 1 — Build authority',
-    statusColour: '#fb923c',
-    points: [
-      'Do NOT post about Set For Six yet — account is too new and will be removed',
-      'Post 2–3 genuine NRL discussion threads per week in r/nrl',
-      'Ideas: "Most underrated player of the NRL era?", "Best Origin moment you\'ve witnessed live?", "Which player would you bring back for one more season?"',
-      'Comment helpfully on others\' posts — add knowledge, not noise',
-      'Target: 200+ post karma before sharing your site',
-      'Rule of thumb: 10 genuine contributions before 1 self-promotion',
+    name: 'Reddit',
+    stance: 'Earn trust first',
+    cadence: '10 comments : 1 link',
+    color: '#ff6a2a',
+    moves: [
+      'Use r/nrl for discussion, not direct acquisition, until karma and comment history look natural.',
+      'Post questions that NRL fans want to answer: underrated players, hardest trivia, Origin memories.',
+      'When you finally mention the site, ask for feedback from footy fans and disclose that you built it.',
+      'Avoid repeating the same link across communities; that is the fastest path to another removal.',
     ],
   },
   {
-    platform: 'Twitter / X',
-    colour: '#38bdf8',
-    status: 'Phase 1 — Active ✓',
-    statusColour: '#22c55e',
-    points: [
-      'Account live: @SetforsixNRL — post daily using the Content Schedule below',
-      'Morning post: today\'s Clue 1 as a teaser — no answer, just the mystery',
-      'Evening post: yesterday\'s answer reveal with one interesting fact',
-      'Use hashtags: #NRL #NRLTwitter on every single post',
-      'Don\'t pitch the game directly — let the content pull people in naturally',
-      'Engage: like and reply to NRL accounts before expecting anything back',
+    name: 'X',
+    stance: 'Reply-led discovery',
+    cadence: '2 posts + 8 replies daily',
+    color: '#38bdf8',
+    moves: [
+      'Post a clue in the morning and an answer/fact at night.',
+      'Reply under journalists, club accounts, fan accounts, and live match threads with relevant trivia.',
+      'Use fewer hashtags: #NRL and #NRLTwitter are enough.',
+      'Do not expect cold posts to work until replies are creating profile visits.',
     ],
   },
   {
-    platform: 'Twitter — Who to Follow',
-    colour: '#38bdf8',
-    status: 'Do this week',
-    statusColour: '#facc15',
-    points: [
-      'Follow 30–50 quality accounts this week — do NOT mass follow (Twitter restricts new accounts that move too fast)',
-      'Official: @NRL, @NRLW, @NRLDoubleHeader',
-      'All 16 clubs: @brisbanebroncos @SydneyRoosters @SeaEagles @PanthersNRL @sharksNRL @RabbitohsNRL @NRLDragons @NRLWarriors @melbournestorm @NQCowboys @ParraEels @TitansNRL @NRLRoosters @WestsTigers @dogsNRL @newcastleknights',
-      'Journalists & media: @foxleague @9NewsNRL — search "NRL journalist" on Twitter to find active reporters',
-      'Stats & fan accounts: search "NRL stats" and "NRL trivia" to find engaged communities',
-      'Engage first — like or reply to 2–3 of their posts before following. They\'re more likely to notice you.',
-      'Never follow-unfollow. It looks spammy and can get your account restricted.',
+    name: 'Facebook',
+    stance: 'Groups before Page reach',
+    cadence: '1 useful group action daily',
+    color: '#4a9ef5',
+    moves: [
+      'Use the Page as your official home, but expect groups to drive reach.',
+      'Read group rules, comment first, and post score-style content instead of obvious promotion.',
+      'Tailor posts to the club when the day\'s answer has a club connection.',
+      'If someone asks for the link, reply manually rather than pasting the same link everywhere.',
     ],
   },
   {
-    platform: 'Long-term',
-    colour: '#a78bfa',
-    status: 'Phase 2 — Months 2–3',
-    statusColour: '#a78bfa',
-    points: [
-      'Once Twitter has 100+ followers: ask followers to share their score',
-      'Once Reddit karma is 200+: share Set For Six in relevant threads naturally',
-      'Reach out to small NRL podcast hosts for a mention (offer a free plug in return)',
-      'Consider a weekly "hardest game of the week" post recapping the trickiest player',
-      'Email list is gold — every subscriber is a daily returning player',
+    name: 'Creators',
+    stance: 'Small pages are the wedge',
+    cadence: '10 personal DMs weekly',
+    color: '#facc15',
+    moves: [
+      'Target podcasts, fan pages, meme pages, stats accounts, and Warriors-focused NZ pages.',
+      'Lead with why their audience would enjoy the daily challenge.',
+      'Offer a no-pressure shout-out, custom weekly leaderboard, or challenge post.',
+      'Track responses and follow up once after a week with a new interesting stat.',
     ],
   },
 ];
 
-function ContentStrategy() {
-  const [open, setOpen] = useState(null);
-
+function ChannelPlaybooks() {
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #222' }}>
-      <div className="px-4 py-3" style={{ background: '#111' }}>
-        <p className="text-sm font-semibold text-white">Content Strategy</p>
-      </div>
-      {STRATEGY.map((s, i) => (
-        <div key={s.platform} style={{ borderTop: '1px solid #1a1a1a', background: '#0e0e0e' }}>
-          <button
-            onClick={() => setOpen(open === i ? null : i)}
-            className="w-full flex items-center justify-between px-4 py-3"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium" style={{ color: s.colour }}>{s.platform}</span>
-              <span
-                className="text-xs px-2 py-0.5 rounded-full"
-                style={{ background: `${s.statusColour}15`, color: s.statusColour, border: `1px solid ${s.statusColour}30` }}
-              >
-                {s.status}
-              </span>
+    <Panel>
+      <SectionHeader eyebrow="Channels" title="AUS + NZ rugby league playbooks" />
+      <div className="grid gap-3 p-4 md:grid-cols-2">
+        {CHANNELS.map(channel => (
+          <article key={channel.name} className="rounded-lg p-4" style={{ background: PANEL_2, border: `1px solid ${LINE}` }}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-black text-white">{channel.name}</h3>
+                <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: channel.color }}>{channel.stance}</p>
+              </div>
+              <span className="rounded-full px-3 py-1 text-xs font-bold" style={{ color: channel.color, background: `${channel.color}18` }}>{channel.cadence}</span>
             </div>
-            <svg
-              viewBox="0 0 16 16"
-              className="w-4 h-4 text-gray-600 transition-transform"
-              style={{ transform: open === i ? 'rotate(180deg)' : 'none' }}
-              fill="none"
-            >
-              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          {open === i && (
-            <ul className="px-4 pb-4 space-y-2">
-              {s.points.map((p, j) => (
-                <li key={j} className="flex gap-2 text-sm text-gray-400 leading-snug">
-                  <span style={{ color: s.colour }} className="mt-0.5 flex-shrink-0">›</span>
-                  {p}
+            <ul className="mt-4 space-y-2">
+              {channel.moves.map(move => (
+                <li key={move} className="flex gap-2 text-sm leading-snug text-gray-300">
+                  <span style={{ color: channel.color }}>-</span>
+                  <span>{move}</span>
                 </li>
               ))}
             </ul>
-          )}
-        </div>
-      ))}
-    </div>
+          </article>
+        ))}
+      </div>
+    </Panel>
   );
 }
 
-// ── Content schedule ──────────────────────────────────────────────────────────
+const AUDIENCES = [
+  { segment: 'NZ Warriors fans', hook: 'One-club legends, Kiwi internationals, trans-Tasman pride', where: 'Warriors groups, NZ league pages, X replies during Warriors news' },
+  { segment: 'Queensland fans', hook: 'Origin heroes, Broncos/Cowboys/Titans nostalgia, Maroons debate', where: 'Club groups, Origin threads, live match windows' },
+  { segment: 'NSW fans', hook: 'Blues selection debates, Sydney club history, old-school NRL names', where: 'r/nrl, club groups, journalists covering team lists' },
+  { segment: 'Fantasy and stats fans', hook: 'Difficulty rate, one-clue percentage, fastest solve', where: 'SuperCoach groups, stats pages, weekly recap posts' },
+  { segment: 'Casual fans', hook: 'Six clues means you do not need expert recall', where: 'Facebook Page, friends sharing scores, broad NRL hashtags' },
+];
 
-const SCHEDULE = [
+function AudienceMap() {
+  return (
+    <Panel>
+      <SectionHeader eyebrow="Targeting" title="Audience angles" />
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[720px] text-left text-sm">
+          <thead>
+            <tr style={{ color: MUTED, background: '#071016' }}>
+              <th className="px-4 py-3 font-semibold">Segment</th>
+              <th className="px-4 py-3 font-semibold">Hook</th>
+              <th className="px-4 py-3 font-semibold">Where to show up</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y" style={{ borderColor: LINE }}>
+            {AUDIENCES.map(row => (
+              <tr key={row.segment} className="align-top">
+                <td className="px-4 py-3 font-bold text-white">{row.segment}</td>
+                <td className="px-4 py-3 text-gray-300">{row.hook}</td>
+                <td className="px-4 py-3 text-gray-300">{row.where}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Panel>
+  );
+}
+
+const X_REPLY_RULES = [
+  'Reply to the post in front of you first. The game link is optional and usually unnecessary.',
+  'Use specific NRL knowledge: player names, clubs, years, Origin moments, stats, or memory hooks.',
+  'Ask a small question when possible. Questions create replies better than statements.',
+  'Keep most replies under 160 characters so they read like a person, not a brand post.',
+  'Only mention Set For Six after you have added value, or when the topic is directly trivia/player-history related.',
+];
+
+const X_REPLY_SCENARIOS = [
   {
-    date: '2026-04-20',
-    label: 'Mon 20 Apr',
-    posts: [
+    group: 'Matchday chatter',
+    aim: 'Join live conversation without forcing the game.',
+    prompts: [
       {
-        id: 'apr20_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Robbie Farah',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Won the NRL premiership in his third season of first-grade football."\n\nWho is today's mystery NRL legend? Six clues, one player.\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'Player comparison',
+        use: 'When people are debating a standout performance.',
+        text: 'Feels like the kind of game people will bring up in 10 years when arguing how good [PLAYER] actually was.',
       },
       {
-        id: 'apr20_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Mark Gasnier',
-        text: `Yesterday's #SetForSix answer: Mark Gasnier 🎉\n\nHis uncle Reg Gasnier was named in Australia's Team of the Century — giving Mark enormous expectations from the moment he stepped onto a first-grade field.\n\nNew game is live now → setforsix.com #NRL`,
+        label: 'Memory hook',
+        use: 'When a player has a big moment or milestone.',
+        text: 'That is going straight into the "[PLAYER] was better than people remember" file.',
+      },
+      {
+        label: 'Debate starter',
+        use: 'When a club wins or loses through one player.',
+        text: 'Where does that rank among [CLUB] individual performances in the last few seasons?',
+      },
+      {
+        label: 'Trivia angle',
+        use: 'When a less obvious player is trending.',
+        text: 'This is the exact type of player who makes a brutal clue 1. Everyone knows the name, but not the career details.',
       },
     ],
   },
   {
-    date: '2026-04-21',
-    label: 'Tue 21 Apr',
-    posts: [
+    group: 'Journalists and analysts',
+    aim: 'Sound informed, not thirsty for clicks.',
+    prompts: [
       {
-        id: 'apr21_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Manu Vatuvei',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Became the first player in NRL history to score at least 10 tries in every one of 10 consecutive seasons."\n\nWho is today's mystery player?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'Add a stat question',
+        use: 'When a journalist posts a stat or team note.',
+        text: 'Interesting one. Do you think [PLAYER] gets remembered more for peak impact or longevity?',
       },
       {
-        id: 'apr21_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Robbie Farah',
-        text: `Yesterday's #SetForSix answer: Robbie Farah 🎉\n\nHis record of 63 tackles in State of Origin Game II in 2012 is the most in a single Origin match — a stat most fans don't know.\n\nNew game is live → setforsix.com #NRL`,
-      },
-    ],
-  },
-  {
-    date: '2026-04-22',
-    label: 'Wed 22 Apr',
-    posts: [
-      {
-        id: 'apr22_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Preston Campbell',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Won the Dally M Player of the Year award by a single point — edging out the player widely considered the best in the world at the time."\n\nWho could beat Andrew Johns to that award?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'Selection debate',
+        use: 'Around team lists, Origin, injuries, or positional changes.',
+        text: 'The hard part with [PLAYER] is separating current form from reputation. What do you weigh more for this spot?',
       },
       {
-        id: 'apr22_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Manu Vatuvei',
-        text: `Yesterday's #SetForSix answer: Manu Vatuvei 🎉\n\nThe Beast broke New Zealand's all-time try-scoring record, finishing with 22 tries in 28 Tests. All 226 of his NRL games were for the Warriors.\n\nNew game is live → setforsix.com #NRL`,
+        label: 'Historical comparison',
+        use: 'When a post references a record, streak, or milestone.',
+        text: 'Who is the closest modern comparison for that career arc? I keep landing on [PLAYER], but not sure it is perfect.',
+      },
+      {
+        label: 'Low-key game mention',
+        use: 'Only when the original post is about trivia, history, records, or guessing players.',
+        text: 'This is exactly why I built Set For Six. NRL history has so many players everyone remembers, but only after the right clue.',
       },
     ],
   },
   {
-    date: '2026-04-23',
-    label: 'Thu 23 Apr',
-    posts: [
+    group: 'Club fan accounts',
+    aim: 'Use club pride and nostalgia.',
+    prompts: [
       {
-        id: 'apr23_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Paul Gallen',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Led his club to their first-ever NRL premiership after 49 years of trying — an achievement that reduced grown men to tears across an entire city."\n\nWho captained that fairytale season?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'Club legend prompt',
+        use: 'When a club posts an old photo, milestone, or alumni content.',
+        text: 'There are at least three [CLUB] players from that era who would make elite trivia answers.',
       },
       {
-        id: 'apr23_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Preston Campbell',
-        text: `Yesterday's #SetForSix answer: Preston Campbell 🎉\n\nHe played every single minute of every match in Penrith's 2003 premiership-winning season — then went on to become the first-ever signing for the Gold Coast Titans.\n\nNew game is live → setforsix.com #NRL`,
-      },
-    ],
-  },
-  {
-    date: '2026-04-24',
-    label: 'Fri 24 Apr',
-    posts: [
-      {
-        id: 'apr24_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Stacey Jones',
-        text: `🏉 Today's clue on #SetForSix:\n\n"His grandfather was a celebrated New Zealand rugby league player — meaning the game ran in his blood long before he ever stepped onto a first-grade field."\n\nWho is the mystery player?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'Underrated player',
+        use: 'When fans are discussing past squads.',
+        text: 'Most underrated [CLUB] player of the NRL era? I feel like [PLAYER] never gets enough credit.',
       },
       {
-        id: 'apr24_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Paul Gallen',
-        text: `Yesterday's #SetForSix answer: Paul Gallen 🎉\n\nDespite being a lock forward, Gallen scored 63 NRL tries. He also holds the record as the longest-serving NSW State of Origin captain.\n\nNew game is live → setforsix.com #NRL`,
+        label: 'One-club hook',
+        use: 'For loyalty, milestone, retirement, or Hall of Fame posts.',
+        text: 'One-club careers always make better trivia clues. You can usually tell who actually watched them.',
+      },
+      {
+        label: 'Club-specific soft mention',
+        use: 'Only when today\'s answer genuinely connects to the club.',
+        text: 'Today\'s Set For Six answer has a [CLUB] link. I reckon proper fans get it by clue 3.',
       },
     ],
   },
   {
-    date: '2026-04-25',
-    label: 'Sat 25 Apr',
-    posts: [
+    group: 'Fan and meme accounts',
+    aim: 'Be casual and conversational.',
+    prompts: [
       {
-        id: 'apr25_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Greg Inglis',
-        text: `🏉 Today's clue on #SetForSix:\n\n"As a teenager from regional NSW, he was already being talked about as an exceptional all-round back with the frame, speed and instincts to become a future superstar."\n\nOne of the greatest. Can you name him from clue 1?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'Funny but useful',
+        use: 'When a player is being praised or roasted.',
+        text: 'The streets will never forget [PLAYER]. The stats might, but the group chats will not.',
       },
       {
-        id: 'apr25_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Stacey Jones',
-        text: `Yesterday's #SetForSix answer: Stacey Jones 🎉\n\nThe Little General won the 2002 Golden Boot as the world's best international player — only the second New Zealander ever to receive that honour. 261 games, one club.\n\nNew game is live → setforsix.com #NRL`,
-      },
-    ],
-  },
-  {
-    date: '2026-04-26',
-    label: 'Sun 26 Apr',
-    posts: [
-      {
-        id: 'apr26_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Corey Parker',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Scored a try in his very first NRL match — a debut that hinted at the longevity and loyalty that would define an entire career at a single club."\n\n347 games. One club. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'Prompt replies',
+        use: 'When a post asks for opinions.',
+        text: 'Give me the most "you had to be there" NRL player. Not the best, just the one YouTube clips do not explain properly.',
       },
       {
-        id: 'apr26_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Greg Inglis',
-        text: `Yesterday's #SetForSix answer: Greg Inglis 🎉\n\nGI retired as Queensland's all-time leading try scorer in Origin history — 18 tries in 32 matches. His Goanna crawl in the 2014 Grand Final remains one of the most iconic images the game has ever produced.\n\nNew game is live → setforsix.com #NRL`,
+        label: 'Hard clue angle',
+        use: 'When a niche name appears.',
+        text: 'If this was clue 1, half of NRL Twitter is cooked.',
+      },
+      {
+        label: 'No-link invitation',
+        use: 'When someone directly engages with trivia or guessing.',
+        text: 'I have been turning these kinds of names into daily clues. The hardest part is making clue 1 fair but not obvious.',
       },
     ],
   },
   {
-    date: '2026-04-27',
-    label: 'Mon 27 Apr',
-    posts: [
+    group: 'When someone replies to you',
+    aim: 'Turn attention into conversation before link clicks.',
+    prompts: [
       {
-        id: 'apr27_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Laurie Daley',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Was spotted by a club talent scout at just 15 — and debuted in the top grade at 17 without ever playing a reserve grade match."\n\nCanberra legend. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'If they guess a player',
+        use: 'A person replies with a name or opinion.',
+        text: 'That is a strong shout. What clue would give it away fastest for you: club, Origin, position, or career stat?',
       },
       {
-        id: 'apr27_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Corey Parker',
-        text: `Yesterday's #SetForSix answer: Corey Parker 🎉\n\n1,328 career points — 586 goals and 39 tries, all for Brisbane across 347 games. Wayne Bennett described him as the ultimate professional.\n\nNew game is live → setforsix.com #NRL`,
-      },
-    ],
-  },
-  {
-    date: '2026-04-28',
-    label: 'Tue 28 Apr',
-    posts: [
-      {
-        id: 'apr28_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Anthony Minichiello',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Repeated back and neck injuries threatened his career in the middle years, yet he fought through them to become one of the most durable and decorated one-club players of the NRL era."\n\n302 games. One club. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'If they ask what Set For Six is',
+        use: 'Only after direct curiosity.',
+        text: 'It is a free daily NRL guessing game: 6 clues, 1 mystery player, new one every morning. setforsix.com',
       },
       {
-        id: 'apr28_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Laurie Daley',
-        text: `Yesterday's #SetForSix answer: Laurie Daley 🎉\n\nGrowing up in Junee, Daley was the only boy among seven sisters — a detail that surprises everyone who watched him play. He went on to captain both NSW and Australia.\n\nNew game is live → setforsix.com #NRL`,
-      },
-    ],
-  },
-  {
-    date: '2026-04-29',
-    label: 'Wed 29 Apr',
-    posts: [
-      {
-        id: 'apr29_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Jason Croker',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Despite being named Rookie of the Year in his debut season, he never became a household name — instead building a quiet reputation as one of the most durable forwards of his era."\n\n318 games. Canberra legend. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
+        label: 'If they say it was too hard',
+        use: 'After a player complains or jokes about difficulty.',
+        text: 'Fair. I want clue 1 to reward sicko-level NRL memory, but clue 4 or 5 should still feel gettable.',
       },
       {
-        id: 'apr29_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Anthony Minichiello',
-        text: `Yesterday's #SetForSix answer: Anthony Minichiello 🎉\n\nThe Count was the first fullback to captain his side to a Grand Final victory since 1934 — a 79-year gap. He appeared in six Grand Finals across his career.\n\nNew game is live → setforsix.com #NRL`,
-      },
-    ],
-  },
-  {
-    date: '2026-04-30',
-    label: 'Thu 30 Apr',
-    posts: [
-      {
-        id: 'apr30_am', time: 'Morning', platform: 'Twitter/X', label: 'Clue teaser — Daly Cherry-Evans',
-        text: `🏉 Today's clue on #SetForSix:\n\n"Won an NRL premiership in his debut season — scoring a try in the grand final — a fairytale introduction to the highest level of the game."\n\nStill playing. One of the great halfbacks. Who is it?\n\nsetforsix.com #NRL #NRLTwitter`,
-      },
-      {
-        id: 'apr30_pm', time: 'Evening', platform: 'Twitter/X', label: 'Answer reveal — Jason Croker',
-        text: `Yesterday's #SetForSix answer: Jason Croker 🎉\n\nWhen Croker played his final game for the Raiders, the ACT Chief Minister presented him with the keys to the city in front of 21,000 fans — a civic honour rarely given to a sportsperson.\n\nNew game is live → setforsix.com #NRL`,
-      },
-    ],
-  },
-  {
-    date: 'evergreen',
-    label: 'Evergreen',
-    posts: [
-      {
-        id: 'ev_intro', time: 'Anytime', platform: 'Twitter/X', label: 'Site launch intro (post once)',
-        text: `I built a free daily NRL trivia game 🏉\n\nSix clues. One mystery NRL legend. The fewer clues you need, the better your score. Ties go to fastest time.\n\nA new player drops every day — free to play, no sign-up needed.\n\nsetforsix.com #NRL #NRLTwitter`,
-      },
-      {
-        id: 'ev_reddit_karma', time: 'Anytime', platform: 'Reddit',
-        label: 'Karma builder — post in r/nrl',
-        text: `Who is the most underrated player of the NRL era?\n\nEvery year the same names come up — Johns, Lockyer, Cronk, Slater. But who flew under the radar and deserved more recognition?\n\nFor me it's [YOUR PICK] — [ONE SENTENCE WHY]. Would love to hear who you'd pick.`,
-      },
-      {
-        id: 'ev_reddit_promote', time: 'After 200 karma', platform: 'Reddit',
-        label: 'Site mention — r/nrl (wait for karma first)',
-        text: `I made a free daily NRL trivia game — similar to Wordle but for footy fans\n\nSix clues. One mystery NRL legend. The fewer clues you use, the better your score. Ties go to fastest time.\n\nA new player every day. Free, no sign-up. setforsix.com\n\nWould love feedback from people who actually know their NRL history.`,
+        label: 'If they share a score',
+        use: 'When someone posts a result.',
+        text: 'That is a proper score. If you got it before clue 3, you definitely know your footy.',
       },
     ],
   },
 ];
 
-function ContentSchedule() {
+function XReplyLab() {
   const [copied, setCopied] = useState(null);
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+  const [open, setOpen] = useState(0);
 
-  function handleCopy(id, text) {
-    navigator.clipboard.writeText(text);
+  async function copy(id, text) {
+    await navigator.clipboard.writeText(text);
     setCopied(id);
-    setTimeout(() => setCopied(null), 2000);
+    setTimeout(() => setCopied(null), 1600);
   }
 
-  const platformColour = p => p === 'Twitter/X' ? '#38bdf8' : '#fb923c';
-
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #222' }}>
-      <div className="px-4 py-3" style={{ background: '#111' }}>
-        <p className="text-sm font-semibold text-white">Content Schedule</p>
-        <p className="text-xs text-gray-500 mt-0.5">Ready-to-post — copy and paste directly. Today is highlighted.</p>
-      </div>
-      {SCHEDULE.map(day => {
-        const isToday = day.date === today;
-        return (
-          <div key={day.date} style={{ borderTop: '1px solid #1a1a1a' }}>
-            <div
-              className="px-4 py-2 flex items-center gap-2"
-              style={{ background: isToday ? 'rgba(34,197,94,0.08)' : '#0e0e0e' }}
-            >
-              <span className="text-xs font-semibold" style={{ color: isToday ? '#22c55e' : '#555' }}>
-                {day.label}
-              </span>
-              {isToday && (
-                <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: '#22c55e20', color: '#22c55e', border: '1px solid #22c55e30' }}>
-                  Today
-                </span>
-              )}
-            </div>
-            {day.posts.map(post => (
-              <div key={post.id} className="px-4 pb-4 pt-2" style={{ background: isToday ? 'rgba(34,197,94,0.03)' : '#0a0a0a' }}>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium" style={{ color: platformColour(post.platform) }}>{post.platform}</span>
-                    <span className="text-xs text-gray-600">·</span>
-                    <span className="text-xs text-gray-600">{post.time}</span>
-                    <span className="text-xs text-gray-600">·</span>
-                    <span className="text-xs text-gray-500">{post.label}</span>
-                  </div>
-                  <button
-                    onClick={() => handleCopy(post.id, post.text)}
-                    className="text-xs px-3 py-1 rounded-lg transition-colors flex-shrink-0"
-                    style={{
-                      background: copied === post.id ? '#22c55e20' : '#1a1a1a',
-                      color: copied === post.id ? '#22c55e' : '#888',
-                      border: `1px solid ${copied === post.id ? '#22c55e40' : '#2a2a2a'}`,
-                    }}
-                  >
-                    {copied === post.id ? '✓ Copied' : 'Copy'}
-                  </button>
+    <Panel>
+      <SectionHeader eyebrow="X reply lab" title="Reply patterns that do not read like promotion" />
+      <div className="grid gap-3 p-4 lg:grid-cols-[0.75fr_1.25fr]">
+        <div className="rounded-lg p-4" style={{ background: PANEL_2, border: `1px solid ${LINE}` }}>
+          <p className="text-sm font-bold text-white">Rules before replying</p>
+          <ul className="mt-3 space-y-2">
+            {X_REPLY_RULES.map(rule => (
+              <li key={rule} className="flex gap-2 text-sm leading-snug text-gray-300">
+                <span style={{ color: GREEN }}>-</span>
+                <span>{rule}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="overflow-hidden rounded-lg" style={{ border: `1px solid ${LINE}` }}>
+          {X_REPLY_SCENARIOS.map((scenario, scenarioIndex) => (
+            <div key={scenario.group} style={{ borderTop: scenarioIndex === 0 ? 'none' : `1px solid ${LINE}` }}>
+              <button onClick={() => setOpen(open === scenarioIndex ? -1 : scenarioIndex)} className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left" style={{ background: '#071016' }}>
+                <div>
+                  <p className="text-sm font-bold text-white">{scenario.group}</p>
+                  <p className="mt-0.5 text-xs" style={{ color: MUTED }}>{scenario.aim}</p>
                 </div>
-                <pre className="text-xs text-gray-500 whitespace-pre-wrap leading-relaxed font-sans">{post.text}</pre>
-              </div>
-            ))}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+                <span className="text-lg" style={{ color: MUTED }}>{open === scenarioIndex ? '-' : '+'}</span>
+              </button>
 
-// ── Facebook Page Setup Checklist ─────────────────────────────────────────────
-
-const FB_PAGE_STEPS = [
-  { id: 'fb_create',     label: 'Create Facebook Page named "Set For Six"' },
-  { id: 'fb_profile',   label: 'Set profile image (use the Set For Six orange rugby ball logo)' },
-  { id: 'fb_cover',     label: 'Set cover image (branded 1200×630)' },
-  { id: 'fb_desc',      label: 'Add Page description: "The daily NRL guessing game. Six clues. One player. New every day. Play at setforsix.com"' },
-  { id: 'fb_website',   label: 'Add website link: setforsix.com' },
-  { id: 'fb_category',  label: 'Add category: Games/Entertainment' },
-  { id: 'fb_firstpost', label: "Post first status update with today's game link" },
-];
-
-function FBPageChecklist() {
-  const [checked, setChecked] = useState(() => readLocalJson('fb_page_checklist'));
-
-  function toggle(id) {
-    const next = { ...checked, [id]: !checked[id] };
-    setChecked(next);
-    localStorage.setItem('fb_page_checklist', JSON.stringify(next));
-  }
-
-  const done = FB_PAGE_STEPS.filter(s => checked[s.id]).length;
-
-  return (
-    <div className="rounded-xl p-4" style={{ background: '#111', border: '1px solid #222' }}>
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-semibold text-white">Part 1 — Page Setup Checklist</p>
-        <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: '#1877F215', color: '#4A9EF5', border: '1px solid #1877F230' }}>
-          {done}/{FB_PAGE_STEPS.length} done
-        </span>
-      </div>
-      <div className="space-y-2">
-        {FB_PAGE_STEPS.map(step => (
-          <button key={step.id} onClick={() => toggle(step.id)} className="w-full flex items-start gap-3 text-left py-1">
-            <span
-              className="mt-0.5 flex-shrink-0 w-4 h-4 rounded border flex items-center justify-center"
-              style={{ background: checked[step.id] ? '#4A9EF5' : 'transparent', borderColor: checked[step.id] ? '#4A9EF5' : '#444' }}
-            >
-              {checked[step.id] && (
-                <svg viewBox="0 0 10 10" className="w-3 h-3" fill="none">
-                  <path d="M2 5l2.5 2.5L8 3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              {open === scenarioIndex && (
+                <div className="divide-y" style={{ borderColor: LINE }}>
+                  {scenario.prompts.map(prompt => {
+                    const id = `${scenario.group}-${prompt.label}`;
+                    return (
+                      <article key={prompt.label} className="px-4 py-3" style={{ background: PANEL_2 }}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: GREEN }}>{prompt.label}</p>
+                            <p className="mt-1 text-xs" style={{ color: MUTED }}>{prompt.use}</p>
+                          </div>
+                          <button
+                            onClick={() => copy(id, prompt.text)}
+                            className="rounded px-3 py-1.5 text-xs font-bold"
+                            style={{ color: copied === id ? '#061016' : GREEN, background: copied === id ? GREEN : 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.28)' }}
+                          >
+                            {copied === id ? 'Copied' : 'Copy'}
+                          </button>
+                        </div>
+                        <p className="mt-3 rounded-lg p-3 text-sm leading-relaxed text-gray-200" style={{ background: '#071016', border: `1px solid ${LINE}` }}>{prompt.text}</p>
+                      </article>
+                    );
+                  })}
+                </div>
               )}
-            </span>
-            <span className="text-sm leading-snug" style={{ color: checked[step.id] ? '#555' : '#ccc', textDecoration: checked[step.id] ? 'line-through' : 'none' }}>
-              {step.label}
-            </span>
-          </button>
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </Panel>
   );
 }
 
-// ── FB Groups Table ────────────────────────────────────────────────────────────
-
-const CLUB_COLOURS = {
-  broncos:   { primary: '#7B0B21', accent: '#F7B500' },
-  panthers:  { primary: '#003087', accent: '#FF6600' },
-  warriors:  { primary: '#888888', accent: '#C8102E' },
-  roosters:  { primary: '#C8102E', accent: '#002B5C' },
-  eels:      { primary: '#1155BB', accent: '#FFD700' },
-  storm:     { primary: '#7B3FA0', accent: '#FFD700' },
-  rabbitohs: { primary: '#006A4E', accent: '#D50032' },
-  bulldogs:  { primary: '#0033A0', accent: '#999999' },
-  seaeagles: { primary: '#8B2A4A', accent: '#999999' },
-  sharks:    { primary: '#005CA9', accent: '#AAAAAA' },
-  dragons:   { primary: '#DF1B12', accent: '#999999' },
-  knights:   { primary: '#003087', accent: '#C8102E' },
-  tigers:    { primary: '#FF6600', accent: '#111111' },
-  titans:    { primary: '#004B87', accent: '#C5A028' },
-  raiders:   { primary: '#46A944', accent: '#002549' },
-  cowboys:   { primary: '#002649', accent: '#FFD700' },
-};
-
-const STATUS_META = {
-  'Not Joined': { colour: '#666',    bg: '#66666615' },
-  'Pending':    { colour: '#F59E0B', bg: '#F59E0B15' },
-  'Joined':     { colour: '#3B82F6', bg: '#3B82F615' },
-  'Posted':     { colour: '#22c55e', bg: '#22c55e15' },
-};
-const STATUSES = ['Not Joined', 'Pending', 'Joined', 'Posted'];
-
-const FB_GROUPS_DEFAULT = [
-  { id: 'nrl_supporters', name: 'NRL Supporters Australia',        members: '~85k', rules: 'Moderate', bestDay: 'Fri/Sat', club: null },
-  { id: 'nrl_memes',      name: 'NRL Memes',                       members: '~60k', rules: 'Open',     bestDay: 'Any',     club: null },
-  { id: 'origin',         name: 'State of Origin Fans',            members: '~50k', rules: 'Moderate', bestDay: 'Wed',     club: null },
-  { id: 'supercoach',     name: 'NRL SuperCoach Community',        members: '~35k', rules: 'Open',     bestDay: 'Thu/Fri', club: null },
-  { id: 'broncos',        name: 'Brisbane Broncos Supporters',     members: '~45k', rules: 'Strict',   bestDay: 'Mon/Tue', club: 'broncos' },
-  { id: 'bulldogs',       name: 'Canterbury Bulldogs Army',        members: '~28k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'bulldogs' },
-  { id: 'panthers',       name: 'Penrith Panthers Fans',           members: '~30k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'panthers' },
-  { id: 'warriors',       name: 'NZ Warriors Nation',              members: '~25k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'warriors' },
-  { id: 'knights',        name: 'Newcastle Knights Supporters',    members: '~25k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'knights' },
-  { id: 'cowboys',        name: 'North Queensland Cowboys Fans',   members: '~22k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'cowboys' },
-  { id: 'eels',           name: 'Parramatta Eels Fans',            members: '~22k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'eels' },
-  { id: 'dragons',        name: 'St George Illawarra Dragons Fans',members: '~22k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'dragons' },
-  { id: 'roosters',       name: 'Sydney Roosters Faithful',        members: '~20k', rules: 'Strict',   bestDay: 'Mon/Tue', club: 'roosters' },
-  { id: 'rabbitohs',      name: 'South Sydney Rabbitohs Fans',     members: '~20k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'rabbitohs' },
-  { id: 'raiders',        name: 'Canberra Raiders Green Machine',  members: '~20k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'raiders' },
-  { id: 'sharks',         name: 'Cronulla Sharks Faithful',        members: '~20k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'sharks' },
-  { id: 'storm',          name: 'Melbourne Storm Supporters',      members: '~18k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'storm' },
-  { id: 'seaeagles',      name: 'Manly Sea Eagles Supporters',     members: '~18k', rules: 'Strict',   bestDay: 'Mon/Tue', club: 'seaeagles' },
-  { id: 'tigers',         name: 'Wests Tigers Supporters',         members: '~15k', rules: 'Moderate', bestDay: 'Mon/Tue', club: 'tigers' },
-  { id: 'titans',         name: 'Gold Coast Titans Fans',          members: '~12k', rules: 'Open',     bestDay: 'Mon/Tue', club: 'titans' },
+const TEMPLATES = [
+  {
+    id: 'x-clue',
+    channel: 'X',
+    title: 'Morning clue post',
+    text: 'Today\'s Set For Six is live.\n\nClue 1: "[PASTE CLUE]"\n\nSix clues. One mystery NRL player. Can you get it before your mates?\n\nsetforsix.com #NRL #NRLTwitter',
+  },
+  {
+    id: 'x-reply',
+    channel: 'X',
+    title: 'Reply under live NRL conversation',
+    text: 'This is exactly the kind of player that makes a Set For Six clue brutal. I reckon today\'s one is gettable in 3 if you know your [CLUB/ORIGIN] history.',
+  },
+  {
+    id: 'x-journo',
+    channel: 'X',
+    title: 'Journalist reply',
+    text: 'Interesting one. Do you think [PLAYER] gets remembered more for peak impact or longevity?',
+  },
+  {
+    id: 'x-club-history',
+    channel: 'X',
+    title: 'Club history reply',
+    text: 'Most underrated [CLUB] player of the NRL era? I feel like [PLAYER] never gets enough credit.',
+  },
+  {
+    id: 'x-direct-ask',
+    channel: 'X',
+    title: 'When someone asks what the game is',
+    text: 'It is a free daily NRL guessing game: 6 clues, 1 mystery player, new one every morning. setforsix.com',
+  },
+  {
+    id: 'reddit-karma',
+    channel: 'Reddit',
+    title: 'Karma-building discussion',
+    text: 'Who is the NRL player everyone remembers as great, but still somehow underrates?\n\nI keep coming back to [PLAYER] because [ONE SPECIFIC REASON]. Curious who other people would pick.',
+  },
+  {
+    id: 'reddit-feedback',
+    channel: 'Reddit',
+    title: 'Feedback post after trust is built',
+    text: 'I built a free daily NRL guessing game and would genuinely love feedback from people who know their footy.\n\nIt is six clues, one mystery player, and a new game each day. I am trying to make the clues hard enough for diehards but still playable for casual fans.\n\nIf anyone has two minutes, I would appreciate thoughts on whether the clues feel fair: setforsix.com',
+  },
+  {
+    id: 'facebook-group',
+    channel: 'Facebook',
+    title: 'Group-safe score post',
+    text: 'Took me [X] clues on today\'s Set For Six. The first clue had me nowhere, but clue [Y] gave it away.\n\nAnyone else playing today?',
+  },
+  {
+    id: 'creator-dm',
+    channel: 'Creator',
+    title: 'Small creator DM',
+    text: 'Hey [NAME] - I built Set For Six, a free daily NRL player guessing game. Your audience seems exactly like the kind of fans who would argue over the clues.\n\nNo pressure, but if you want to try today\'s puzzle I would love feedback. Happy to shout out your page in a weekly recap if your followers get around it.',
+  },
 ];
 
-const RULES_COLOUR = { Strict: '#ef4444', Moderate: '#F59E0B', Open: '#22c55e' };
+function CopyBank() {
+  const [copied, setCopied] = useState(null);
+  const [filter, setFilter] = useState('All');
+  const filters = ['All', ...new Set(TEMPLATES.map(t => t.channel))];
+  const visible = filter === 'All' ? TEMPLATES : TEMPLATES.filter(t => t.channel === filter);
 
-function FBGroupsTable() {
-  const [groupState, setGroupState] = useState(() => readLocalJson('fb_groups_state'));
-  const [filterStatus, setFilterStatus] = useState('All');
-  const [expandedNotes, setExpandedNotes] = useState(null);
-
-  function saveGroupState(next) {
-    setGroupState(next);
-    localStorage.setItem('fb_groups_state', JSON.stringify(next));
-  }
-
-  function cycleStatus(id) {
-    const current = groupState[id]?.status ?? 'Not Joined';
-    const next = STATUSES[(STATUSES.indexOf(current) + 1) % STATUSES.length];
-    saveGroupState({ ...groupState, [id]: { ...groupState[id], status: next } });
-  }
-
-  function setNotes(id, notes) {
-    saveGroupState({ ...groupState, [id]: { ...groupState[id], notes } });
-  }
-
-  const filtered = FB_GROUPS_DEFAULT.filter(g =>
-    filterStatus === 'All' || (groupState[g.id]?.status ?? 'Not Joined') === filterStatus
-  );
-
-  function filterBtnStyle(s) {
-    const active = filterStatus === s;
-    if (!active) return { background: '#1a1a1a', color: '#555', border: '1px solid #2a2a2a' };
-    const meta = STATUS_META[s] ?? { colour: '#22c55e', bg: '#22c55e15' };
-    return { background: meta.bg, color: meta.colour, border: `1px solid ${meta.colour}40` };
+  async function copy(id, text) {
+    await navigator.clipboard.writeText(text);
+    setCopied(id);
+    setTimeout(() => setCopied(null), 1600);
   }
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #222' }}>
-      <div className="px-4 py-3" style={{ background: '#111' }}>
-        <div className="flex items-start justify-between gap-2 flex-wrap">
-          <div>
-            <p className="text-sm font-semibold text-white">Part 2 — NRL Facebook Groups</p>
-            <p className="text-xs text-gray-500 mt-0.5">Click status to cycle it · Click group name to add notes</p>
-          </div>
-          <div className="flex gap-1 flex-wrap">
-            {['All', ...STATUSES].map(s => (
-              <button key={s} onClick={() => setFilterStatus(s)} className="text-xs px-2 py-1 rounded-lg" style={filterBtnStyle(s)}>
-                {s}
+    <Panel>
+      <SectionHeader
+        eyebrow="Copy bank"
+        title="Templates to adapt, not paste blindly"
+        action={
+          <div className="flex flex-wrap gap-1">
+            {filters.map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className="rounded px-2.5 py-1 text-xs font-bold"
+                style={{ color: filter === f ? '#061016' : MUTED, background: filter === f ? GREEN : '#071016', border: `1px solid ${LINE}` }}
+              >
+                {f}
               </button>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* Table header */}
-      <div
-        className="grid text-xs text-gray-600 px-3 py-2"
-        style={{ gridTemplateColumns: '1fr 52px 68px 60px 88px', background: '#0d0d0d', borderTop: '1px solid #1a1a1a' }}
-      >
-        <span>Group</span>
-        <span>Size</span>
-        <span>Rules</span>
-        <span>Best Day</span>
-        <span>Status</span>
-      </div>
-
-      {filtered.map(group => {
-        const state = groupState[group.id] ?? {};
-        const status = state.status ?? 'Not Joined';
-        const sm = STATUS_META[status];
-        const cc = group.club ? CLUB_COLOURS[group.club] : null;
-        const isExpanded = expandedNotes === group.id;
-
-        return (
-          <div key={group.id} style={{ borderTop: '1px solid #161616' }}>
-            <div
-              className="grid items-center px-3 py-2.5"
-              style={{ gridTemplateColumns: '1fr 52px 68px 60px 88px', background: '#0a0a0a' }}
-            >
+        }
+      />
+      <div className="divide-y" style={{ borderColor: LINE }}>
+        {visible.map(template => (
+          <article key={template.id} className="px-4 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: GREEN }}>{template.channel}</p>
+                <h3 className="mt-1 text-sm font-bold text-white">{template.title}</h3>
+              </div>
               <button
-                onClick={() => setExpandedNotes(isExpanded ? null : group.id)}
-                className="flex items-center gap-2 text-left min-w-0"
+                onClick={() => copy(template.id, template.text)}
+                className="rounded px-3 py-1.5 text-xs font-bold"
+                style={{ color: copied === template.id ? '#061016' : GREEN, background: copied === template.id ? GREEN : 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.28)' }}
               >
-                {cc && (
-                  <span
-                    className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
-                    style={{ background: cc.primary, boxShadow: `0 0 0 1px ${cc.accent}55` }}
-                  />
-                )}
-                <span className="text-xs text-gray-300 leading-snug truncate">{group.name}</span>
-                {state.notes && <span className="text-gray-600 flex-shrink-0 text-xs">✎</span>}
-              </button>
-
-              <span className="text-xs text-gray-600">{group.members}</span>
-
-              <span className="text-xs font-medium" style={{ color: RULES_COLOUR[group.rules] }}>
-                {group.rules}
-              </span>
-
-              <span className="text-xs text-gray-500">{group.bestDay}</span>
-
-              <button
-                onClick={() => cycleStatus(group.id)}
-                className="text-xs px-2 py-0.5 rounded-full text-left truncate"
-                style={{ background: sm.bg, color: sm.colour, border: `1px solid ${sm.colour}35` }}
-              >
-                {status}
+                {copied === template.id ? 'Copied' : 'Copy'}
               </button>
             </div>
-
-            {isExpanded && (
-              <div className="px-3 pb-3 pt-1" style={{ background: '#0d0d0d' }}>
-                <textarea
-                  value={state.notes ?? ''}
-                  onChange={e => setNotes(group.id, e.target.value)}
-                  placeholder="Notes — e.g. 'Posted 21 Apr, 3 likes. Mod OK with game links.'"
-                  rows={2}
-                  className="w-full text-xs text-gray-400 rounded-lg px-3 py-2 resize-none outline-none"
-                  style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}
-                />
-              </div>
-            )}
-          </div>
-        );
-      })}
-
-      {filtered.length === 0 && (
-        <p className="text-xs text-gray-600 px-4 py-6 text-center" style={{ background: '#0a0a0a' }}>
-          No groups with status &quot;{filterStatus}&quot; yet.
-        </p>
-      )}
-    </div>
-  );
-}
-
-// ── FB Post Templates Library ──────────────────────────────────────────────────
-
-const FB_TEMPLATES = {
-  daily: [
-    {
-      id: 'fb_morning',
-      label: 'Morning post — game live',
-      text: `Set For Six #[N] is live 🏉 Can you name today's mystery NRL player in under 6 clues?\n\nsetforsix.com`,
-    },
-    {
-      id: 'fb_champion',
-      label: "Evening — today's champion",
-      text: `Today's Set For Six champion: [Name] — cracked it in [X] clues 🔥\n\nsetforsix.com`,
-    },
-    {
-      id: 'fb_stats',
-      label: 'Stats tease',
-      text: `Only [X]% got today's player in 1 clue. Think you could've?\n\nsetforsix.com`,
-    },
-  ],
-  groups: [
-    {
-      id: 'fb_result',
-      label: 'Result share (attach score card)',
-      text: `Took me [X] clues to get today's Set For Six 😅 anyone else playing?`,
-      tip: "Attach your share card image. Never paste the link in the post body — only drop it in the comments if someone asks.",
-    },
-    {
-      id: 'fb_question',
-      label: 'Question bait — use today\'s real clue',
-      text: `Who nails this in 1 clue? "Grew up in a remote Indigenous community in Far North Queensland" 🤔`,
-      tip: "Replace the clue text with today's actual Clue 1 to make it feel live and timely.",
-    },
-    {
-      id: 'fb_challenge',
-      label: 'Friendly challenge',
-      text: `Bet none of you lot can beat my 2-clue run on today's Set For Six 👀`,
-    },
-    {
-      id: 'fb_club',
-      label: 'Club-specific (match to the group)',
-      text: `Today's Set For Six was a Broncos legend — gettable in 3 clues if you know your history 🟤🟡`,
-      tip: "Change the club name and emoji colours to match the group you're posting in. Only use when the day's player actually played for that club.",
-    },
-  ],
-  reddit: [
-    {
-      id: 'fb_reddit_launch',
-      label: 'Launch post — r/nrl (once only, 200+ karma first)',
-      text: `I built a daily NRL "guess the player" game — would love your feedback\n\n[Write a genuine 3–4 sentence post. Mention you built it yourself, what it does, and why you made it. Do NOT use this template verbatim — make it personal and conversational.]`,
-      tip: "Post this once only, and only when your Reddit karma is 200+. Authenticity is everything on r/nrl — if it reads like a press release it will get removed.",
-    },
-    {
-      id: 'fb_reddit_stats',
-      label: 'Weekly stats recap — r/nrl',
-      text: `Set For Six week in review — hardest player was [X], only [Y]% got it\n\n[Add a short paragraph with the week's most interesting stats. End with a question to invite replies.]`,
-    },
-  ],
-  twitter: [
-    {
-      id: 'fb_tw_daily',
-      label: 'Daily post',
-      text: `Today's Set For Six is live. Six clues. One mystery NRL player. setforsix.com 🏉`,
-    },
-    {
-      id: 'fb_tw_reply',
-      label: 'Reply to NRL journalist tweets',
-      text: `my [X]-clue effort on today's Set For Six 🏉`,
-      tip: "Reply to relevant NRL tweets during match days. Keep it casual — this is a conversation starter, not a pitch. Never reply with the full game URL unprompted.",
-    },
-  ],
-};
-
-const TEMPLATE_TABS = [
-  { key: 'daily',   label: 'Daily (Page)', colour: '#4A9EF5' },
-  { key: 'groups',  label: 'Groups',       colour: '#22c55e' },
-  { key: 'reddit',  label: 'Reddit',       colour: '#fb923c' },
-  { key: 'twitter', label: 'Twitter',      colour: '#38bdf8' },
-];
-
-function FBPostTemplates() {
-  const [activeTab, setActiveTab] = useState('daily');
-  const [copied, setCopied] = useState(null);
-
-  function handleCopy(id, text) {
-    navigator.clipboard.writeText(text);
-    setCopied(id);
-    setTimeout(() => setCopied(null), 2000);
-  }
-
-  const tab = TEMPLATE_TABS.find(t => t.key === activeTab);
-  const templates = FB_TEMPLATES[activeTab];
-
-  return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #222' }}>
-      <div className="px-4 py-3" style={{ background: '#111' }}>
-        <p className="text-sm font-semibold text-white">Part 3 — Post Templates Library</p>
-        <p className="text-xs text-gray-500 mt-0.5">Edit the bracketed parts before posting. Never paste links directly in group posts.</p>
-      </div>
-
-      {/* Tab bar */}
-      <div className="flex gap-1 px-4 py-2 flex-wrap" style={{ background: '#0d0d0d', borderTop: '1px solid #1a1a1a' }}>
-        {TEMPLATE_TABS.map(t => (
-          <button
-            key={t.key}
-            onClick={() => setActiveTab(t.key)}
-            className="text-xs px-3 py-1.5 rounded-lg"
-            style={{
-              background: activeTab === t.key ? `${t.colour}20` : '#1a1a1a',
-              color: activeTab === t.key ? t.colour : '#555',
-              border: `1px solid ${activeTab === t.key ? `${t.colour}40` : '#2a2a2a'}`,
-            }}
-          >
-            {t.label}
-          </button>
+            <pre className="mt-3 whitespace-pre-wrap rounded-lg p-3 font-sans text-xs leading-relaxed text-gray-300" style={{ background: '#071016', border: `1px solid ${LINE}` }}>{template.text}</pre>
+          </article>
         ))}
       </div>
-
-      {/* Templates */}
-      {templates.map(tmpl => (
-        <div key={tmpl.id} style={{ borderTop: '1px solid #161616', background: '#0a0a0a' }}>
-          <div className="px-4 pt-3 pb-1 flex items-start justify-between gap-3">
-            <p className="text-xs font-medium" style={{ color: tab.colour }}>{tmpl.label}</p>
-            <button
-              onClick={() => handleCopy(tmpl.id, tmpl.text)}
-              className="text-xs px-3 py-1 rounded-lg flex-shrink-0"
-              style={{
-                background: copied === tmpl.id ? '#22c55e20' : '#1a1a1a',
-                color: copied === tmpl.id ? '#22c55e' : '#888',
-                border: `1px solid ${copied === tmpl.id ? '#22c55e40' : '#2a2a2a'}`,
-              }}
-            >
-              {copied === tmpl.id ? '✓ Copied' : 'Copy'}
-            </button>
-          </div>
-          <pre className="px-4 pb-3 text-xs text-gray-500 whitespace-pre-wrap leading-relaxed font-sans">{tmpl.text}</pre>
-          {tmpl.tip && (
-            <div className="mx-4 mb-3 px-3 py-2 rounded-lg text-xs text-gray-500" style={{ background: '#141414', borderLeft: `2px solid ${tab.colour}60` }}>
-              {tmpl.tip}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+    </Panel>
   );
 }
 
-// ── Facebook section wrapper ───────────────────────────────────────────────────
+const TRACKERS = [
+  { id: 'x_replies', label: 'X replies made today', target: '8' },
+  { id: 'reddit_comments', label: 'Reddit comments without links', target: '2' },
+  { id: 'fb_groups', label: 'Facebook group interactions', target: '1' },
+  { id: 'creator_dms', label: 'Creator DMs this week', target: '10' },
+  { id: 'share_posts', label: 'Friend/player score shares', target: '3' },
+];
 
-function FacebookSection() {
+function Tracker() {
+  const [values, setValues] = useState(() => readLocalJson('mkt_tracker'));
+
+  function update(id, value) {
+    const next = { ...values, [id]: value };
+    setValues(next);
+    localStorage.setItem('mkt_tracker', JSON.stringify(next));
+  }
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3 pt-2">
-        <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" fill="#4A9EF5">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+    <Panel>
+      <SectionHeader eyebrow="Manual tracking" title="Inputs that create distribution" />
+      <div className="divide-y" style={{ borderColor: LINE }}>
+        {TRACKERS.map(item => (
+          <label key={item.id} className="grid grid-cols-[1fr_72px_56px] items-center gap-3 px-4 py-3">
+            <span className="text-sm font-semibold text-white">{item.label}</span>
+            <input
+              value={values[item.id] ?? ''}
+              onChange={e => update(item.id, e.target.value)}
+              inputMode="numeric"
+              className="rounded px-3 py-2 text-sm text-white outline-none"
+              style={{ background: '#071016', border: `1px solid ${LINE}` }}
+            />
+            <span className="text-xs" style={{ color: MUTED }}>/{item.target}</span>
+          </label>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+const LINKS = [
+  { label: 'Vercel Analytics', url: 'https://vercel.com/nero1948s-projects/footyiq/analytics' },
+  { label: 'Supabase', url: 'https://supabase.com/dashboard' },
+  { label: 'X profile', url: 'https://x.com/setforsixnrl' },
+  { label: 'X Analytics', url: 'https://analytics.twitter.com' },
+  { label: 'r/nrl', url: 'https://reddit.com/r/nrl' },
+  { label: 'Facebook Pages', url: 'https://www.facebook.com/pages/create' },
+];
+
+function QuickLinks() {
+  return (
+    <Panel>
+      <SectionHeader eyebrow="Launch pad" title="Platform links" />
+      <div className="grid gap-2 p-4 sm:grid-cols-2">
+        {LINKS.map(link => (
+          <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="rounded-lg px-3 py-3 text-sm font-bold text-white" style={{ background: PANEL_2, border: `1px solid ${LINE}` }}>
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+function Hero({ stats, today }) {
+  const sevenDayAverage = useMemo(() => {
+    const lastSeven = stats.chartData.slice(-7);
+    const total = lastSeven.reduce((sum, item) => sum + item.count, 0);
+    return Math.round(total / Math.max(lastSeven.length, 1));
+  }, [stats.chartData]);
+
+  return (
+    <div className="relative overflow-hidden rounded-lg px-5 py-6 md:px-7 md:py-8" style={{ background: '#071016', border: `1px solid ${LINE}` }}>
+      <div className="absolute inset-y-0 right-0 hidden w-1/2 md:block" aria-hidden>
+        <svg viewBox="0 0 520 320" className="h-full w-full opacity-20">
+          <path d="M260 16C430 16 504 90 504 160S430 304 260 304 16 230 16 160 90 16 260 16Z" fill="none" stroke={GREEN} strokeWidth="6" />
+          <path d="M16 160c70 20 150 30 244 30s174-10 244-30" fill="none" stroke={GREEN} strokeWidth="4" />
+          <path d="M260 62v196" stroke={GREEN} strokeWidth="4" />
+          {[112, 136, 160, 184, 208].map(y => <path key={y} d={`M232 ${y}h56`} stroke={GREEN} strokeWidth="7" strokeLinecap="round" />)}
         </svg>
-        <div>
-          <h2 className="text-base font-bold text-white">Facebook Marketing</h2>
-          <p className="text-xs text-gray-500">Page setup · Group outreach · Post templates</p>
+      </div>
+      <div className="relative max-w-3xl">
+        <p className="text-xs font-bold uppercase tracking-[0.26em]" style={{ color: GREEN }}>Set For Six growth command</p>
+        <h1 className="mt-3 text-3xl font-black leading-tight text-white md:text-5xl">Get the daily NRL game in front of AUS and NZ league fans.</h1>
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed md:text-base" style={{ color: MUTED }}>
+          Focus on trust-led community participation, matchday replies, club-specific hooks, and creator outreach. The target is not one viral post; it is a repeatable daily loop that turns NRL attention into returning players.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <StatCard label="Today" value={stats.todayPlays.toLocaleString()} note={today} tone="#60a5fa" />
+          <StatCard label="7-day avg" value={sevenDayAverage.toLocaleString()} note="Daily plays" />
+          <StatCard label="Subscribers" value={stats.subscribers.toLocaleString()} note="Owned audience" tone="#facc15" />
         </div>
       </div>
-      <FBPageChecklist />
-      <FBGroupsTable />
-      <FBPostTemplates />
     </div>
   );
 }
-
-// ── Main dashboard ─────────────────────────────────────────────────────────────
 
 export default function MarketingClient({ stats, authed }) {
   if (!authed) return <PasswordForm />;
 
   const today = new Date().toLocaleDateString('en-AU', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
     timeZone: 'Australia/Sydney',
   });
 
   return (
-    <div className="min-h-screen" style={{ background: '#0a0a0a' }}>
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+    <main className="min-h-screen px-4 py-5 text-white md:py-8" style={{ background: '#061016' }}>
+      <div className="mx-auto max-w-6xl space-y-4">
+        <Hero stats={stats} today={today} />
 
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-white">Marketing Hub</h1>
-          <p className="text-sm text-gray-500 mt-1">{today} · Set For Six</p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <StatCard label="Total plays" value={stats.totalPlays.toLocaleString()} note="All time" />
+          <StatCard label="Plays today" value={stats.todayPlays.toLocaleString()} note="Sydney time" tone="#60a5fa" />
+          <StatCard label="Win rate" value={`${stats.winRate}%`} note="Solved attempts" tone="#a78bfa" />
+          <StatCard label="Games live" value={stats.gamesLive.toLocaleString()} note="Content runway" tone="#fb923c" />
+          <StatCard label="Email list" value={stats.subscribers.toLocaleString()} note="Daily reminder base" tone="#facc15" />
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Total plays" value={stats.totalPlays.toLocaleString()} />
-          <StatCard label="Plays today" value={stats.todayPlays.toLocaleString()} colour="#60a5fa" />
-          <StatCard label="Win rate" value={`${stats.winRate}%`} colour="#a78bfa" sub="players who solved it" />
-          <StatCard label="Subscribers" value={stats.subscribers.toLocaleString()} colour="#fb923c" />
+        <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+          <GrowthChart data={stats.chartData} />
+          <DailyChecklist />
         </div>
 
-        {/* Growth chart */}
-        <GrowthChart data={stats.chartData} />
+        <Funnel />
 
-        {/* Checklist + Traffic */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Checklist />
-          <TrafficSources />
+        <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+          <StepPlan />
+          <ChannelPlaybooks />
         </div>
 
-        {/* Strategy */}
-        <ContentStrategy />
+        <XReplyLab />
 
-        {/* Content schedule */}
-        <ContentSchedule />
+        <AudienceMap />
 
-        {/* Facebook marketing */}
-        <FacebookSection />
-
+        <div className="grid gap-4 lg:grid-cols-[1fr_0.72fr]">
+          <CopyBank />
+          <div className="space-y-4">
+            <Tracker />
+            <QuickLinks />
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

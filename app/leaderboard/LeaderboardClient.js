@@ -66,14 +66,15 @@ export default function LeaderboardClient({ initialData }) {
         <div className="mb-6">
           <h1 className="text-2xl font-black text-white">Today&apos;s Leaderboard</h1>
           {gameNumber && <p className="text-sm text-gray-500 mt-1">Game #{gameNumber}</p>}
+          <p className="text-xs text-gray-600 mt-2">Ranked by fewest clues, then fastest time.</p>
         </div>
 
         {error && <p className="text-red-400 text-center">{error}</p>}
 
         {!error && entries.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-lg mb-2">No scores yet</p>
-            <p className="text-gray-700 text-sm">Be the first to finish today&apos;s game!</p>
+            <p className="text-gray-500 text-lg mb-2">No one&apos;s on the board yet</p>
+            <p className="text-gray-700 text-sm">Be first to crack today&apos;s player.</p>
           </div>
         )}
 

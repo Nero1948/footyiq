@@ -190,7 +190,19 @@ export default async function ChampionPage() {
           <p className="text-sm text-gray-500 mb-6">Fastest solve. Cleanest flex.</p>
 
           {champion ? (
-            <>
+            <div
+              className="rounded-2xl px-5 py-6"
+              style={{
+                background: 'linear-gradient(180deg, rgba(246,185,31,0.10), rgba(255,255,255,0.03))',
+                border: '1px solid rgba(246,185,31,0.28)',
+                boxShadow: '0 0 36px rgba(246,185,31,0.08)',
+              }}
+            >
+              {gameNumber && (
+                <p className="text-xs font-bold uppercase tracking-[0.24em] mb-3" style={{ color: '#f6b91f' }}>
+                  Game #{gameNumber}
+                </p>
+              )}
               <p className="text-4xl sm:text-5xl font-black mb-2 text-white">{champion.name}</p>
               <p className="text-base font-bold mb-5" style={{ color: '#f6b91f' }}>
                 {getTitleForClues(champion.cluesUsed)}
@@ -219,7 +231,7 @@ export default async function ChampionPage() {
                   Beat <span className="text-[#00e676] font-bold">{beatPct}%</span> of players today
                 </p>
               )}
-            </>
+            </div>
           ) : (
             <>
               <p className="text-2xl font-black text-gray-600 mb-2">No champion yet</p>

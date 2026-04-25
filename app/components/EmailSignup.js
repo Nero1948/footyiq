@@ -31,7 +31,7 @@ export default function EmailSignup() {
   if (emailState === 'done') {
     return (
       <p className="font-bold text-lg" style={{ color: GREEN }}>
-        You're in! See you tomorrow at 7am AEST / 9am NZT.
+        You&apos;re in! See you tomorrow at 7am Sydney / 9am NZ.
       </p>
     );
   }

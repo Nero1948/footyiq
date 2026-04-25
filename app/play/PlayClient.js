@@ -294,26 +294,28 @@ export default function PlayClient({ initialGame }) {
     setTimeout(() => setUsernameSaved(false), 2000);
   }
 
-  // ── Copy share text ────────────────────────────────────────────────────────
+  // ── Share result ───────────────────────────────────────────────────────────
 
-  function handleCopy() {
+  async function handleShare() {
     if (!game || !gameOverData) return;
     track('share_clicked', { solved: gameOverData.solved, clues_used: gameOverData.cluesUsed });
     const text = buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak);
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(text)
-        .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); })
-        .catch(() => {
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        });
-    } else {
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ text });
+        return;
+      } catch {
+        // Fall back to clipboard if sharing is cancelled or unavailable.
+      }
+    }
+
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
       const ta = document.createElement('textarea');
       ta.value = text;
       document.body.appendChild(ta);
@@ -383,7 +385,27 @@ export default function PlayClient({ initialGame }) {
         {gameState === 'playing' && (
           <>
             <div className="mb-6">
-              <h2 className="text-2xl font-black text-white mb-4">Can you name this NRL player?</h2>
+              <h2 className="text-2xl font-black text-white mb-3">Can you name this NRL player?</h2>
+
+              <div
+                className="mb-4 grid grid-cols-3 overflow-hidden rounded-xl text-center"
+                style={{ background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.07)' }}
+              >
+                {[
+                  ['6', 'clues'],
+                  ['1', 'player'],
+                  ['Fastest', 'wins'],
+                ].map(([value, label], idx) => (
+                  <div
+                    key={label}
+                    className="px-2 py-2.5"
+                    style={{ borderLeft: idx === 0 ? 'none' : '1px solid rgba(255,255,255,0.06)' }}
+                  >
+                    <p className="text-sm font-black leading-none" style={{ color: '#00e676' }}>{value}</p>
+                    <p className="text-[11px] uppercase tracking-wider text-gray-600 mt-1">{label}</p>
+                  </div>
+                ))}
+              </div>
 
               {/* Progress bar — 6 segments */}
               <div className="flex gap-1.5">
@@ -557,7 +579,7 @@ export default function PlayClient({ initialGame }) {
             </div>
 
             {/* Share — primary CTA */}
-            <button onClick={handleCopy} className="w-full font-bold py-4 rounded-xl active:scale-95 transition-transform text-base" style={{ background: '#00e676', color: '#000' }}>
+            <button onClick={handleShare} className="w-full font-bold py-4 rounded-xl active:scale-95 transition-transform text-base" style={{ background: '#00e676', color: '#000' }}>
               {copied ? '✓ Copied to clipboard!' : 'Share your result'}
             </button>
 
@@ -666,12 +688,12 @@ export default function PlayClient({ initialGame }) {
 
               {/* Email signup — subtle */}
               {emailState === 'done' ? (
-                <p className="text-center text-[#00e676] text-sm">You&apos;re in! We&apos;ll remind you tomorrow at 9am.</p>
+                <p className="text-center text-[#00e676] text-sm">You&apos;re in! We&apos;ll remind you tomorrow at 7am Sydney / 9am NZ.</p>
               ) : (
                 <div className="rounded-xl p-3" style={{ background: '#121821' }}>
                   <div className="flex items-center justify-between gap-3 mb-2">
                     <div>
-                      <p className="text-sm text-white font-medium">Daily reminder at 9am</p>
+                      <p className="text-sm text-white font-medium">Daily reminder at 7am Sydney / 9am NZ</p>
                       <p className="text-xs text-gray-500">Keep your streak alive.</p>
                     </div>
                   </div>

@@ -52,7 +52,7 @@ const FAQS = [
   },
   {
     q: 'When does a new game come out?',
-    a: 'A fresh game launches every morning at midnight New Zealand time (10pm AEDT / 11pm AEST). Both Aussie and Kiwi rugby league fans can start their day with a new puzzle.',
+    a: 'A fresh game launches every day on Sydney time. Both Aussie and Kiwi rugby league fans can start their day with a new puzzle.',
   },
   {
     q: 'Do I need to be an NRL expert?',

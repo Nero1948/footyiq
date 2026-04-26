@@ -10,14 +10,14 @@ export const metadata = {
     title: 'Set For Six — Leaderboard',
     description: "See today's fastest NRL guessers. Can you crack it in fewer clues?",
     url: 'https://www.setforsix.com/leaderboard',
-    images: [{ url: 'https://www.setforsix.com/api/og', width: 1200, height: 630, alt: 'Set For Six Leaderboard' }],
+    images: [{ url: 'https://www.setforsix.com/og.png', width: 1200, height: 630, alt: 'Set For Six Leaderboard', type: 'image/png' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Set For Six — Leaderboard',
     description: "See today's fastest NRL guessers. Can you crack it in fewer clues?",
-    images: ['https://www.setforsix.com/api/og'],
+    images: ['https://www.setforsix.com/og.png'],
   },
 };
 

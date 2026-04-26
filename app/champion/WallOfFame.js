@@ -11,7 +11,7 @@ function formatDisplayDate(dateStr) {
   });
 }
 
-export default function WallOfFame({ entries, todayAEST, winnerCounts }) {
+export default function WallOfFame({ entries, todayAEST }) {
   const [expandedDate, setExpandedDate] = useState(null);
 
   if (!entries.length) {
@@ -22,7 +22,6 @@ export default function WallOfFame({ entries, todayAEST, winnerCounts }) {
     <div className="space-y-2 mt-4">
       {entries.map(({ date, champion: c }, i) => {
         const isToday = date === todayAEST;
-        const isMultiWinner = c && winnerCounts[c.name] > 1;
         const isTopEntry = i === 0 && !!c;
         const isExpanded = expandedDate === date;
         const isClickable = !!c;
@@ -44,15 +43,6 @@ export default function WallOfFame({ entries, todayAEST, winnerCounts }) {
                   : '1px solid ' + (isToday ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.06)'),
               }}
             >
-              <div className="flex-shrink-0 w-8 text-center">
-                {isMultiWinner
-                  ? <span className="text-lg">👑</span>
-                  : c
-                    ? <span className="text-base">🏅</span>
-                    : <span className="text-gray-700 text-xs">—</span>
-                }
-              </div>
-
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-semibold ${isToday ? 'text-white' : 'text-gray-300'}`}>
                   {isToday ? 'Today' : formatDisplayDate(date)}

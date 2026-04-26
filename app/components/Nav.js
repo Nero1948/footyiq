@@ -7,7 +7,7 @@ export default function Nav() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: '/leaderboard', label: 'Leaderboard', shortLabel: 'Board' },
+    { href: '/leaderboard', label: 'Leaderboard', shortLabel: 'Leaderboard' },
     { href: '/champion', label: 'Champions', shortLabel: 'Champs' },
   ];
 

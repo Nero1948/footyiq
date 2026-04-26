@@ -155,12 +155,6 @@ export default async function ChampionPage() {
     }
   }
 
-  // Multi-winner counts across 14 days (for 👑 display)
-  const winnerCounts = {};
-  for (const { champion: c } of hallOfFame) {
-    if (c) winnerCounts[c.name] = (winnerCounts[c.name] || 0) + 1;
-  }
-
   // Beat percentage — only show when enough players have played
   const beatPct = totalAttempts >= 20
     ? Math.round(((totalAttempts - 1) / totalAttempts) * 100)
@@ -241,24 +235,23 @@ export default async function ChampionPage() {
           )}
         </section>
 
-        {/* ── Wall of Fame ──────────────────────────────────────────────── */}
+        {/* ── Daily Champions ───────────────────────────────────────────── */}
         <section>
           <div className="mb-2">
             <h2
               className="text-lg font-black text-white inline-block pb-1"
               style={{ borderBottom: '2px solid rgba(246,185,31,0.5)' }}
             >
-              Wall of Fame 🏅
+              Daily Champions
             </h2>
             <p className="text-xs text-gray-600 mt-1.5">
-              All-time champions. The ones who cracked it first.
+              The fastest player from each day.
             </p>
           </div>
 
           <WallOfFame
             entries={displayEntries}
             todayAEST={todayAEST}
-            winnerCounts={winnerCounts}
           />
         </section>
 

@@ -13,6 +13,7 @@ const CONFETTI = Array.from({ length: 40 }, (_, i) => ({
   size: `${7 + (i % 5)}px`,
   round: i % 3 !== 0,
 }));
+const SHARE_URL = 'https://www.setforsix.com/play';
 
 const ls = {
   get: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
@@ -59,29 +60,19 @@ function TimerBall({ children, active = false }) {
         aria-hidden
         style={{
           position: 'absolute',
-          inset: '8px auto 8px 50%',
-          width: 1,
-          transform: 'translateX(-50%)',
-          background: active ? 'rgba(0,230,118,0.55)' : 'rgba(255,255,255,0.16)',
+          inset: 4,
+          borderRadius: '50% / 42%',
+          borderTop: `1px solid ${active ? 'rgba(0,230,118,0.28)' : 'rgba(255,255,255,0.1)'}`,
+          borderBottom: `1px solid ${active ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.08)'}`,
         }}
       />
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          aria-hidden
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: 13 + i * 6,
-            width: 16,
-            height: 2,
-            borderRadius: 999,
-            transform: 'translateX(-50%)',
-            background: active ? '#00e676' : 'rgba(255,255,255,0.22)',
-          }}
-        />
-      ))}
-      <span className="relative font-mono text-lg font-black tabular-nums text-white">
+      <span
+        className="relative rounded-full px-3 py-1 font-mono text-lg font-black tabular-nums text-white"
+        style={{
+          background: 'rgba(10,14,19,0.78)',
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.08)',
+        }}
+      >
         {children}
       </span>
     </div>
@@ -96,25 +87,23 @@ function getSecondsUntilMidnightAEST() {
   return Math.max(0, Math.floor((aestMidnight - aestNow) / 1000));
 }
 
-function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalPlayers, streak) {
+function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalPlayers) {
   const squares = solved
     ? [...Array(cluesUsed - 1).fill('⬛'), '🏉', ...Array(6 - cluesUsed).fill('⬜')]
     : Array(6).fill('⬛');
   const clueWord = cluesUsed === 1 ? 'clue' : 'clues';
-  const lines = [`Set For Six #${gameNumber} 🏉`, squares.join(''), ''];
+  const lines = [`Set For Six #${gameNumber}`, squares.join('')];
   if (solved) {
-    lines.push(`TRY! Scored in ${cluesUsed} ${clueWord} · ${formatTime(totalTimeMs)}`);
-    const extras = [];
-    if (rank !== null && rank !== undefined && totalPlayers) extras.push(`🏅 #${rank} of ${totalPlayers}`);
-    extras.push(`🔥 ${streak} day streak`);
-    lines.push(extras.join(' · '));
+    lines.push(`${cluesUsed}/6 ${clueWord} · ${formatTime(totalTimeMs)}`);
+    if (rank !== null && rank !== undefined && totalPlayers) {
+      lines.push(`#${rank} of ${totalPlayers} today`);
+    }
   } else {
-    lines.push(`Held up over the line · ${formatTime(totalTimeMs)}`);
-    if (totalPlayers) lines.push(`${totalPlayers} players tried today`);
+    lines.push(`Missed in 6 clues · ${formatTime(totalTimeMs)}`);
+    if (totalPlayers) lines.push(`${totalPlayers} played today`);
   }
   lines.push('');
-  lines.push('Think you know league?');
-  lines.push('https://www.setforsix.com');
+  lines.push(SHARE_URL);
   return lines.join('\n');
 }
 
@@ -140,6 +129,7 @@ export default function PlayClient({ initialGame }) {
   const [countdown, setCountdown] = useState('');
   const [username, setUsername] = useState('Anonymous');
   const [usernameSaved, setUsernameSaved] = useState(false);
+  const [isAdvancingClue, setIsAdvancingClue] = useState(false);
 
   const startTimeRef = useRef(null);
   const timerRef = useRef(null);
@@ -280,7 +270,7 @@ export default function PlayClient({ initialGame }) {
 
   const handleGuess = useCallback(async () => {
     const guessText = currentGuess.trim();
-    if (!guessText || isGuessing) return;
+    if (!guessText || isGuessing || isAdvancingClue) return;
     const timeMs = Math.round(performance.now() - startTimeRef.current);
     setIsGuessing(true);
     setCurrentGuess('');
@@ -310,7 +300,27 @@ export default function PlayClient({ initialGame }) {
       setCurrentGuess(guessText);
       setIsGuessing(false);
     }
-  }, [currentGuess, isGuessing, game, deviceId, clueNumber, wrongGuesses, finishGame]);
+  }, [currentGuess, isGuessing, isAdvancingClue, game, deviceId, clueNumber, wrongGuesses, finishGame]);
+
+  const handleNextClue = useCallback(async () => {
+    if (isGuessing || isAdvancingClue || clueNumber >= 6 || !game || !deviceId) return;
+    const timeMs = Math.round(performance.now() - startTimeRef.current);
+    setIsAdvancingClue(true);
+    try {
+      const res = await fetch('/api/clue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gameId: game.id, deviceId, clueNumber, totalTimeMs: timeMs }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.nextClue) { setIsAdvancingClue(false); return; }
+      setClues((prev) => [...prev, data.nextClue]);
+      setClueNumber((prev) => prev + 1);
+      setIsAdvancingClue(false);
+    } catch {
+      setIsAdvancingClue(false);
+    }
+  }, [isGuessing, isAdvancingClue, clueNumber, game, deviceId]);
 
   // ── Email signup ───────────────────────────────────────────────────────────
 
@@ -353,11 +363,16 @@ export default function PlayClient({ initialGame }) {
   async function handleShare() {
     if (!game || !gameOverData) return;
     track('share_clicked', { solved: gameOverData.solved, clues_used: gameOverData.cluesUsed });
-    const text = buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak);
+    const text = buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers);
+    const shareText = text
+      .split('\n')
+      .filter((line) => line !== SHARE_URL)
+      .join('\n')
+      .trim();
 
     if (navigator.share) {
       try {
-        await navigator.share({ text });
+        await navigator.share({ title: `Set For Six #${game.game_number}`, text: shareText, url: SHARE_URL });
         return;
       } catch {
         // Fall back to clipboard if sharing is cancelled or unavailable.
@@ -529,7 +544,7 @@ export default function PlayClient({ initialGame }) {
 
             {/* Guess input */}
             <div>
-              <p className="text-xs text-gray-500 mb-2">Type a player&apos;s name</p>
+              <p className="text-xs text-gray-500 mb-2">Type a player&apos;s full name</p>
               <div className="flex flex-col min-[420px]:flex-row gap-2">
                 <input
                   ref={inputRef}
@@ -540,14 +555,24 @@ export default function PlayClient({ initialGame }) {
                   placeholder="Type player name…"
                   autoComplete="off"
                   autoFocus
-                  disabled={isGuessing || !deviceId}
+                  disabled={isGuessing || isAdvancingClue || !deviceId}
                   className="flex-1 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-base focus:outline-none disabled:opacity-50 transition-colors"
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                 />
-                <button onClick={handleGuess} disabled={isGuessing || !currentGuess.trim() || !deviceId} className="font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform text-white min-[420px]:whitespace-nowrap" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                <button onClick={handleGuess} disabled={isGuessing || isAdvancingClue || !currentGuess.trim() || !deviceId} className="font-semibold px-5 py-3 rounded-xl disabled:opacity-40 active:scale-95 transition-transform text-white min-[420px]:whitespace-nowrap" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}>
                   {isGuessing ? '…' : 'Lock it in'}
                 </button>
               </div>
+              {clueNumber < 6 && (
+                <button
+                  type="button"
+                  onClick={handleNextClue}
+                  disabled={isGuessing || isAdvancingClue || !deviceId}
+                  className="mt-3 text-sm font-semibold text-gray-500 hover:text-[#00e676] disabled:opacity-40 disabled:hover:text-gray-500 transition-colors"
+                >
+                  {isAdvancingClue ? '…' : 'Next clue'}
+                </button>
+              )}
             </div>
           </>
         )}
@@ -588,30 +613,34 @@ export default function PlayClient({ initialGame }) {
               </div>
             </div>
 
-            {/* All the clues */}
+            {/* Clue recap */}
             {gameOverData.allClues?.length === 6 && (
               <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <p className="text-xs text-gray-500 uppercase tracking-wider">All the clues</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">
+                  {gameOverData.solved ? 'Your clue and what came next' : 'All the clues'}
+                </p>
                 <ul className="space-y-2.5">
-                  {gameOverData.allClues.map((clueText, i) => {
-                    const clueNum = i + 1;
-                    const wasRevealed = clueNum <= gameOverData.cluesUsed;
-                    const isSolvedOn = gameOverData.solved && clueNum === gameOverData.cluesUsed;
-                    return (
-                      <li key={clueNum} className="flex items-start gap-3">
-                        <div
-                          className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5"
-                          style={{
-                            background: isSolvedOn ? '#00e676' : wasRevealed ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)',
-                            color: isSolvedOn ? '#0a0e13' : wasRevealed ? 'white' : '#6b7280',
-                          }}
-                        >
-                          {clueNum}
-                        </div>
-                        <p className={`text-sm leading-relaxed ${wasRevealed ? 'text-white' : 'text-gray-400'}`}>{clueText}</p>
-                      </li>
-                    );
-                  })}
+                  {gameOverData.allClues
+                    .slice(gameOverData.solved ? gameOverData.cluesUsed - 1 : 0)
+                    .map((clueText, i) => {
+                      const clueNum = i + (gameOverData.solved ? gameOverData.cluesUsed : 1);
+                      const isSolvedOn = gameOverData.solved && clueNum === gameOverData.cluesUsed;
+                      const isFailedReveal = !gameOverData.solved;
+                      return (
+                        <li key={clueNum} className="flex items-start gap-3">
+                          <div
+                            className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5"
+                            style={{
+                              background: isSolvedOn ? '#00e676' : isFailedReveal ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)',
+                              color: isSolvedOn ? '#0a0e13' : isFailedReveal ? 'white' : '#6b7280',
+                            }}
+                          >
+                            {clueNum}
+                          </div>
+                          <p className={`text-sm leading-relaxed ${isSolvedOn || isFailedReveal ? 'text-white' : 'text-gray-400'}`}>{clueText}</p>
+                        </li>
+                      );
+                    })}
                 </ul>
               </div>
             )}

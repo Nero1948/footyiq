@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 const PLAY_OG = {
   title: "Set For Six — Today's Game is Live 🏉",
   description: 'Six clues. One mystery NRL player. Can you crack it before your mates?',
-  images: [{ url: 'https://www.setforsix.com/api/og', width: 1200, height: 630, alt: 'Set For Six — Play Today' }],
+  images: [{ url: 'https://www.setforsix.com/og.png', width: 1200, height: 630, alt: 'Set For Six — Play Today', type: 'image/png' }],
   url: 'https://www.setforsix.com/play',
   type: 'website',
 };

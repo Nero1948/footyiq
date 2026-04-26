@@ -14,14 +14,14 @@ export const metadata = {
     title: 'Set For Six — The Daily NRL Guessing Game',
     description: 'Six clues. One mystery NRL player. New every day. Can you beat your mates?',
     url: 'https://www.setforsix.com',
-    images: [{ url: 'https://www.setforsix.com/api/og', width: 1200, height: 630, alt: 'Set For Six — Daily NRL Guessing Game' }],
+    images: [{ url: 'https://www.setforsix.com/og.png', width: 1200, height: 630, alt: 'Set For Six — Daily NRL Guessing Game', type: 'image/png' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Set For Six — The Daily NRL Guessing Game',
     description: 'Six clues. One mystery NRL player. New every day. Can you beat your mates?',
-    images: ['https://www.setforsix.com/api/og'],
+    images: ['https://www.setforsix.com/og.png'],
   },
 };
 
@@ -207,11 +207,6 @@ export default async function Home() {
 
         <div className="relative max-w-3xl mx-auto">
 
-          {/* Eyebrow */}
-          <p className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6">
-            The daily NRL guessing game
-          </p>
-
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight leading-none mb-6 text-white">
             Guess the NRL player<br />
@@ -280,18 +275,6 @@ export default async function Home() {
             >
               Play today&apos;s game →
             </Link>
-            <p className="mt-4 text-sm font-medium text-gray-500">
-              Free to play. No sign-up. Takes about two minutes.
-            </p>
-            <div className="mt-3 flex items-center justify-center gap-4 text-sm">
-              <Link href="/leaderboard" className="text-gray-500 hover:text-[#00e676] transition-colors">
-                View today&apos;s leaderboard
-              </Link>
-              <span style={{ color: 'rgba(0,230,118,0.22)' }}>|</span>
-              <Link href="/champion" className="text-gray-500 hover:text-[#00e676] transition-colors">
-                See champions
-              </Link>
-            </div>
           </div>
 
         </div>

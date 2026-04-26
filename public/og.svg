@@ -1,0 +1,13 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#07111f"/>
+  <circle cx="1020" cy="130" r="260" fill="#00e676" fill-opacity="0.08"/>
+  <circle cx="100" cy="560" r="220" fill="#00e676" fill-opacity="0.06"/>
+  <path d="M790 124C970 124 1120 198 1120 315C1120 432 970 506 790 506C610 506 460 432 460 315C460 198 610 124 790 124Z" stroke="#00e676" stroke-width="6" stroke-opacity="0.22"/>
+  <path d="M463 315C552 342 674 354 790 354C906 354 1028 342 1117 315" stroke="#00e676" stroke-width="4" stroke-opacity="0.18"/>
+  <line x1="790" y1="178" x2="790" y2="452" stroke="#00e676" stroke-width="4" stroke-opacity="0.18"/>
+  <text x="96" y="194" fill="#00e676" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="5">THE DAILY NRL GUESSING GAME</text>
+  <text x="96" y="300" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="92" font-weight="900">Set For Six</text>
+  <text x="96" y="372" fill="#00e676" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700">6 clues. 1 player. Can you guess who?</text>
+  <rect x="96" y="430" width="304" height="70" rx="14" fill="#00e676"/>
+  <text x="136" y="474" fill="#000000" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="900">Play at setforsix.com</text>
+</svg>

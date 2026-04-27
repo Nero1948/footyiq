@@ -92,15 +92,20 @@ function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalP
     ? [...Array(cluesUsed - 1).fill('⬛'), '🏉', ...Array(6 - cluesUsed).fill('⬜')]
     : Array(6).fill('⬛');
   const clueWord = cluesUsed === 1 ? 'clue' : 'clues';
-  const lines = [`Set For Six #${gameNumber}`, squares.join('')];
+  const lines = [];
   if (solved) {
-    lines.push(`${cluesUsed}/6 ${clueWord} · ${formatTime(totalTimeMs)}`);
+    lines.push(`Your mate challenged you: beat ${cluesUsed}/6 ${clueWord} in ${formatTime(totalTimeMs)}.`);
+    lines.push(squares.join(''));
     if (rank !== null && rank !== undefined && totalPlayers) {
-      lines.push(`#${rank} of ${totalPlayers} today`);
+      lines.push(`#${rank} of ${totalPlayers} today. Can you top it?`);
+    } else {
+      lines.push('Can you top it?');
     }
   } else {
-    lines.push(`Missed in 6 clues · ${formatTime(totalTimeMs)}`);
-    if (totalPlayers) lines.push(`${totalPlayers} played today`);
+    lines.push(`Your mate challenged you: solve today's NRL player.`);
+    lines.push(squares.join(''));
+    lines.push(`I missed in 6 ${clueWord} after ${formatTime(totalTimeMs)}. Your turn.`);
+    if (totalPlayers) lines.push(`${totalPlayers} played today.`);
   }
   lines.push('');
   lines.push(SHARE_URL);
@@ -372,7 +377,7 @@ export default function PlayClient({ initialGame }) {
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: `Set For Six #${game.game_number}`, text: shareText, url: SHARE_URL });
+        await navigator.share({ title: `Daily NRL challenge #${game.game_number}`, text: shareText, url: SHARE_URL });
         return;
       } catch {
         // Fall back to clipboard if sharing is cancelled or unavailable.

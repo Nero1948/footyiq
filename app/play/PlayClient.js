@@ -215,6 +215,16 @@ export default function PlayClient({ initialGame }) {
     if (gameState === 'playing') inputRef.current?.focus();
   }, [gameState, clueNumber]);
 
+  // ── Result screen position ────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (gameState !== 'done' || !gameOverData) return;
+    const frame = requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [gameState, gameOverData]);
+
   // ── Stats + yesterday when done ────────────────────────────────────────────
 
   useEffect(() => {

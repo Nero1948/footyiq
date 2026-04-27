@@ -12,7 +12,7 @@ export async function GET() {
 
   const { data: game, error: gameError } = await supabase
     .from('games')
-    .select('id, game_number, answer_player, facts, drama')
+    .select('id, game_number, answer_player, clue_1, clue_2, clue_3, clue_4, clue_5, clue_6, facts, drama')
     .eq('date', yesterdayAEST)
     .single();
 
@@ -43,6 +43,7 @@ export async function GET() {
     answer: game.answer_player,
     gameNumber: game.game_number,
     date: yesterdayAEST,
+    clues: [game.clue_1, game.clue_2, game.clue_3, game.clue_4, game.clue_5, game.clue_6].filter(Boolean),
     solvedCount,
     oneCluePercent,
     facts: game.facts ?? [],

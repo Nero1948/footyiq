@@ -135,6 +135,7 @@ export default function PlayClient({ initialGame }) {
   const [username, setUsername] = useState('Anonymous');
   const [usernameSaved, setUsernameSaved] = useState(false);
   const [isAdvancingClue, setIsAdvancingClue] = useState(false);
+  const [showYesterday, setShowYesterday] = useState(false);
 
   const startTimeRef = useRef(null);
   const timerRef = useRef(null);
@@ -587,18 +588,13 @@ export default function PlayClient({ initialGame }) {
           <div className="space-y-4">
 
             {/* Result hero card */}
-            <div className="rounded-2xl p-5 text-center" style={{ background: '#0f1419', border: `1px solid ${gameOverData.solved ? 'rgba(0,230,118,0.2)' : 'rgba(248,113,113,0.2)'}` }}>
-              {/* Icon */}
-              <div className="text-4xl mb-3">{gameOverData.solved ? '🏉' : '😤'}</div>
-
-              {/* Player name — the hero */}
-              <p className="text-xs font-bold tracking-widest mb-1" style={{ color: gameOverData.solved ? '#00e676' : '#f87171' }}>
+            <div className="rounded-2xl p-4 text-center" style={{ background: '#0f1419', border: `1px solid ${gameOverData.solved ? 'rgba(0,230,118,0.2)' : 'rgba(248,113,113,0.2)'}` }}>
+              <p className="text-[11px] font-bold tracking-widest mb-1" style={{ color: gameOverData.solved ? '#00e676' : '#f87171' }}>
                 {gameOverData.solved ? 'YOU GOT IT' : 'TODAY\'S PLAYER'}
               </p>
-              <h1 className="text-3xl font-black text-white leading-tight mb-3">{gameOverData.answer}</h1>
+              <h1 className="text-2xl min-[380px]:text-3xl font-black text-white leading-tight mb-3">{gameOverData.answer}</h1>
 
-              {/* Score fraction + dots in one row */}
-              <div className="flex items-center justify-center gap-3 mb-1">
+              <div className="flex items-center justify-center gap-3">
                 <span className="text-lg font-black tabular-nums" style={{ color: gameOverData.solved ? '#00e676' : '#f87171' }}>
                   {gameOverData.solved ? gameOverData.cluesUsed : '✗'}<span className="text-gray-600 font-normal text-base"> / 6</span>
                 </span>
@@ -618,39 +614,7 @@ export default function PlayClient({ initialGame }) {
               </div>
             </div>
 
-            {/* Clue recap */}
-            {gameOverData.allClues?.length === 6 && (
-              <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <p className="text-xs text-gray-500 uppercase tracking-wider">
-                  {gameOverData.solved ? 'Your clue and what came next' : 'All the clues'}
-                </p>
-                <ul className="space-y-2.5">
-                  {gameOverData.allClues
-                    .slice(gameOverData.solved ? gameOverData.cluesUsed - 1 : 0)
-                    .map((clueText, i) => {
-                      const clueNum = i + (gameOverData.solved ? gameOverData.cluesUsed : 1);
-                      const isSolvedOn = gameOverData.solved && clueNum === gameOverData.cluesUsed;
-                      const isFailedReveal = !gameOverData.solved;
-                      return (
-                        <li key={clueNum} className="flex items-start gap-3">
-                          <div
-                            className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5"
-                            style={{
-                              background: isSolvedOn ? '#00e676' : isFailedReveal ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)',
-                              color: isSolvedOn ? '#0a0e13' : isFailedReveal ? 'white' : '#6b7280',
-                            }}
-                          >
-                            {clueNum}
-                          </div>
-                          <p className={`text-sm leading-relaxed ${isSolvedOn || isFailedReveal ? 'text-white' : 'text-gray-400'}`}>{clueText}</p>
-                        </li>
-                      );
-                    })}
-                </ul>
-              </div>
-            )}
-
-            {/* Horizontal stats strip */}
+            {/* Result stats */}
             <div className="grid grid-cols-3 gap-2">
               <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Time</p>
@@ -670,6 +634,27 @@ export default function PlayClient({ initialGame }) {
             <button onClick={handleShare} className="w-full font-bold py-4 rounded-xl active:scale-95 transition-transform text-base" style={{ background: '#00e676', color: '#000' }}>
               {copied ? '✓ Copied to clipboard!' : 'Share your result'}
             </button>
+
+            {/* Email signup */}
+            {emailState === 'done' ? (
+              <div className="rounded-xl p-4 text-center" style={{ background: 'rgba(0,230,118,0.07)', border: '1px solid rgba(0,230,118,0.18)' }}>
+                <p className="text-[#00e676] text-sm font-semibold">You&apos;re in. We&apos;ll remind you tomorrow.</p>
+              </div>
+            ) : (
+              <div className="rounded-xl p-4" style={{ background: '#121821', border: '1px solid rgba(0,230,118,0.14)' }}>
+                <div className="mb-3">
+                  <p className="text-sm text-white font-bold">Get tomorrow&apos;s game</p>
+                  <p className="text-xs text-gray-500">Daily reminder at 7am Sydney / 9am NZ.</p>
+                </div>
+                <form onSubmit={handleEmailSubmit} className="flex flex-col min-[420px]:flex-row gap-2">
+                  <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" disabled={emailState === 'loading'} className="flex-1 rounded-lg px-3 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                  <button type="submit" disabled={emailState === 'loading'} className="text-sm font-bold px-4 py-2.5 rounded-lg disabled:opacity-50 whitespace-nowrap" style={{ background: '#00e676', color: '#000' }}>
+                    {emailState === 'loading' ? '…' : 'Remind me'}
+                  </button>
+                </form>
+                {emailState === 'error' && <p className="text-xs text-red-400 mt-2">Something went wrong. Try again.</p>}
+              </div>
+            )}
 
             {/* Save name — secondary */}
             <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
@@ -703,6 +688,36 @@ export default function PlayClient({ initialGame }) {
             >
               View Leaderboard →
             </Link>
+
+            {/* Clue recap */}
+            {gameOverData.allClues?.length === 6 && (!gameOverData.solved || gameOverData.cluesUsed < 6) && (
+              <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">
+                  {gameOverData.solved ? 'Remaining clues' : 'All the clues'}
+                </p>
+                <ul className="space-y-2.5">
+                  {gameOverData.allClues
+                    .slice(gameOverData.solved ? gameOverData.cluesUsed : 0)
+                    .map((clueText, i) => {
+                      const clueNum = i + (gameOverData.solved ? gameOverData.cluesUsed + 1 : 1);
+                      return (
+                        <li key={clueNum} className="flex items-start gap-3">
+                          <div
+                            className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5"
+                            style={{
+                              background: gameOverData.solved ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.1)',
+                              color: gameOverData.solved ? '#6b7280' : 'white',
+                            }}
+                          >
+                            {clueNum}
+                          </div>
+                          <p className={`text-sm leading-relaxed ${gameOverData.solved ? 'text-gray-400' : 'text-white'}`}>{clueText}</p>
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+            )}
 
             {/* Facts */}
             {gameOverData.facts?.length > 0 && (
@@ -752,15 +767,60 @@ export default function PlayClient({ initialGame }) {
 
             {/* Yesterday's answer */}
             {yesterdayData && (
-              <div className="rounded-xl p-4 space-y-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <p className="text-xs text-gray-500 uppercase tracking-wider">Yesterday&apos;s answer</p>
-                <p className="text-lg font-bold text-white">{yesterdayData.answer}</p>
-                {yesterdayData.facts?.length > 0 && (
-                  <ul className="space-y-2 pt-1">
-                    {yesterdayData.facts.map((fact, i) => (
-                      <li key={i} className="text-sm text-gray-400 leading-relaxed">• {fact}</li>
-                    ))}
-                  </ul>
+              <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowYesterday((value) => !value)}
+                  className="flex w-full items-center justify-between gap-3 text-left"
+                >
+                  <span>
+                    <span className="block text-xs text-gray-500 uppercase tracking-wider">Missed it?</span>
+                    <span className="block text-base font-bold text-white">See yesterday&apos;s player</span>
+                  </span>
+                  <span className="text-xl font-black" style={{ color: '#00e676' }}>{showYesterday ? '−' : '+'}</span>
+                </button>
+
+                {showYesterday && (
+                  <div className="space-y-4 pt-1">
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Yesterday&apos;s answer</p>
+                      <p className="text-xl font-black text-white">{yesterdayData.answer}</p>
+                    </div>
+
+                    {yesterdayData.clues?.length > 0 && (
+                      <div className="space-y-2.5">
+                        <p className="text-xs text-gray-500 uppercase tracking-wider">Clues</p>
+                        <ul className="space-y-2.5">
+                          {yesterdayData.clues.map((clueText, i) => (
+                            <li key={i} className="flex items-start gap-3">
+                              <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5" style={{ background: 'rgba(255,255,255,0.08)', color: 'white' }}>
+                                {i + 1}
+                              </div>
+                              <p className="text-sm text-gray-300 leading-relaxed">{clueText}</p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {yesterdayData.facts?.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-500 uppercase tracking-wider">Facts</p>
+                        <ul className="space-y-2">
+                          {yesterdayData.facts.map((fact, i) => (
+                            <li key={i} className="text-sm text-gray-400 leading-relaxed">• {fact}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {yesterdayData.drama && (
+                      <div className="space-y-1">
+                        <p className="text-xs text-gray-500 uppercase tracking-wider">Drama</p>
+                        <p className="text-sm text-gray-400 leading-relaxed">{yesterdayData.drama}</p>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -773,27 +833,6 @@ export default function PlayClient({ initialGame }) {
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Next game in</p>
                 <p className="text-3xl font-mono font-black tabular-nums" style={{ color: '#00e676' }}>{countdown}</p>
               </div>
-
-              {/* Email signup — subtle */}
-              {emailState === 'done' ? (
-                <p className="text-center text-[#00e676] text-sm">You&apos;re in! We&apos;ll remind you tomorrow at 7am Sydney / 9am NZ.</p>
-              ) : (
-                <div className="rounded-xl p-3" style={{ background: '#121821' }}>
-                  <div className="flex items-center justify-between gap-3 mb-2">
-                    <div>
-                      <p className="text-sm text-white font-medium">Daily reminder at 7am Sydney / 9am NZ</p>
-                      <p className="text-xs text-gray-500">Keep your streak alive.</p>
-                    </div>
-                  </div>
-                  <form onSubmit={handleEmailSubmit} className="flex gap-2">
-                    <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" disabled={emailState === 'loading'} className="flex-1 rounded-lg px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
-                    <button type="submit" disabled={emailState === 'loading'} className="text-sm font-semibold px-4 py-2 rounded-lg disabled:opacity-50 whitespace-nowrap" style={{ background: 'rgba(0,230,118,0.12)', color: '#00e676', border: '1px solid rgba(0,230,118,0.2)' }}>
-                      {emailState === 'loading' ? '…' : 'Opt in'}
-                    </button>
-                  </form>
-                  {emailState === 'error' && <p className="text-xs text-red-400 mt-2">Something went wrong. Try again.</p>}
-                </div>
-              )}
 
             </div>
 

@@ -642,7 +642,7 @@ export default function PlayClient({ initialGame }) {
 
             {/* Share — primary CTA */}
             <button onClick={handleShare} className="w-full font-bold py-4 rounded-xl active:scale-95 transition-transform text-base" style={{ background: '#00e676', color: '#000' }}>
-              {copied ? '✓ Copied to clipboard!' : 'Share your result'}
+              {copied ? '✓ Copied to clipboard!' : 'Challenge a mate'}
             </button>
 
             {/* Email signup */}

@@ -13,7 +13,7 @@ const CONFETTI = Array.from({ length: 40 }, (_, i) => ({
   size: `${7 + (i % 5)}px`,
   round: i % 3 !== 0,
 }));
-const SHARE_URL = 'https://www.setforsix.com/play';
+const SHARE_URL = 'https://www.setforsix.com/play?utm_source=share&utm_medium=result&utm_campaign=challenge';
 
 const ls = {
   get: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
@@ -87,7 +87,7 @@ function getSecondsUntilMidnightAEST() {
   return Math.max(0, Math.floor((aestMidnight - aestNow) / 1000));
 }
 
-function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalPlayers) {
+function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalPlayers, streak = 1) {
   const squares = solved
     ? [...Array(cluesUsed - 1).fill('⬛'), '🏉', ...Array(6 - cluesUsed).fill('⬜')]
     : Array(6).fill('⬛');
@@ -97,7 +97,10 @@ function buildShareText(gameNumber, solved, cluesUsed, totalTimeMs, rank, totalP
     lines.push(`Your mate challenged you: beat ${cluesUsed}/6 ${clueWord} in ${formatTime(totalTimeMs)}.`);
     lines.push(squares.join(''));
     if (rank !== null && rank !== undefined && totalPlayers) {
-      lines.push(`#${rank} of ${totalPlayers} today. Can you top it?`);
+      lines.push(`#${rank} of ${totalPlayers} today${streak > 1 ? ` · ${streak}-day streak` : ''}`);
+      lines.push('Can you top it?');
+    } else if (streak > 1) {
+      lines.push(`${streak}-day streak. Can you top it?`);
     } else {
       lines.push('Can you top it?');
     }
@@ -379,7 +382,7 @@ export default function PlayClient({ initialGame }) {
   async function handleShare() {
     if (!game || !gameOverData) return;
     track('share_clicked', { solved: gameOverData.solved, clues_used: gameOverData.cluesUsed });
-    const text = buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers);
+    const text = buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak);
     const shareText = text
       .split('\n')
       .filter((line) => line !== SHARE_URL)
@@ -647,14 +650,22 @@ export default function PlayClient({ initialGame }) {
 
             {/* Email signup */}
             {emailState === 'done' ? (
-              <div className="rounded-xl p-4 text-center" style={{ background: 'rgba(0,230,118,0.07)', border: '1px solid rgba(0,230,118,0.18)' }}>
-                <p className="text-[#00e676] text-sm font-semibold">You&apos;re in. We&apos;ll remind you tomorrow.</p>
+              <div className="rounded-xl p-4 text-center space-y-3" style={{ background: 'rgba(0,230,118,0.07)', border: '1px solid rgba(0,230,118,0.18)' }}>
+                <div>
+                  <p className="text-[#00e676] text-sm font-semibold">You&apos;re in. We&apos;ll remind you tomorrow.</p>
+                  <p className="mt-1 text-xs text-gray-400">Now send today&apos;s score to someone who will try to beat it.</p>
+                </div>
+                <button onClick={handleShare} className="w-full rounded-lg px-4 py-2.5 text-sm font-bold text-black active:scale-95 transition-transform" style={{ background: '#00e676' }}>
+                  Challenge a mate
+                </button>
               </div>
             ) : (
               <div className="rounded-xl p-4" style={{ background: '#121821', border: '1px solid rgba(0,230,118,0.14)' }}>
                 <div className="mb-3">
-                  <p className="text-sm text-white font-bold">Get tomorrow&apos;s game</p>
-                  <p className="text-xs text-gray-500">Daily reminder at 7am Sydney / 9am NZ.</p>
+                  <p className="text-sm text-white font-bold">
+                    {gameOverData.solved && streak > 1 ? `Protect your ${streak}-day streak` : gameOverData.solved ? "Get tomorrow's challenge" : 'Get another shot tomorrow'}
+                  </p>
+                  <p className="text-xs text-gray-500">Daily reminder at 7am Sydney / 9am NZ. No account needed.</p>
                 </div>
                 <form onSubmit={handleEmailSubmit} className="flex flex-col min-[420px]:flex-row gap-2">
                   <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" disabled={emailState === 'loading'} className="flex-1 rounded-lg px-3 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />

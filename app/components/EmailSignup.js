@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { track } from '@vercel/analytics';
+import posthog from 'posthog-js';
 
 const GREEN = '#00e676';
 
@@ -20,7 +20,7 @@ export default function EmailSignup() {
         body: JSON.stringify({ email: email.trim() }),
       });
       if (res.ok) {
-        track('email_signup', { location: 'homepage' });
+        posthog.capture('email_signup', { location: 'homepage' });
       }
       setEmailState(res.ok ? 'done' : 'error');
     } catch {

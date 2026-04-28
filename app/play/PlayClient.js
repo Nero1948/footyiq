@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import { track } from '@vercel/analytics';
+import posthog from 'posthog-js';
 
 const CONFETTI_COLOURS = ['#00e676', '#ffb800', '#ff4466', '#4499ff', '#cc44ff', '#ffffff'];
 const CONFETTI = Array.from({ length: 40 }, (_, i) => ({
@@ -271,13 +271,13 @@ export default function PlayClient({ initialGame }) {
         setGameOverData(resultData);
         setGameState('done');
         ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
-        track('game_completed', { solved, clues_used: cluesUsed });
+        posthog.capture('game_completed', { solved, clues_used: cluesUsed });
       } catch {
         const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts, drama, allClues };
         setGameOverData(resultData);
         setGameState('done');
         ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
-        track('game_completed', { solved, clues_used: cluesUsed });
+        posthog.capture('game_completed', { solved, clues_used: cluesUsed });
       } finally {
         setIsGuessing(false);
       }
@@ -350,7 +350,7 @@ export default function PlayClient({ initialGame }) {
     try {
       const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: emailInput.trim() }) });
       if (res.ok) {
-        track('email_signup', { location: 'play_page' });
+        posthog.capture('email_signup', { location: 'play_page' });
       }
       setEmailState(res.ok ? 'done' : 'error');
     } catch { setEmailState('error'); }
@@ -381,7 +381,7 @@ export default function PlayClient({ initialGame }) {
 
   async function handleShare() {
     if (!game || !gameOverData) return;
-    track('share_clicked', { solved: gameOverData.solved, clues_used: gameOverData.cluesUsed });
+    posthog.capture('share_clicked', { solved: gameOverData.solved, clues_used: gameOverData.cluesUsed });
     const text = buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak);
     const shareText = text
       .split('\n')

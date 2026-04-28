@@ -1,6 +1,7 @@
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import PostHogInit from './components/PostHogInit';
 
 export const metadata = {
   metadataBase: new URL('https://www.setforsix.com'),
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
     <html lang="en-AU">
       <body>
         {children}
+        <PostHogInit />
         <Analytics />
         <SpeedInsights />
         <script

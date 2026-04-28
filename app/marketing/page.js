@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
-import MarketingClient from './MarketingClient';
+import SimpleMarketingClient from './SimpleMarketingClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +17,7 @@ async function getStats() {
   fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 13);
   const fromDate = fourteenDaysAgo.toLocaleDateString('en-CA', tz);
 
-  const [totalResult, todayResult, subscriberResult, solvedResult, recentResult, gamesResult] =
+  const [totalResult, todayResult, subscriberResult, solvedResult, recentResult, gamesResult, todayGameResult] =
     await Promise.all([
       supabase.from('attempts').select('*', { count: 'exact', head: true }),
       supabase.from('attempts').select('*', { count: 'exact', head: true }).gte('created_at', today),
@@ -25,6 +25,11 @@ async function getStats() {
       supabase.from('attempts').select('*', { count: 'exact', head: true }).eq('solved', true),
       supabase.from('attempts').select('created_at, device_id').gte('created_at', fromDate).order('created_at'),
       supabase.from('games').select('*', { count: 'exact', head: true }),
+      supabase
+        .from('games')
+        .select('game_number, date, answer_player, clue_1, clue_2, clue_3, clue_4, clue_5, clue_6, facts, drama')
+        .eq('date', today)
+        .maybeSingle(),
     ]);
 
   // Group recent attempts by date
@@ -61,6 +66,23 @@ async function getStats() {
     gamesLive: gamesResult.count ?? 0,
     winRate,
     chartData,
+    todayGame: todayGameResult.data
+      ? {
+          gameNumber: todayGameResult.data.game_number,
+          date: todayGameResult.data.date,
+          answer: todayGameResult.data.answer_player,
+          clues: [
+            todayGameResult.data.clue_1,
+            todayGameResult.data.clue_2,
+            todayGameResult.data.clue_3,
+            todayGameResult.data.clue_4,
+            todayGameResult.data.clue_5,
+            todayGameResult.data.clue_6,
+          ].filter(Boolean),
+          facts: todayGameResult.data.facts ?? [],
+          drama: todayGameResult.data.drama ?? null,
+        }
+      : null,
   };
 }
 
@@ -69,9 +91,9 @@ export default async function MarketingPage() {
   const isAuthed = cookieStore.get('mkt_auth')?.value === '1';
 
   if (!isAuthed) {
-    return <MarketingClient stats={null} authed={false} />;
+    return <SimpleMarketingClient stats={null} authed={false} />;
   }
 
   const stats = await getStats();
-  return <MarketingClient stats={stats} authed={true} />;
+  return <SimpleMarketingClient stats={stats} authed={true} />;
 }

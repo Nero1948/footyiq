@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import posthog from 'posthog-js';
 
 const GREEN = '#00e676';
 
@@ -19,9 +18,6 @@ export default function EmailSignup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
       });
-      if (res.ok) {
-        posthog.capture('email_signup', { location: 'homepage' });
-      }
       setEmailState(res.ok ? 'done' : 'error');
     } catch {
       setEmailState('error');

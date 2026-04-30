@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import posthog from 'posthog-js';
 
 const CONFETTI_COLOURS = ['#00e676', '#ffb800', '#ff4466', '#4499ff', '#cc44ff', '#ffffff'];
 const CONFETTI = Array.from({ length: 40 }, (_, i) => ({
@@ -130,6 +129,7 @@ export default function PlayClient({ initialGame }) {
   const [emailInput, setEmailInput] = useState('');
   const [emailState, setEmailState] = useState('idle');
   const [copied, setCopied] = useState(false);
+  const [hasShared, setHasShared] = useState(false);
   const [loadError, setLoadError] = useState(initialGame ? null : 'No game today. Check back tomorrow!');
   const [isGuessing, setIsGuessing] = useState(false);
   const [stats, setStats] = useState(null);
@@ -271,13 +271,11 @@ export default function PlayClient({ initialGame }) {
         setGameOverData(resultData);
         setGameState('done');
         ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
-        posthog.capture('game_completed', { solved, clues_used: cluesUsed });
       } catch {
         const resultData = { solved, answer, cluesUsed, totalTimeMs, rank: null, totalPlayers: null, percentile: null, facts, drama, allClues };
         setGameOverData(resultData);
         setGameState('done');
         ls.set(`setforsix_result_${game.date}`, JSON.stringify(resultData));
-        posthog.capture('game_completed', { solved, clues_used: cluesUsed });
       } finally {
         setIsGuessing(false);
       }
@@ -349,9 +347,6 @@ export default function PlayClient({ initialGame }) {
     setEmailState('loading');
     try {
       const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: emailInput.trim() }) });
-      if (res.ok) {
-        posthog.capture('email_signup', { location: 'play_page' });
-      }
       setEmailState(res.ok ? 'done' : 'error');
     } catch { setEmailState('error'); }
   }
@@ -381,7 +376,6 @@ export default function PlayClient({ initialGame }) {
 
   async function handleShare() {
     if (!game || !gameOverData) return;
-    posthog.capture('share_clicked', { solved: gameOverData.solved, clues_used: gameOverData.cluesUsed });
     const text = buildShareText(game.game_number, gameOverData.solved, gameOverData.cluesUsed, gameOverData.totalTimeMs, gameOverData.rank, gameOverData.totalPlayers, streak);
     const shareText = text
       .split('\n')
@@ -392,6 +386,7 @@ export default function PlayClient({ initialGame }) {
     if (navigator.share) {
       try {
         await navigator.share({ title: `Daily NRL challenge #${game.game_number}`, text: shareText, url: SHARE_URL });
+        setHasShared(true);
         return;
       } catch {
         // Fall back to clipboard if sharing is cancelled or unavailable.
@@ -402,6 +397,7 @@ export default function PlayClient({ initialGame }) {
       if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
       await navigator.clipboard.writeText(text);
       setCopied(true);
+      setHasShared(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       const ta = document.createElement('textarea');
@@ -411,6 +407,7 @@ export default function PlayClient({ initialGame }) {
       document.execCommand('copy');
       document.body.removeChild(ta);
       setCopied(true);
+      setHasShared(true);
       setTimeout(() => setCopied(false), 2000);
     }
   }
@@ -643,38 +640,67 @@ export default function PlayClient({ initialGame }) {
               </div>
             </div>
 
-            {/* Share — primary CTA */}
-            <button onClick={handleShare} className="w-full font-bold py-4 rounded-xl active:scale-95 transition-transform text-base" style={{ background: '#00e676', color: '#000' }}>
-              {copied ? '✓ Copied to clipboard!' : 'Challenge a mate'}
-            </button>
-
-            {/* Email signup */}
+            {/* Share + email — sequenced CTAs */}
             {emailState === 'done' ? (
               <div className="rounded-xl p-4 text-center space-y-3" style={{ background: 'rgba(0,230,118,0.07)', border: '1px solid rgba(0,230,118,0.18)' }}>
                 <div>
-                  <p className="text-[#00e676] text-sm font-semibold">You&apos;re in. We&apos;ll remind you tomorrow.</p>
-                  <p className="mt-1 text-xs text-gray-400">Now send today&apos;s score to someone who will try to beat it.</p>
-                </div>
-                <button onClick={handleShare} className="w-full rounded-lg px-4 py-2.5 text-sm font-bold text-black active:scale-95 transition-transform" style={{ background: '#00e676' }}>
-                  Challenge a mate
-                </button>
-              </div>
-            ) : (
-              <div className="rounded-xl p-4" style={{ background: '#121821', border: '1px solid rgba(0,230,118,0.14)' }}>
-                <div className="mb-3">
-                  <p className="text-sm text-white font-bold">
-                    {gameOverData.solved && streak > 1 ? `Protect your ${streak}-day streak` : gameOverData.solved ? "Get tomorrow's challenge" : 'Get another shot tomorrow'}
+                  <p className="text-[#00e676] text-sm font-semibold">
+                    {hasShared ? "You're in. Cheers for sharing." : "You're in. We'll remind you tomorrow."}
                   </p>
-                  <p className="text-xs text-gray-500">Daily reminder at 7am Sydney / 9am NZ. No account needed.</p>
+                  {!hasShared && (
+                    <p className="mt-1 text-xs text-gray-400">Now send today&apos;s score to someone who will try to beat it.</p>
+                  )}
                 </div>
-                <form onSubmit={handleEmailSubmit} className="flex flex-col min-[420px]:flex-row gap-2">
-                  <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" disabled={emailState === 'loading'} className="flex-1 rounded-lg px-3 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
-                  <button type="submit" disabled={emailState === 'loading'} className="text-sm font-bold px-4 py-2.5 rounded-lg disabled:opacity-50 whitespace-nowrap" style={{ background: '#00e676', color: '#000' }}>
-                    {emailState === 'loading' ? '…' : 'Remind me'}
+                {!hasShared && (
+                  <button onClick={handleShare} className="w-full rounded-lg px-4 py-2.5 text-sm font-bold text-black active:scale-95 transition-transform" style={{ background: '#00e676' }}>
+                    Challenge a mate
                   </button>
-                </form>
-                {emailState === 'error' && <p className="text-xs text-red-400 mt-2">Something went wrong. Try again.</p>}
+                )}
               </div>
+            ) : !hasShared ? (
+              <>
+                {/* Pre-share: share primary, email secondary */}
+                <button onClick={handleShare} className="w-full font-bold py-4 rounded-xl active:scale-95 transition-transform text-base" style={{ background: '#00e676', color: '#000' }}>
+                  {copied ? '✓ Copied to clipboard!' : 'Challenge a mate'}
+                </button>
+
+                <div className="rounded-xl p-4" style={{ background: '#121821', border: '1px solid rgba(0,230,118,0.14)' }}>
+                  <div className="mb-3">
+                    <p className="text-sm text-white font-bold">
+                      {gameOverData.solved && streak > 1 ? `Protect your ${streak}-day streak` : gameOverData.solved ? "Get tomorrow's game" : 'Get another shot tomorrow'}
+                    </p>
+                    <p className="text-xs text-gray-500">One email at 7am Sydney / 9am NZ. Just the link, that&apos;s it.</p>
+                  </div>
+                  <form onSubmit={handleEmailSubmit} className="flex flex-col min-[420px]:flex-row gap-2">
+                    <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" disabled={emailState === 'loading'} className="flex-1 rounded-lg px-3 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                    <button type="submit" disabled={emailState === 'loading'} className="text-sm font-bold px-4 py-2.5 rounded-lg disabled:opacity-50 whitespace-nowrap" style={{ background: '#00e676', color: '#000' }}>
+                      {emailState === 'loading' ? '…' : 'Send it to me'}
+                    </button>
+                  </form>
+                  {emailState === 'error' && <p className="text-xs text-red-400 mt-2">Something went wrong. Try again.</p>}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Post-share: share confirmation, email promoted to primary */}
+                <div className="w-full text-center py-2.5 rounded-xl text-sm font-semibold" style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', color: '#00e676' }}>
+                  ✓ Shared. Nice one.
+                </div>
+
+                <div className="rounded-xl p-5" style={{ background: 'rgba(0,230,118,0.06)', border: '1px solid rgba(0,230,118,0.3)', borderLeft: '3px solid #00e676' }}>
+                  <div className="mb-3">
+                    <p className="text-base text-white font-black mb-1">Now lock in tomorrow&apos;s game</p>
+                    <p className="text-xs text-gray-400">One email at 7am Sydney / 9am NZ. Just the link, that&apos;s it.</p>
+                  </div>
+                  <form onSubmit={handleEmailSubmit} className="flex flex-col min-[420px]:flex-row gap-2">
+                    <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="your@email.com" disabled={emailState === 'loading'} className="flex-1 rounded-lg px-3 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} />
+                    <button type="submit" disabled={emailState === 'loading'} className="text-sm font-bold px-4 py-2.5 rounded-lg disabled:opacity-50 whitespace-nowrap" style={{ background: '#00e676', color: '#000' }}>
+                      {emailState === 'loading' ? '…' : 'Send it to me'}
+                    </button>
+                  </form>
+                  {emailState === 'error' && <p className="text-xs text-red-400 mt-2">Something went wrong. Try again.</p>}
+                </div>
+              </>
             )}
 
             {/* Save name — secondary */}

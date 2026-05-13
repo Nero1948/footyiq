@@ -1,0 +1,53 @@
+[
+  {
+    "game_number": 31,
+    "date": "2026-05-15",
+    "answer_player": "Benji Marshall",
+    "clue_1": "Made his first-grade debut in 2003 while still school-age, after moving from New Zealand to Queensland as a teenager and coming through a Gold Coast rugby league nursery",
+    "clue_2": "Across an 18-season NRL career, he played for four clubs, scored 96 tries, kicked more than 400 goals and finished with over 1,200 points",
+    "clue_3": "Had one brief professional rugby union detour, playing six Super Rugby games in 2014 before returning to rugby league later that same season",
+    "clue_4": "Captained his country in 19 Tests and was part of its 2008 World Cup-winning side, later winning the Golden Boot as the world's best player",
+    "clue_5": "Played in two NRL grand finals 16 years apart, winning the first with a joint-venture club and losing the second from the bench with South Sydney",
+    "clue_6": "Wests Tigers, Dragons, Broncos and Rabbitohs playmaker from Whakatane who played 346 NRL games, won the 2005 premiership with the Tigers, won the 2010 Golden Boot, and later became Wests Tigers head coach",
+    "facts": [
+      "Marshall played 346 NRL games and 31 Tests for New Zealand, including 19 Tests as captain.",
+      "His 2005 grand final flick pass to Pat Richards became one of the defining images of Wests Tigers' first premiership.",
+      "He won the 2010 Golden Boot and was inducted into the NRL Hall of Fame in 2024."
+    ],
+    "drama": null
+  },
+  {
+    "game_number": 32,
+    "date": "2026-05-16",
+    "answer_player": "Nathan Hindmarsh",
+    "clue_1": "A country NSW junior who debuted in 1998, he spent his entire first-grade career at one club and became known less for flash than for extreme repeat effort",
+    "clue_2": "At his peak, he was selected as the competition's best player in his position five times across seven seasons, while also becoming a fixture in representative football",
+    "clue_3": "His career became associated with remarkable defensive volume: his club later credited him as the first player in NRL history to pass 12,000 tackles",
+    "clue_4": "Played in two grand finals eight years apart but never won a premiership, despite finishing as one of his club's most respected modern players",
+    "clue_5": "Finished with 330 first-grade games, 17 State of Origin appearances and 23 Tests for Australia, and later moved into television where the missing premiership became a running joke",
+    "clue_6": "Parramatta Eels one-club second-rower from Bowral nicknamed 'Hindy' who won five Dally M Second-rower of the Year awards and was inducted into the Eels Hall of Fame in 2018",
+    "facts": [
+      "Hindmarsh played 330 first-grade games for Parramatta, the most in Eels history.",
+      "Parramatta credited him as the first player in NRL history to make over 12,000 tackles and the first Eel to pass 30,000 running metres.",
+      "He played 17 State of Origin games for NSW and 23 Tests for Australia, but finished without an NRL premiership after grand final losses in 2001 and 2009."
+    ],
+    "drama": null
+  },
+  {
+    "game_number": 33,
+    "date": "2026-05-17",
+    "answer_player": "Cooper Cronk",
+    "clue_1": "Began first grade as a utility rather than a settled playmaker, only becoming a permanent number seven after a senior halfback left the club",
+    "clue_2": "His reputation was built on preparation, timing and control rather than improvisation, making him the organising voice in an all-time great spine",
+    "clue_3": "Won the game's top individual medal twice in a four-season span and was also named the world's best player during the same peak period",
+    "clue_4": "Appeared in nine NRL grand finals across two clubs, with two early premierships later stripped and his final two seasons ending in titles at a Sydney club",
+    "clue_5": "One of his defining games came in a grand final against his former club, when he played with a fractured scapula and barely carried the ball",
+    "clue_6": "Melbourne Storm and Sydney Roosters halfback who played 372 NRL games, won the Clive Churchill Medal in 2012, the Dally M Medal in 2013 and 2016, the 2016 Golden Boot, 38 Tests for Australia and 22 Origins for Queensland",
+    "facts": [
+      "Cronk played 372 NRL games, 38 Tests for Australia and 22 State of Origin matches for Queensland.",
+      "He appeared in nine NRL grand finals across Melbourne and the Sydney Roosters, finishing his career with back-to-back premierships in 2018 and 2019.",
+      "He won the Clive Churchill Medal in 2012, the Dally M Medal in 2013 and 2016, and the Golden Boot in 2016."
+    ],
+    "drama": null
+  }
+]

@@ -76,7 +76,88 @@ const DRAMA_UPDATES = [
 // ── Games to insert ────────────────────────────────────────────────────────────
 // Move approved PENDING_GAMES here when ready to go live.
 
-const NEW_GAMES = [];
+const NEW_GAMES = [
+  {
+    game_number: 34,
+    date: '2026-05-18',
+    answer_player: 'Tanah Boyd',
+    clue_1: 'Born in Penrith in 2000 to a former 1990s first-grade prop, he was raised on the Gold Coast and attended a Queensland high school renowned as a rugby league nursery, earning Australian Schoolboys selection in 2017',
+    clue_2: 'A halfback known for his goalkicking — he has racked up more than 175 NRL conversions across his career — whose partner is an elite-level athlete in a completely different football code',
+    clue_3: 'He slotted a 2022 golden-point field goal to seal a 27-26 upset over a New Zealand opposition — the same club that would later sign him on a multi-year deal',
+    clue_4: 'After six seasons and 69 NRL games as the long-suffering first-choice playmaker at a struggling Queensland franchise, he crossed the Tasman for the 2025 season seeking finals football',
+    clue_5: 'In May 2026 he re-signed at his new club through to the end of 2029, locking himself in as the long-term #7 at one of the NRL’s most-watched teams',
+    clue_6: 'New Zealand Warriors halfback (2025-present, signed to 2029) who spent 2019-2024 at the Gold Coast Titans — junior product of Runaway Bay Seagulls and Keebra Park State High School, son of 1990s first-grader Shayne Boyd',
+    facts: [
+      "Tanah's father Shayne Boyd played first-grade for Penrith Panthers and Balmain Tigers in the 1990s.",
+      "His partner Jacqui Yorston plays AFL Women's football for the Port Adelaide Power.",
+      'In 2022 he kicked the 27-26 golden-point match-winning field goal against the New Zealand Warriors — the team he would later sign with.',
+    ],
+  },
+  {
+    game_number: 35,
+    date: '2026-05-19',
+    answer_player: 'Bradley Clyde',
+    clue_1: 'Born in a small NSW country town in 1970 but raised in Canberra, he played Australian Rules at junior level before switching codes and earning Australian Schoolboys selection in successive years',
+    clue_2: 'A workaholic forward famed for his tireless tackling and ball-running, he was crowned man-of-the-match in his first grand final at just 19 years of age',
+    clue_3: 'He won the Clive Churchill Medal twice — in 1989 and 1991 — and was later named in Australia’s official "100 Greatest Players (1908-2007)" team',
+    clue_4: 'A Round 20 knee injury in 1990 ruled him out of his club’s premiership win and the subsequent Kangaroo tour, but he returned to win another title with the same club in 1994',
+    clue_5: 'After a decade as one of the country’s most-feared forwards, he spent his final NRL seasons with Canterbury (1999-2000) before a one-year stint at Leeds Rhinos in Super League',
+    clue_6: 'Canberra Raiders lock/second-rower (1988-1998, 178 games), two-time Clive Churchill Medal winner (1989, 1991), Harry Sunderland Medal winner in 1992, 12 Origins for NSW, 19 Tests for Australia, NRL Hall of Fame inductee',
+    facts: [
+      'Clyde won the Clive Churchill Medal in 1989 and 1991, becoming one of a handful of players to claim the grand-final man-of-the-match award twice.',
+      'An ACL tear in Round 20 of 1990 cost him a grand final appearance — Canberra won the title without him.',
+      "Clyde was named in Australia's official 100 Greatest Players of the 20th Century team (1908-2007).",
+    ],
+  },
+  {
+    game_number: 36,
+    date: '2026-05-20',
+    answer_player: "Henry Fa'afili",
+    clue_1: 'Born in Apia, Samoa in 1980 and emigrating to New Zealand as a three-year-old, he attended two well-known Auckland rugby league schools before earning Junior Kiwi honours in 1998',
+    clue_2: 'A powerful, versatile back who scored from cross-field bombs as comfortably as on the run, he played wing, centre, five-eighth and even second-row across a career split between two countries',
+    clue_3: 'He topped the Super League try-scoring charts in 2007 and once produced a Test hat-trick against Great Britain in the 2003 Tri-Nations at Blackburn’s Ewood Park',
+    clue_4: 'A foundation-era figure at his first NRL club, he was part of the playing group for the minor premiership of 2002 but missed the famous grand final loss to the Sydney Roosters — the closest his club has ever come to a title',
+    clue_5: 'He spent four seasons at Warrington Wolves alongside playmaker Lee Briers, scoring 73 tries in 97 games before retiring to mentor underprivileged boys at a boxing academy in Tauranga',
+    clue_6: "New Zealand Warriors winger/centre (2000-2003, 94 games, 38 tries) and Warrington Wolves utility back, 9-Test Kiwi with 5 international tries — Samoan-born, Auckland-raised, a cult hero of the Warriors' foundation era",
+    facts: [
+      "Fa'afili was born in Apia, Samoa and moved to New Zealand at three years old, eventually attending De La Salle College in Mangere East.",
+      'He topped the Super League try-scoring charts in 2007 while playing for Warrington Wolves.',
+      'In the 2003 Tri-Nations Test at Ewood Park he scored a hat-trick against Great Britain — one of the great individual Kiwi performances of that era.',
+    ],
+  },
+  {
+    game_number: 37,
+    date: '2026-05-21',
+    answer_player: 'Jamie Soward',
+    clue_1: 'Born in Canberra in 1984 and a junior at a country NSW club, he came through the Raiders’ system but made his first-grade debut in Sydney with a rival outfit in 2005',
+    clue_2: 'A diminutive playmaker famed for his short kicking game and goalkicking accuracy, he polarised fans throughout his career and famously feuded on-air with a Tigers winger turned TV presenter',
+    clue_3: 'He played three NSW State of Origins in 2011 and finished runner-up in Dally M voting in 2009, claiming the Five-Eighth of the Year award that same season',
+    clue_4: 'His most famous moment came in heavy rain at ANZ Stadium in October 2010, when he orchestrated his Wollongong-based joint venture’s first-ever premiership win — a 32-8 victory over the Sydney Roosters',
+    clue_5: 'After a reported four-year, $1.5m move to Penrith, he wound down his career with two stints at London Broncos before turning to coaching — he most recently led the Samoa Women’s national team',
+    clue_6: 'St George Illawarra Dragons five-eighth (2007-2013, 141 games) who orchestrated the joint venture’s first-ever premiership in 2010, played three Origins for NSW in 2011 and represented at the 2008 Rugby League World Cup',
+    facts: [
+      "Soward was the architect of the 2010 NRL Grand Final win — the Dragons' first premiership as a joint venture — beating the Roosters 32-8 in pouring rain.",
+      'He finished runner-up in the 2009 Dally M voting and won Five-Eighth of the Year the same season.',
+      'His public feud with broadcaster Beau Ryan, who repeatedly mocked his speech, became one of the longest-running media stoushes of the 2010s.',
+    ],
+  },
+  {
+    game_number: 38,
+    date: '2026-05-22',
+    answer_player: 'Anthony Watmough',
+    clue_1: 'Born in Auburn in 1983 and a Narrabeen Sharks junior, he made his NRL debut in 2002 for a now-defunct joint-venture club before settling in at one of its parent clubs',
+    clue_2: 'A snarling, fast-talking forward with a shaved head, he was as famous for headline-grabbing off-field incidents as for his ball-running — including a 2009 season-launch fracas and a 2011 post-Origin hotel-room rampage',
+    clue_3: 'He won the Dally M Second Rower of the Year award twice — in 2007 and 2009 — and across 2008-2010 racked up more penalties conceded than any other player in the NRL',
+    clue_4: 'A central figure in two premiership wins under Des Hasler on the Northern Beaches in 2008 and 2011, he played alongside the Stewart brothers, Steve Matai and Jamie Lyon',
+    clue_5: 'He left his long-time home for one final pay-day at Parramatta in 2015, but persistent knee problems forced him into medical retirement in May 2016',
+    clue_6: 'Manly-Warringah Sea Eagles second-rower (2003-2014, 278 games, 71 tries), 2008 and 2011 premiership winner, 14 Origins for NSW and 16 Tests for Australia — one of the most-feared edge forwards of his generation',
+    facts: [
+      'Watmough won NRL premierships with Manly in both 2008 and 2011 under coach Des Hasler.',
+      'He won the Dally M Second Rower of the Year award twice (2007, 2009).',
+      "He was at the centre of multiple off-field controversies, including a 2009 season-launch incident involving Manly's then-sponsor and a 2011 post-Origin hotel-room destruction allegation.",
+    ],
+  },
+];
 
 // ── Already-inserted games (reference only, not re-inserted) ──────────────────
 // Games 5-20 are confirmed live in the DB. Older entries (7-10) kept here for reference.

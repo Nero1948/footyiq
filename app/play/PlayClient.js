@@ -424,6 +424,11 @@ export default function PlayClient({ initialGame }) {
 
   // ── Render: game ───────────────────────────────────────────────────────────
 
+  // One-day joke banner: only shows while the Sydney date (same clock the API
+  // uses to pick the daily game) is 2026-07-20, then disappears by itself.
+  const showJokeOfTheDay =
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Australia/Sydney' }).format(new Date()) === '2026-07-20';
+
   return (
     <div
       className="min-h-screen text-white flex flex-col"
@@ -470,6 +475,21 @@ export default function PlayClient({ initialGame }) {
         {gameState === 'playing' && (
           <>
             <div className="mb-6">
+              {showJokeOfTheDay && (
+                <div
+                  className="mb-4 rounded-xl px-4 py-3"
+                  style={{ background: 'rgba(0,230,118,0.06)', border: '1px solid rgba(0,230,118,0.18)' }}
+                >
+                  <p className="text-[11px] uppercase tracking-wider mb-1 font-bold" style={{ color: '#00e676' }}>
+                    Today&apos;s dressing-room joke
+                  </p>
+                  <p className="text-sm text-gray-300 leading-relaxed">
+                    A bloke tells his doctor he&apos;s been having the same nightmare for 15 years.
+                    Doctor says &ldquo;that&apos;s not a nightmare mate, you&apos;re just a Tigers fan.&rdquo;
+                  </p>
+                </div>
+              )}
+
               <h2 className="text-2xl font-black text-white mb-3">Can you name this NRL player?</h2>
 
               <div
